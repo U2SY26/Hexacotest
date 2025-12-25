@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Brain, Users, Share2, Sparkles, ChevronRight, Hexagon, Clock, Zap, Target, Star, TrendingUp, Globe, CheckCircle } from 'lucide-react'
 import { useTestStore } from '../stores/testStore'
 import { testVersions } from '../data/questions'
+import ElectricBorder from '../components/ElectricBorder'
+import DecryptedText from '../components/DecryptedText'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -71,47 +73,6 @@ function FloatingParticles() {
         />
       ))}
     </div>
-  )
-}
-
-// Typing effect component
-function TypingText({ texts, className }: { texts: string[], className?: string }) {
-  const [currentTextIndex, setCurrentTextIndex] = useState(0)
-  const [displayText, setDisplayText] = useState('')
-  const [isDeleting, setIsDeleting] = useState(false)
-
-  useEffect(() => {
-    const currentFullText = texts[currentTextIndex]
-
-    const timeout = setTimeout(() => {
-      if (!isDeleting) {
-        if (displayText.length < currentFullText.length) {
-          setDisplayText(currentFullText.slice(0, displayText.length + 1))
-        } else {
-          setTimeout(() => setIsDeleting(true), 2000)
-        }
-      } else {
-        if (displayText.length > 0) {
-          setDisplayText(displayText.slice(0, -1))
-        } else {
-          setIsDeleting(false)
-          setCurrentTextIndex((prev) => (prev + 1) % texts.length)
-        }
-      }
-    }, isDeleting ? 50 : 100)
-
-    return () => clearTimeout(timeout)
-  }, [displayText, isDeleting, currentTextIndex, texts])
-
-  return (
-    <span className={className}>
-      {displayText}
-      <motion.span
-        animate={{ opacity: [1, 0] }}
-        transition={{ duration: 0.5, repeat: Infinity }}
-        className="inline-block w-[3px] h-[1em] bg-purple-400 ml-1 align-middle"
-      />
-    </span>
   )
 }
 
@@ -428,11 +389,16 @@ export default function LandingPage() {
               <motion.div
                 {...fadeInUp}
                 transition={{ delay: 0.15 }}
-                className="h-16 mb-6"
+                className="h-12 mb-6"
               >
-                <TypingText
-                  texts={typingTexts}
+                <DecryptedText
+                  text={typingTexts[0]}
+                  speed={60}
+                  maxIterations={10}
+                  animateOn="view"
+                  revealDirection="start"
                   className="text-xl md:text-2xl text-purple-300"
+                  parentClassName="text-xl md:text-2xl text-purple-300"
                 />
               </motion.div>
 
@@ -455,17 +421,26 @@ export default function LandingPage() {
                 </span>
                 <div className="flex gap-2">
                   {([60, 120, 180] as const).map((v) => (
-                    <button
+                    <ElectricBorder
                       key={v}
-                      onClick={() => setTestVersion(v)}
-                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                        testVersion === v
-                          ? 'bg-purple-500 text-white'
-                          : 'bg-dark-card border border-dark-border text-gray-400 hover:border-purple-500/50'
-                      }`}
+                      color={testVersion === v ? '#8B5CF6' : '#4B5563'}
+                      speed={1}
+                      chaos={testVersion === v ? 0.5 : 0.2}
+                      thickness={2}
+                      style={{ borderRadius: 9999 }}
                     >
-                      {v}
-                    </button>
+                      <button
+                        onClick={() => setTestVersion(v)}
+                        className={`px-4 py-2 text-sm font-medium transition-all ${
+                          testVersion === v
+                            ? 'bg-purple-500/20 text-white'
+                            : 'bg-dark-card text-gray-400 hover:text-white'
+                        }`}
+                        style={{ borderRadius: 9999 }}
+                      >
+                        {v}
+                      </button>
+                    </ElectricBorder>
                   ))}
                 </div>
               </motion.div>
@@ -475,15 +450,24 @@ export default function LandingPage() {
                 transition={{ delay: 0.3 }}
                 className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start"
               >
-                <Link
-                  to="/test"
-                  onClick={() => reset()}
-                  className="btn-primary inline-flex items-center justify-center gap-2 text-lg group"
+                <ElectricBorder
+                  color="#8B5CF6"
+                  speed={1}
+                  chaos={0.5}
+                  thickness={2}
+                  style={{ borderRadius: 12 }}
                 >
-                  <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                  {testVersion}{t('landing.selectVersion.questions')} {t('landing.cta')}
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                  <Link
+                    to="/test"
+                    onClick={() => reset()}
+                    className="px-6 py-3 bg-gradient-to-r from-purple-600/80 to-pink-600/80 inline-flex items-center justify-center gap-2 text-lg font-semibold text-white group"
+                    style={{ borderRadius: 12 }}
+                  >
+                    <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+                    {testVersion}{t('landing.selectVersion.questions')} {t('landing.cta')}
+                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </ElectricBorder>
                 <a
                   href="#learn-more"
                   className="btn-secondary inline-flex items-center justify-center gap-2"
