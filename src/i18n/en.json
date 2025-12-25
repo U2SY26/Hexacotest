@@ -1,0 +1,120 @@
+{
+  "common": {
+    "start": "Start Test",
+    "next": "Next",
+    "prev": "Previous",
+    "submit": "See Results",
+    "share": "Share",
+    "save": "Save Image",
+    "copyLink": "Copy Link",
+    "copied": "Copied!",
+    "retry": "Retake Test",
+    "home": "Home"
+  },
+  "landing": {
+    "title": "HEXACO",
+    "subtitle": "Personality Test",
+    "description": "Based on world-renowned psychological research,\nthe HEXACO model analyzes your personality across 6 factors.",
+    "cta": "Start Free Test",
+    "features": {
+      "scientific": {
+        "title": "Scientific Analysis",
+        "description": "Uses academically validated HEXACO-60 questionnaire"
+      },
+      "persona": {
+        "title": "Celebrity Match",
+        "description": "Find famous people with similar personalities to yours"
+      },
+      "share": {
+        "title": "Share Results",
+        "description": "Easily share your results with friends"
+      }
+    },
+    "hexaco": {
+      "title": "What is the HEXACO Model?",
+      "description": "HEXACO is a personality structure model developed by Canadian psychologists. It adds Honesty-Humility to the traditional Big Five model for more precise personality measurement.",
+      "factors": {
+        "H": {
+          "name": "Honesty-Humility",
+          "full": "Honesty-Humility",
+          "desc": "Sincerity, fairness, greed avoidance, modesty"
+        },
+        "E": {
+          "name": "Emotionality",
+          "full": "Emotionality",
+          "desc": "Fearfulness, anxiety, dependence, sentimentality"
+        },
+        "X": {
+          "name": "Extraversion",
+          "full": "eXtraversion",
+          "desc": "Social confidence, sociability, liveliness, boldness"
+        },
+        "A": {
+          "name": "Agreeableness",
+          "full": "Agreeableness",
+          "desc": "Forgiveness, gentleness, flexibility, patience"
+        },
+        "C": {
+          "name": "Conscientiousness",
+          "full": "Conscientiousness",
+          "desc": "Organization, diligence, perfectionism, prudence"
+        },
+        "O": {
+          "name": "Openness",
+          "full": "Openness to Experience",
+          "desc": "Aesthetic appreciation, curiosity, creativity, unconventionality"
+        }
+      }
+    }
+  },
+  "test": {
+    "progress": "{{current}} / {{total}}",
+    "question": "Question {{number}}",
+    "scale": {
+      "1": "Strongly Disagree",
+      "2": "Disagree",
+      "3": "Neutral",
+      "4": "Agree",
+      "5": "Strongly Agree"
+    }
+  },
+  "result": {
+    "title": "Your HEXACO Results",
+    "analyzing": "Analyzing...",
+    "matchTitle": "Your Celebrity Match",
+    "matchDescription": "The person most similar to your personality profile",
+    "similarity": "{{percent}}% Similar",
+    "category": {
+      "celebrity": "Celebrity",
+      "artist": "Artist",
+      "politician": "Politician",
+      "entrepreneur": "Entrepreneur"
+    },
+    "factorDetail": {
+      "H": {
+        "high": "You are sincere and fair, valuing moral principles over material gain.",
+        "low": "You actively pursue your interests and care about social status."
+      },
+      "E": {
+        "high": "You are emotionally sensitive and form deep bonds with others.",
+        "low": "You are emotionally stable and remain calm under stress."
+      },
+      "X": {
+        "high": "You are sociable and energetic, gaining energy from being with people.",
+        "low": "You are quiet and introverted, enjoying time alone."
+      },
+      "A": {
+        "high": "You easily forgive others, avoid conflict, and are cooperative.",
+        "low": "You express your opinions strongly and don't hesitate to criticize when needed."
+      },
+      "C": {
+        "high": "You are organized, goal-oriented, and act according to plans.",
+        "low": "You are flexible and spontaneous, not bound by rules."
+      },
+      "O": {
+        "high": "You are creative, curious, and seek new experiences.",
+        "low": "You are practical and prefer traditional approaches."
+      }
+    }
+  }
+}

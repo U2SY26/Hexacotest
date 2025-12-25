@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: HEXACO 성격 테스트 웹사이트 구현\n\n- React 18 + Vite + TypeScript 프로젝트 설정\n- Tailwind CSS 다크 모드 기본 설정\n- Framer Motion 애니메이션 효과\n- 60문항 HEXACO 테스트 구현\n- 레이더 차트 결과 시각화 \\(Recharts\\)\n- 12명의 유명인/위인 매칭 시스템\n- 다국어 지원 \\(한국어/영어\\)\n- URL 파라미터 기반 결과 공유\n- 소셜 공유 및 이미지 저장 기능\n- 모바일 반응형 디자인\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+    ]
+  }
+}

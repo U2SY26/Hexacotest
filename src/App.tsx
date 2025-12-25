@@ -1,0 +1,26 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { Suspense, lazy } from 'react'
+import Layout from './components/layout/Layout'
+import LoadingSpinner from './components/common/LoadingSpinner'
+
+const LandingPage = lazy(() => import('./pages/LandingPage'))
+const TestPage = lazy(() => import('./pages/TestPage'))
+const ResultPage = lazy(() => import('./pages/ResultPage'))
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Layout>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/test" element={<TestPage />} />
+            <Route path="/result" element={<ResultPage />} />
+          </Routes>
+        </Suspense>
+      </Layout>
+    </BrowserRouter>
+  )
+}
+
+export default App
