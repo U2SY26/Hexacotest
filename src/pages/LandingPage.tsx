@@ -455,7 +455,7 @@ export default function LandingPage() {
                   className="btn-primary inline-flex items-center justify-center gap-2 text-lg group"
                 >
                   <Sparkles className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-                  {t('landing.cta')}
+                  {testVersion}{t('landing.selectVersion.questions')} {t('landing.cta')}
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <a
