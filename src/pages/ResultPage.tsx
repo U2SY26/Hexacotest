@@ -9,18 +9,32 @@ import {
 import { Download, Link2, RotateCcw, Home, Check, Twitter } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import { decodeResults, useTestStore } from '../stores/testStore'
-import { factorColors, factors } from '../data/questions'
-import { findBestMatch, MatchResult } from '../utils/matching'
+import { factorColors, factors, Factor } from '../data/questions'
+import { findTopMatches, MatchResult } from '../utils/matching'
 import { categoryColors } from '../data/personas'
-import { buildDetailedAnalysis } from '../utils/analysis'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+
+interface AnalysisFactor {
+  factor: Factor
+  overview: string
+  strengths: string[]
+  risks: string[]
+  growth: string
+}
+
+interface AnalysisResponse {
+  summary: string
+  factors: AnalysisFactor[]
+}
 
 export default function ResultPage() {
   const { t, i18n } = useTranslation()
   const [searchParams] = useSearchParams()
   const resultRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
-  const [match, setMatch] = useState<MatchResult | null>(null)
+  const [topMatches, setTopMatches] = useState<MatchResult[]>([])
+  const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null)
+  const [analysisError, setAnalysisError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const storeScores = useTestStore(state => state.scores)
@@ -29,22 +43,70 @@ export default function ResultPage() {
   // URL에서 결과 가져오기 또는 스토어에서 가져오기
   const encodedResult = searchParams.get('r')
   const scores = encodedResult ? decodeResults(encodedResult) : storeScores
-  const analysisItems = scores
-    ? buildDetailedAnalysis(scores, i18n.language === 'ko' ? 'ko' : 'en')
+  const match = topMatches[0]
+  const analysisFactors = analysis
+    ? factors
+        .map(factor => analysis.factors.find(item => item.factor === factor))
+        .filter((item): item is AnalysisFactor => Boolean(item))
     : []
 
   useEffect(() => {
-    if (scores) {
-      // 약간의 딜레이로 분석 중 효과
-      const timer = setTimeout(() => {
-        setMatch(findBestMatch(scores))
-        setIsLoading(false)
-      }, 1500)
-      return () => clearTimeout(timer)
-    } else {
+    if (!scores) {
       setIsLoading(false)
+      return
     }
-  }, [scores])
+
+    let cancelled = false
+    setIsLoading(true)
+    setAnalysis(null)
+    setAnalysisError(null)
+
+    const delay = new Promise(resolve => {
+      setTimeout(resolve, 1500)
+    })
+
+    const matchesPromise = delay.then(() => findTopMatches(scores, 5))
+
+    const analysisPromise = fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        scores,
+        language: i18n.language === 'ko' ? 'ko' : 'en'
+      })
+    }).then(async response => {
+      if (!response.ok) {
+        throw new Error('Failed to load analysis')
+      }
+      return response.json() as Promise<AnalysisResponse>
+    })
+
+    Promise.allSettled([matchesPromise, analysisPromise]).then(results => {
+      if (cancelled) return
+
+      const matchResult = results[0]
+      if (matchResult.status === 'fulfilled') {
+        setTopMatches(matchResult.value)
+      } else {
+        setTopMatches(findTopMatches(scores, 5))
+      }
+
+      const analysisResult = results[1]
+      if (analysisResult.status === 'fulfilled') {
+        setAnalysis(analysisResult.value)
+      } else {
+        setAnalysisError(i18n.language === 'ko'
+          ? 'LLM 분석을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
+          : 'Failed to load LLM analysis. Please try again later.')
+      }
+
+      setIsLoading(false)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [scores, i18n.language])
 
   const chartData = scores
     ? factors.map(factor => ({
@@ -59,6 +121,10 @@ export default function ResultPage() {
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
+
+  const formatPercent = (value: number) => `${value.toFixed(1)}%`
+
+  const toSafeUrl = (url: string) => encodeURI(url)
 
   const shareTwitter = () => {
     const text = i18n.language === 'ko'
@@ -196,9 +262,8 @@ export default function ResultPage() {
                 </div>
                 <div className="flex items-end gap-2">
                   <span className="text-3xl font-bold text-white">
-                    {scores[factor]}
+                    {formatPercent(scores[factor])}
                   </span>
-                  <span className="text-gray-500 text-sm mb-1">/100</span>
                 </div>
                 <div className="mt-2 h-2 bg-dark-bg rounded-full overflow-hidden">
                   <motion.div
@@ -209,17 +274,12 @@ export default function ResultPage() {
                     style={{ backgroundColor: factorColors[factor] }}
                   />
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  {scores[factor] >= 50
-                    ? t(`result.factorDetail.${factor}.high`)
-                    : t(`result.factorDetail.${factor}.low`)}
-                </p>
               </motion.div>
             ))}
           </motion.div>
 
-          {/* Detailed Analysis */}
-          {analysisItems.length > 0 && (
+          {/* LLM Analysis */}
+          {analysis && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -227,15 +287,13 @@ export default function ResultPage() {
               className="card"
             >
               <h2 className="text-xl font-bold text-white mb-2">
-                {i18n.language === 'ko' ? '성격 상세 분석' : 'Detailed Personality Analysis'}
+                {i18n.language === 'ko' ? 'LLM 성격 분석' : 'LLM Personality Analysis'}
               </h2>
               <p className="text-gray-400 text-sm mb-6">
-                {i18n.language === 'ko'
-                  ? '점수 수준을 기준으로 성향을 더 깊게 해석한 내용입니다.'
-                  : 'A deeper interpretation of your tendencies based on score levels.'}
+                {analysis.summary}
               </p>
               <div className="space-y-4">
-                {analysisItems.map(item => (
+                {analysisFactors.map(item => (
                   <div key={item.factor} className="rounded-lg bg-dark-bg/40 p-4">
                     <div className="flex items-center gap-2 mb-2">
                       <span
@@ -248,15 +306,48 @@ export default function ResultPage() {
                         {t(`landing.hexaco.factors.${item.factor}.name`)}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-400">{item.text}</p>
+                    <p className="text-sm text-gray-400">{item.overview}</p>
+                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-500">
+                      <div>
+                        <p className="text-gray-400 font-medium mb-1">
+                          {i18n.language === 'ko' ? '강점' : 'Strengths'}
+                        </p>
+                        <ul className="list-disc list-inside space-y-1">
+                          {item.strengths?.map((strength, index) => (
+                            <li key={`strength-${item.factor}-${index}`}>{strength}</li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="text-gray-400 font-medium mb-1">
+                          {i18n.language === 'ko' ? '주의점' : 'Risks'}
+                        </p>
+                        <ul className="list-disc list-inside space-y-1">
+                          {item.risks?.map((risk, index) => (
+                            <li key={`risk-${item.factor}-${index}`}>{risk}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-3">
+                      <span className="text-gray-400 font-medium mr-2">
+                        {i18n.language === 'ko' ? '제안' : 'Growth'}
+                      </span>
+                      {item.growth}
+                    </p>
                   </div>
                 ))}
               </div>
             </motion.div>
           )}
+          {analysisError && (
+            <div className="card border border-red-500/30 bg-red-500/5 text-red-200 text-sm">
+              {analysisError}
+            </div>
+          )}
 
-          {/* Persona Match */}
-          {match && (
+          {/* Top Persona Matches */}
+          {topMatches.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -270,52 +361,62 @@ export default function ResultPage() {
                 {t('result.matchDescription')}
               </p>
 
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                {/* Persona Avatar */}
-                <div className="relative">
-                  <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1">
-                    <div className="w-full h-full rounded-full bg-dark-card flex items-center justify-center">
-                      <span className="text-4xl font-bold gradient-text">
-                        {match.persona.name[i18n.language as 'ko' | 'en'][0]}
-                      </span>
+              <div className="space-y-4">
+                {topMatches.map((item, index) => (
+                  <div
+                    key={item.persona.id}
+                    className="flex flex-col md:flex-row items-center gap-4 rounded-lg bg-dark-bg/40 p-4"
+                  >
+                    <div className="relative">
+                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1">
+                        <div className="w-full h-full rounded-full bg-dark-card flex items-center justify-center">
+                          <span className="text-2xl font-bold gradient-text">
+                            {item.persona.name[i18n.language as 'ko' | 'en'][0]}
+                          </span>
+                        </div>
+                      </div>
+                      <div
+                        className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-medium"
+                        style={{
+                          backgroundColor: categoryColors[item.persona.category],
+                          color: 'white'
+                        }}
+                      >
+                        {t(`result.category.${item.persona.category}`)}
+                      </div>
+                      <div className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/10 text-white">
+                        #{index + 1}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 text-center md:text-left">
+                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
+                        <h3 className="text-lg font-bold text-white">
+                          {item.persona.name[i18n.language as 'ko' | 'en']}
+                        </h3>
+                        <p className="text-purple-400 text-sm font-medium">
+                          {t('result.similarity', { percent: item.similarity })}
+                        </p>
+                      </div>
+                      <p className="text-gray-400 text-sm mt-2">
+                        {item.persona.description[i18n.language as 'ko' | 'en']}
+                      </p>
+                      <div className="mt-2 text-xs text-gray-500">
+                        <span className="mr-2">
+                          {i18n.language === 'ko' ? '출처' : 'Source'}:
+                        </span>
+                        <a
+                          href={toSafeUrl(item.persona.sourceUrl)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="underline hover:text-gray-300"
+                        >
+                          {i18n.language === 'ko' ? '나무위키' : 'NamuWiki'}
+                        </a>
+                      </div>
                     </div>
                   </div>
-                  <div
-                    className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-medium"
-                    style={{
-                      backgroundColor: categoryColors[match.persona.category],
-                      color: 'white'
-                    }}
-                  >
-                    {t(`result.category.${match.persona.category}`)}
-                  </div>
-                </div>
-
-                {/* Persona Info */}
-                <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-2xl font-bold text-white mb-1">
-                    {match.persona.name[i18n.language as 'ko' | 'en']}
-                  </h3>
-                  <p className="text-purple-400 font-medium mb-3">
-                    {t('result.similarity', { percent: match.similarity })}
-                  </p>
-                  <p className="text-gray-400">
-                    {match.persona.description[i18n.language as 'ko' | 'en']}
-                  </p>
-                  <div className="mt-3 text-xs text-gray-500">
-                    <span className="mr-2">
-                      {i18n.language === 'ko' ? '출처' : 'Source'}:
-                    </span>
-                    <a
-                      href={match.persona.sourceUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="underline hover:text-gray-300"
-                    >
-                      {i18n.language === 'ko' ? '나무위키' : 'NamuWiki'}
-                    </a>
-                  </div>
-                </div>
+                ))}
               </div>
             </motion.div>
           )}

@@ -30,6 +30,13 @@
         "description": "친구들과 결과를 쉽게 공유할 수 있습니다"
       }
     },
+    "selectVersion": {
+      "title": "테스트 유형을 선택하세요",
+      "description": "문항 수가 많을수록 더 정밀한 분석 결과를 얻을 수 있습니다",
+      "questions": "문항",
+      "selected": "선택됨",
+      "time": "약 {{minutes}}분 소요"
+    },
     "hexaco": {
       "title": "HEXACO 모델이란?",
       "description": "HEXACO는 캐나다의 심리학자들이 개발한 성격 구조 모델로, 기존의 Big Five 모델에 정직-겸손(Honesty-Humility) 요인을 추가하여 인간의 성격을 더욱 정밀하게 측정합니다.",
@@ -70,6 +77,14 @@
   "test": {
     "progress": "{{current}} / {{total}}",
     "question": "질문 {{number}}",
+    "version": {
+      "quick": "빠른 테스트",
+      "quickDesc": "핵심 성격 특성을 빠르게 파악합니다",
+      "standard": "표준 테스트",
+      "standardDesc": "균형 잡힌 분석으로 신뢰도 높은 결과를 제공합니다",
+      "detailed": "정밀 테스트",
+      "detailedDesc": "가장 상세하고 정확한 성격 분석을 제공합니다"
+    },
     "scale": {
       "1": "전혀 그렇지 않다",
       "2": "그렇지 않다",
@@ -81,8 +96,8 @@
   "result": {
     "title": "당신의 HEXACO 결과",
     "analyzing": "분석 중...",
-    "matchTitle": "당신과 닮은 위인",
-    "matchDescription": "당신의 성격 프로필과 가장 유사한 인물입니다",
+    "matchTitle": "당신과 가장 유사한 인물 5명",
+    "matchDescription": "당신의 성격 프로필과 점수가 가장 가까운 5명입니다",
     "similarity": "유사도 {{percent}}%",
     "category": {
       "celebrity": "연예인",

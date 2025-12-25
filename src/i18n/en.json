@@ -30,6 +30,13 @@
         "description": "Easily share your results with friends"
       }
     },
+    "selectVersion": {
+      "title": "Choose Test Type",
+      "description": "More questions provide more precise analysis results",
+      "questions": " Questions",
+      "selected": "Selected",
+      "time": "About {{minutes}} min"
+    },
     "hexaco": {
       "title": "What is the HEXACO Model?",
       "description": "HEXACO is a personality structure model developed by Canadian psychologists. It adds Honesty-Humility to the traditional Big Five model for more precise personality measurement.",
@@ -70,6 +77,14 @@
   "test": {
     "progress": "{{current}} / {{total}}",
     "question": "Question {{number}}",
+    "version": {
+      "quick": "Quick Test",
+      "quickDesc": "Quickly identify core personality traits",
+      "standard": "Standard Test",
+      "standardDesc": "Balanced analysis with reliable results",
+      "detailed": "Detailed Test",
+      "detailedDesc": "Most comprehensive and accurate personality analysis"
+    },
     "scale": {
       "1": "Strongly Disagree",
       "2": "Disagree",
@@ -81,8 +96,8 @@
   "result": {
     "title": "Your HEXACO Results",
     "analyzing": "Analyzing...",
-    "matchTitle": "Your Celebrity Match",
-    "matchDescription": "The person most similar to your personality profile",
+    "matchTitle": "Your Top 5 Matches",
+    "matchDescription": "Five people closest to your personality profile",
     "similarity": "{{percent}}% Similar",
     "category": {
       "celebrity": "Celebrity",
