@@ -6,6 +6,7 @@ import LoadingSpinner from './components/common/LoadingSpinner'
 const LandingPage = lazy(() => import('./pages/LandingPage'))
 const TestPage = lazy(() => import('./pages/TestPage'))
 const ResultPage = lazy(() => import('./pages/ResultPage'))
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
             <Route path="/" element={<LandingPage />} />
             <Route path="/test" element={<TestPage />} />
             <Route path="/result" element={<ResultPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
           </Routes>
         </Suspense>
       </Layout>

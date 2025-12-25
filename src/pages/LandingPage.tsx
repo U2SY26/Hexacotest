@@ -230,6 +230,11 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
           <p>HEXACO Personality Test</p>
           <p className="mt-1">Based on HEXACO-PI-R by Ashton & Lee</p>
+          <p className="mt-3">
+            <Link to="/privacy" className="hover:text-purple-400 transition-colors">
+              개인정보처리방침
+            </Link>
+          </p>
         </div>
       </footer>
     </div>
