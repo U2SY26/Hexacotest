@@ -444,6 +444,32 @@ export default function LandingPage() {
                 {t('landing.description')}
               </motion.p>
 
+              {/* Quick version selector */}
+              <motion.div
+                {...fadeInUp}
+                transition={{ delay: 0.25 }}
+                className="flex items-center gap-2 justify-center md:justify-start mb-6"
+              >
+                <span className="text-gray-500 text-sm">
+                  {i18n.language === 'ko' ? '문항 수:' : 'Questions:'}
+                </span>
+                <div className="flex gap-2">
+                  {([60, 120, 180] as const).map((v) => (
+                    <button
+                      key={v}
+                      onClick={() => setTestVersion(v)}
+                      className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                        testVersion === v
+                          ? 'bg-purple-500 text-white'
+                          : 'bg-dark-card border border-dark-border text-gray-400 hover:border-purple-500/50'
+                      }`}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
+
               <motion.div
                 {...fadeInUp}
                 transition={{ delay: 0.3 }}
