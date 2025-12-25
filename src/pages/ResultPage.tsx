@@ -12,6 +12,7 @@ import { decodeResults, useTestStore } from '../stores/testStore'
 import { factorColors, factors } from '../data/questions'
 import { findBestMatch, MatchResult } from '../utils/matching'
 import { categoryColors } from '../data/personas'
+import { buildDetailedAnalysis } from '../utils/analysis'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 
 export default function ResultPage() {
@@ -28,6 +29,9 @@ export default function ResultPage() {
   // URL에서 결과 가져오기 또는 스토어에서 가져오기
   const encodedResult = searchParams.get('r')
   const scores = encodedResult ? decodeResults(encodedResult) : storeScores
+  const analysisItems = scores
+    ? buildDetailedAnalysis(scores, i18n.language === 'ko' ? 'ko' : 'en')
+    : []
 
   useEffect(() => {
     if (scores) {
@@ -214,6 +218,43 @@ export default function ResultPage() {
             ))}
           </motion.div>
 
+          {/* Detailed Analysis */}
+          {analysisItems.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="card"
+            >
+              <h2 className="text-xl font-bold text-white mb-2">
+                {i18n.language === 'ko' ? '성격 상세 분석' : 'Detailed Personality Analysis'}
+              </h2>
+              <p className="text-gray-400 text-sm mb-6">
+                {i18n.language === 'ko'
+                  ? '점수 수준을 기준으로 성향을 더 깊게 해석한 내용입니다.'
+                  : 'A deeper interpretation of your tendencies based on score levels.'}
+              </p>
+              <div className="space-y-4">
+                {analysisItems.map(item => (
+                  <div key={item.factor} className="rounded-lg bg-dark-bg/40 p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span
+                        className="text-lg font-bold"
+                        style={{ color: factorColors[item.factor] }}
+                      >
+                        {item.factor}
+                      </span>
+                      <span className="text-sm text-gray-400">
+                        {t(`landing.hexaco.factors.${item.factor}.name`)}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-400">{item.text}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
+
           {/* Persona Match */}
           {match && (
             <motion.div
@@ -261,6 +302,19 @@ export default function ResultPage() {
                   <p className="text-gray-400">
                     {match.persona.description[i18n.language as 'ko' | 'en']}
                   </p>
+                  <div className="mt-3 text-xs text-gray-500">
+                    <span className="mr-2">
+                      {i18n.language === 'ko' ? '출처' : 'Source'}:
+                    </span>
+                    <a
+                      href={match.persona.sourceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline hover:text-gray-300"
+                    >
+                      {i18n.language === 'ko' ? '나무위키' : 'NamuWiki'}
+                    </a>
+                  </div>
                 </div>
               </div>
             </motion.div>
