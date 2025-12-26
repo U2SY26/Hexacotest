@@ -12,7 +12,8 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: SEO 및 AdSense 설정 파일 추가\n\n- ads.txt \\(Google AdSense 게시자 인증\\)\n- robots.txt \\(검색엔진 크롤링 규칙\\)\n- sitemap.xml \\(사이트 구조 정보\\)\n- 개인정보처리방침 페이지 추가\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: 랜딩/테스트 페이지 UI 대폭 개선\n\n랜딩 페이지:\n- 타이핑 효과 애니메이션 추가\n- 플로팅 파티클 배경 효과\n- 통계 섹션 \\(50K+ 테스트, 4.8 평점 등\\)\n- 샘플 질문 미리보기 슬라이더\n- 혜택 리스트 및 회전 HEXACO 시각화\n- 호버 인터랙션 개선\n\n테스트 페이지:\n- Ambient 배경 \\(느린 그라데이션 오브\\)\n- Factor별 색상 프로그레스 바\n- H-E-X-A-C-O 미니 인디케이터\n- 응답 버튼 색상 그라데이션\n- 호흡 가이드 추가\n\n기타:\n- 180문항 상황기반 질문으로 개선\n- 60/120/180 문항 버전 선택\n- Gemini API 분석 기능\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git push)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(cat:*)"
     ]
   }
 }
