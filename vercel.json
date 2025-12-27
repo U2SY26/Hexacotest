@@ -6,11 +6,6 @@
   "framework": null,
   "cleanUrls": false,
   "trailingSlash": false,
-  "functions": {
-    "api/*.ts": {
-      "runtime": "@vercel/node@3"
-    }
-  },
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/google2e375c8dd7f15496.html", "headers": { "Content-Type": "text/html" }, "dest": "/google2e375c8dd7f15496.html" },
