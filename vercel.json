@@ -9,10 +9,14 @@
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/google2e375c8dd7f15496.html", "headers": { "Content-Type": "text/html" }, "dest": "/google2e375c8dd7f15496.html" },
-    { "src": "/ads.txt", "headers": { "Content-Type": "text/plain" }, "dest": "/ads.txt" },
-    { "src": "/robots.txt", "headers": { "Content-Type": "text/plain" }, "dest": "/robots.txt" },
-    { "src": "/sitemap.xml", "headers": { "Content-Type": "application/xml" }, "dest": "/sitemap.xml" },
-    { "src": "/hexagon.svg", "dest": "/hexagon.svg" },
+    { "src": "/ads.txt", "headers": { "Content-Type": "text/plain; charset=utf-8" }, "dest": "/ads.txt" },
+    { "src": "/robots.txt", "headers": { "Content-Type": "text/plain; charset=utf-8" }, "dest": "/robots.txt" },
+    { "src": "/sitemap.xml", "headers": { "Content-Type": "application/xml; charset=utf-8" }, "dest": "/sitemap.xml" },
+    { "src": "/sitemap-index.xml", "headers": { "Content-Type": "application/xml; charset=utf-8" }, "dest": "/sitemap-index.xml" },
+    { "src": "/manifest.json", "headers": { "Content-Type": "application/manifest+json" }, "dest": "/manifest.json" },
+    { "src": "/browserconfig.xml", "headers": { "Content-Type": "application/xml" }, "dest": "/browserconfig.xml" },
+    { "src": "/.well-known/security.txt", "headers": { "Content-Type": "text/plain" }, "dest": "/.well-known/security.txt" },
+    { "src": "/hexagon.svg", "headers": { "Content-Type": "image/svg+xml" }, "dest": "/hexagon.svg" },
     { "src": "/assets/(.*)", "dest": "/assets/$1" },
     { "src": "^/(?!.*\\.).*$", "dest": "/index.html" }
   ]

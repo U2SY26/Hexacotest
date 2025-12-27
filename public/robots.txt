@@ -1,4 +1,92 @@
+# HEXACO Personality Test - robots.txt
+# https://hexacotest.vercel.app
+
+# Allow all crawlers
 User-agent: *
 Allow: /
+Allow: /test
+Allow: /result
+Allow: /privacy
 
+# Disallow internal/API paths
+Disallow: /api/
+
+# Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Google Image
+User-agent: Googlebot-Image
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+# Naver
+User-agent: Yeti
+Allow: /
+Crawl-delay: 1
+
+# Daum
+User-agent: Daumoa
+Allow: /
+
+# Baidu
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+# Yandex
+User-agent: YandexBot
+Allow: /
+Crawl-delay: 2
+
+# DuckDuckGo
+User-agent: DuckDuckBot
+Allow: /
+
+# Facebook
+User-agent: facebookexternalhit
+Allow: /
+
+# Twitter
+User-agent: Twitterbot
+Allow: /
+
+# LinkedIn
+User-agent: LinkedInBot
+Allow: /
+
+# Kakao
+User-agent: kakao
+Allow: /
+
+# Pinterest
+User-agent: Pinterest
+Allow: /
+
+# OpenAI GPTBot (for AI training/referencing)
+User-agent: GPTBot
+Allow: /
+
+# Anthropic Claude
+User-agent: ClaudeBot
+Allow: /
+
+# Google Bard/Gemini
+User-agent: Google-Extended
+Allow: /
+
+# Common Crawl
+User-agent: CCBot
+Allow: /
+
+# Sitemaps
 Sitemap: https://hexacotest.vercel.app/sitemap.xml
+Sitemap: https://hexacotest.vercel.app/sitemap-index.xml
+
+# Host
+Host: https://hexacotest.vercel.app
