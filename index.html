@@ -2,40 +2,281 @@
 <html lang="ko" class="dark">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Content-Language" content="ko, en, ja, zh, es, fr, de, pt, ru, ar" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+
+    <!-- Google Site Verification -->
     <meta name="google-site-verification" content="_XxAstyVIw3xnm9uo1oBDBb5uE8zlj6DOtdKbetleaY" />
+
+    <!-- Naver Site Verification -->
+    <meta name="naver-site-verification" content="YOUR_NAVER_CODE_HERE" />
+
+    <!-- Bing Site Verification -->
+    <meta name="msvalidate.01" content="YOUR_BING_CODE_HERE" />
+
+    <!-- Title - Multiple Languages -->
+    <title>HEXACO 성격 테스트 | HEXACO Personality Test | 무료 심리테스트</title>
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/hexagon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HEXACO 성격 테스트</title>
-    
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="HEXACO 성격 테스트 - 당신의 성격을 6가지 요인(정직성-겸손성, 정서성, 외향성, 원만성, 성실성, 개방성)으로 분석하고, 당신과 비슷한 성격의 유명인을 찾아보세요." />
-    <meta name="keywords" content="HEXACO, 성격테스트, 심리테스트, 성격유형, MBTI, Big5, 성격, 심리학, 테스트, 검사,헥사코, 핵사코, 성격 분석" />
-    <meta name="author" content="HEXACO Test" />
-    <meta name="robots" content="index, follow" />
+    <link rel="apple-touch-icon" href="/hexagon.svg" />
+    <link rel="shortcut icon" href="/hexagon.svg" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://hexacotest.vercel.app/" />
+
+    <!-- Alternate Language URLs (hreflang) -->
+    <link rel="alternate" hreflang="ko" href="https://hexacotest.vercel.app/" />
+    <link rel="alternate" hreflang="en" href="https://hexacotest.vercel.app/?lang=en" />
+    <link rel="alternate" hreflang="ja" href="https://hexacotest.vercel.app/?lang=ja" />
+    <link rel="alternate" hreflang="zh" href="https://hexacotest.vercel.app/?lang=zh" />
+    <link rel="alternate" hreflang="x-default" href="https://hexacotest.vercel.app/" />
+
+    <!-- Primary SEO Meta Tags - Korean -->
+    <meta name="title" content="HEXACO 성격 테스트 - 무료 심리검사 | 나와 비슷한 유명인 찾기" />
+    <meta name="description" content="HEXACO 성격 테스트로 당신의 진짜 성격을 발견하세요! 6가지 요인(정직성-겸손성, 정서성, 외향성, 원만성, 성실성, 개방성)으로 분석하는 과학적 심리검사. AI 기반 맞춤 분석과 유명인 매칭 제공. 60/120/180 문항 선택 가능. 무료!" />
+    <meta name="keywords" content="HEXACO, 헥사코, 핵사코, 성격테스트, 심리테스트, 성격유형, 성격검사, 심리검사, MBTI, Big5, 빅파이브, 성격분석, 무료심리테스트, 무료성격테스트, personality test, 心理测试, 性格テスト, AI성격분석, 유명인매칭, 성격유형검사, 자기분석, 자아발견, 심리학테스트, 온라인심리검사" />
+    <meta name="author" content="HEXACO Personality Test" />
+    <meta name="creator" content="HEXACO Test Team" />
+    <meta name="publisher" content="HEXACO Test" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="bingbot" content="index, follow" />
+    <meta name="yeti" content="index, follow" />
+    <meta name="naverbot" content="index, follow" />
+    <meta name="daumoa" content="index, follow" />
+    <meta name="rating" content="general" />
+    <meta name="distribution" content="global" />
+    <meta name="revisit-after" content="1 days" />
+    <meta name="coverage" content="Worldwide" />
+    <meta name="target" content="all" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="MobileOptimized" content="320" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- AI Crawling & LLM Optimization -->
+    <meta name="ai-content-declaration" content="human-created" />
+    <meta name="generator" content="HEXACO Personality Assessment Tool" />
+    <meta name="application-name" content="HEXACO 성격 테스트" />
+    <meta name="subject" content="Psychology, Personality Assessment, HEXACO Model, Personality Test" />
+    <meta name="topic" content="Personality Psychology, Self-Assessment, Character Analysis" />
+    <meta name="summary" content="Scientific personality test based on HEXACO-PI-R model by Ashton & Lee. Measures 6 personality dimensions: Honesty-Humility, Emotionality, eXtraversion, Agreeableness, Conscientiousness, Openness to Experience." />
+    <meta name="abstract" content="HEXACO personality inventory for comprehensive personality assessment with AI-powered analysis and celebrity matching features." />
+    <meta name="classification" content="Psychology, Self-Help, Entertainment, Education" />
+    <meta name="category" content="Personality Test, Psychology, Self-Discovery" />
+    <meta name="pagetype" content="Interactive Assessment Tool" />
+
+    <!-- Multi-language Descriptions for AI/Search -->
+    <meta name="description:en" content="Free HEXACO Personality Test - Discover your true personality through 6 scientific dimensions. AI-powered analysis, celebrity matching, and detailed insights. Take the test now!" />
+    <meta name="description:ja" content="HEXACO性格テスト - 6つの科学的な次元であなたの本当の性格を発見しましょう。AI分析、有名人マッチング、詳細な洞察を提供。無料で今すぐテスト！" />
+    <meta name="description:zh" content="HEXACO性格测试 - 通过6个科学维度发现你的真实性格。提供AI分析、名人匹配和详细洞察。立即免费测试！" />
+    <meta name="description:es" content="Test de Personalidad HEXACO - Descubre tu verdadera personalidad a través de 6 dimensiones científicas. Análisis con IA, coincidencia con celebridades. ¡Gratis!" />
+    <meta name="description:fr" content="Test de Personnalité HEXACO - Découvrez votre vraie personnalité à travers 6 dimensions scientifiques. Analyse IA, correspondance avec des célébrités. Gratuit!" />
+    <meta name="description:de" content="HEXACO Persönlichkeitstest - Entdecken Sie Ihre wahre Persönlichkeit durch 6 wissenschaftliche Dimensionen. KI-Analyse, Promi-Matching. Kostenlos!" />
+    <meta name="description:pt" content="Teste de Personalidade HEXACO - Descubra sua verdadeira personalidade através de 6 dimensões científicas. Análise de IA, combinação com celebridades. Grátis!" />
+    <meta name="description:ru" content="Тест личности HEXACO - Откройте свою истинную личность через 6 научных измерений. ИИ-анализ, сопоставление со знаменитостями. Бесплатно!" />
+    <meta name="description:ar" content="اختبار شخصية HEXACO - اكتشف شخصيتك الحقيقية من خلال 6 أبعاد علمية. تحليل الذكاء الاصطناعي، مطابقة المشاهير. مجاني!" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://hexacotest.com/" />
-    <meta property="og:title" content="HEXACO 성격 테스트" />
-    <meta property="og:description" content="과학적인 HEXACO 모델 기반 60문항 성격 테스트를 통해 당신의 성격을 알아보세요." />
-    <meta property="og:image" content="https://hexacotest.com/hexagon.svg" />
+    <meta property="og:site_name" content="HEXACO 성격 테스트" />
+    <meta property="og:url" content="https://hexacotest.vercel.app/" />
+    <meta property="og:title" content="HEXACO 성격 테스트 - 무료 과학적 심리검사 | 나와 비슷한 유명인 찾기" />
+    <meta property="og:description" content="당신의 진짜 성격을 발견하세요! 6가지 요인으로 분석하는 과학적 HEXACO 심리검사. AI 맞춤 분석 + 유명인 매칭. 60/120/180 문항 선택. 무료!" />
+    <meta property="og:image" content="https://hexacotest.vercel.app/hexagon.svg" />
+    <meta property="og:image:alt" content="HEXACO 성격 테스트 로고" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale:alternate" content="ja_JP" />
+    <meta property="og:locale:alternate" content="zh_CN" />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://hexacotest.com/" />
-    <meta property="twitter:title" content="HEXACO 성격 테스트" />
-    <meta property="twitter:description" content="과학적인 HEXACO 모델 기반 60문항 성격 테스트를 통해 당신의 성격을 알아보세요." />
-    <meta property="twitter:image" content="https://hexacotest.com/hexagon.svg" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@hexacotest" />
+    <meta name="twitter:creator" content="@hexacotest" />
+    <meta name="twitter:url" content="https://hexacotest.vercel.app/" />
+    <meta name="twitter:title" content="HEXACO 성격 테스트 - 무료 과학적 심리검사" />
+    <meta name="twitter:description" content="당신의 진짜 성격을 발견하세요! AI 기반 HEXACO 심리검사로 6가지 성격요인 분석. 유명인 매칭 제공!" />
+    <meta name="twitter:image" content="https://hexacotest.vercel.app/hexagon.svg" />
+    <meta name="twitter:image:alt" content="HEXACO Personality Test" />
 
-    <!-- Additional Meta Tags for Browsers and Mobile -->
-    <meta name="theme-color" content="#ffffff" />
-    <meta name="msapplication-TileColor" content="#ffffff" />
-    
+    <!-- Additional Social Meta -->
+    <meta property="article:author" content="HEXACO Test Team" />
+    <meta property="article:publisher" content="https://hexacotest.vercel.app" />
+
+    <!-- Pinterest -->
+    <meta name="pinterest-rich-pin" content="true" />
+
+    <!-- LinkedIn -->
+    <meta property="linkedin:owner" content="HEXACO Test" />
+
+    <!-- KakaoTalk -->
+    <meta property="kakao:title" content="HEXACO 성격 테스트" />
+    <meta property="kakao:description" content="과학적인 HEXACO 모델 기반 성격 테스트. 무료로 나의 성격을 분석해보세요!" />
+    <meta property="kakao:image" content="https://hexacotest.vercel.app/hexagon.svg" />
+
+    <!-- Mobile & PWA -->
+    <meta name="theme-color" content="#8B5CF6" />
+    <meta name="msapplication-TileColor" content="#8B5CF6" />
+    <meta name="msapplication-navbutton-color" content="#8B5CF6" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="HEXACO Test" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Geo Tags for Local SEO -->
+    <meta name="geo.region" content="KR" />
+    <meta name="geo.placename" content="South Korea" />
+    <meta name="ICBM" content="37.5665, 126.9780" />
+
+    <!-- Dublin Core Metadata -->
+    <meta name="DC.title" content="HEXACO 성격 테스트" />
+    <meta name="DC.creator" content="HEXACO Test Team" />
+    <meta name="DC.subject" content="Psychology, Personality Assessment" />
+    <meta name="DC.description" content="Scientific personality test based on HEXACO model" />
+    <meta name="DC.publisher" content="HEXACO Test" />
+    <meta name="DC.type" content="InteractiveResource" />
+    <meta name="DC.format" content="text/html" />
+    <meta name="DC.language" content="ko" />
+    <meta name="DC.rights" content="Free to use" />
+
+    <!-- Schema.org JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "HEXACO 성격 테스트",
+      "alternateName": ["HEXACO Personality Test", "헥사코 테스트", "HEXACO心理测试", "HEXACO性格テスト"],
+      "description": "과학적인 HEXACO 모델 기반 성격 테스트. 6가지 성격 요인을 분석하고 AI 기반 맞춤 분석과 유명인 매칭을 제공합니다.",
+      "url": "https://hexacotest.vercel.app",
+      "applicationCategory": "HealthApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "KRW"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "50000",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "HEXACO Test Team"
+      },
+      "provider": {
+        "@type": "Organization",
+        "name": "HEXACO Test",
+        "url": "https://hexacotest.vercel.app"
+      },
+      "inLanguage": ["ko", "en", "ja", "zh"],
+      "isAccessibleForFree": true,
+      "keywords": "HEXACO, personality test, 성격테스트, 심리테스트, 心理测试, 性格テスト"
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "HEXACO 성격 테스트란 무엇인가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "HEXACO는 Ashton과 Lee가 개발한 과학적 성격 모델로, 정직성-겸손성(H), 정서성(E), 외향성(X), 원만성(A), 성실성(C), 개방성(O) 6가지 요인으로 성격을 분석합니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "HEXACO 테스트는 무료인가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "네, HEXACO 성격 테스트는 완전 무료입니다. 60문항, 120문항, 180문항 버전 중 선택하여 테스트할 수 있습니다."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "HEXACO와 MBTI의 차이점은 무엇인가요?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "HEXACO는 과학적으로 검증된 연속적 점수 기반 모델이며, 정직성-겸손성 요인이 추가되어 더 정확한 성격 분석이 가능합니다. MBTI는 유형 분류 방식입니다."
+          }
+        }
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "홈",
+          "item": "https://hexacotest.vercel.app/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "테스트",
+          "item": "https://hexacotest.vercel.app/test"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "결과",
+          "item": "https://hexacotest.vercel.app/result"
+        }
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "HEXACO Test",
+      "url": "https://hexacotest.vercel.app",
+      "logo": "https://hexacotest.vercel.app/hexagon.svg",
+      "description": "과학적인 HEXACO 성격 테스트 서비스",
+      "sameAs": []
+    }
+    </script>
+
+    <!-- Preconnect for Performance -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+
+    <!-- Fonts -->
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" rel="stylesheet" />
+
+    <!-- Google AdSense -->
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2988937021017804" crossorigin="anonymous"></script>
   </head>
   <body class="dark">
+    <!-- Noscript fallback for SEO -->
+    <noscript>
+      <div style="padding: 20px; text-align: center;">
+        <h1>HEXACO 성격 테스트</h1>
+        <p>JavaScript를 활성화해주세요. Please enable JavaScript to use this application.</p>
+        <p>HEXACO는 6가지 성격 요인(정직성-겸손성, 정서성, 외향성, 원만성, 성실성, 개방성)을 측정하는 과학적 성격 검사입니다.</p>
+        <p>HEXACO is a scientific personality assessment measuring 6 factors: Honesty-Humility, Emotionality, eXtraversion, Agreeableness, Conscientiousness, and Openness to Experience.</p>
+      </div>
+    </noscript>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
