@@ -1,92 +1,299 @@
 # HEXACO Personality Test - robots.txt
 # https://hexacotest.vercel.app
+# Last updated: 2024-12-27
 
-# Allow all crawlers
+# ===========================================
+# DEFAULT: Allow everything for all crawlers
+# ===========================================
 User-agent: *
 Allow: /
 Allow: /test
+Allow: /test?version=60
+Allow: /test?version=120
+Allow: /test?version=180
 Allow: /result
 Allow: /privacy
+Allow: /?lang=en
+Allow: /?lang=ja
+Allow: /?lang=zh
+Allow: /?lang=ko
+Allow: /?lang=es
+Allow: /?lang=fr
+Allow: /?lang=de
+Allow: /?lang=pt
+Allow: /?lang=ru
+Allow: /sitemap.xml
+Allow: /sitemap-index.xml
+Allow: /robots.txt
+Allow: /manifest.json
+Allow: /ads.txt
+Allow: /hexagon.svg
 
-# Disallow internal/API paths
-Disallow: /api/
-
-# Google
+# ===========================================
+# GOOGLE - World's largest search engine
+# ===========================================
 User-agent: Googlebot
 Allow: /
-Crawl-delay: 1
 
-# Google Image
 User-agent: Googlebot-Image
 Allow: /
 
-# Bing
+User-agent: Googlebot-News
+Allow: /
+
+User-agent: Googlebot-Video
+Allow: /
+
+User-agent: Storebot-Google
+Allow: /
+
+User-agent: Google-InspectionTool
+Allow: /
+
+User-agent: GoogleOther
+Allow: /
+
+# ===========================================
+# BING / MICROSOFT
+# ===========================================
 User-agent: Bingbot
 Allow: /
-Crawl-delay: 1
 
-# Naver
+User-agent: MSNBot
+Allow: /
+
+User-agent: BingPreview
+Allow: /
+
+User-agent: MicrosoftPreview
+Allow: /
+
+User-agent: adidxbot
+Allow: /
+
+# ===========================================
+# NAVER - Korea's largest search engine
+# ===========================================
 User-agent: Yeti
 Allow: /
-Crawl-delay: 1
 
-# Daum
+User-agent: NaverBot
+Allow: /
+
+User-agent: Naverbot
+Allow: /
+
+# ===========================================
+# DAUM / KAKAO - Korea
+# ===========================================
 User-agent: Daumoa
 Allow: /
 
-# Baidu
-User-agent: Baiduspider
-Allow: /
-Crawl-delay: 2
-
-# Yandex
-User-agent: YandexBot
-Allow: /
-Crawl-delay: 2
-
-# DuckDuckGo
-User-agent: DuckDuckBot
-Allow: /
-
-# Facebook
-User-agent: facebookexternalhit
-Allow: /
-
-# Twitter
-User-agent: Twitterbot
-Allow: /
-
-# LinkedIn
-User-agent: LinkedInBot
-Allow: /
-
-# Kakao
 User-agent: kakao
 Allow: /
 
-# Pinterest
+User-agent: kakaotalk-scrap
+Allow: /
+
+# ===========================================
+# YAHOO
+# ===========================================
+User-agent: Slurp
+Allow: /
+
+# ===========================================
+# BAIDU - China's largest search engine
+# ===========================================
+User-agent: Baiduspider
+Allow: /
+
+User-agent: Baiduspider-image
+Allow: /
+
+User-agent: Baiduspider-video
+Allow: /
+
+User-agent: Baiduspider-news
+Allow: /
+
+# ===========================================
+# YANDEX - Russia's largest search engine
+# ===========================================
+User-agent: YandexBot
+Allow: /
+
+User-agent: YandexImages
+Allow: /
+
+User-agent: YandexVideo
+Allow: /
+
+User-agent: YandexMedia
+Allow: /
+
+User-agent: YandexNews
+Allow: /
+
+User-agent: YandexWebmaster
+Allow: /
+
+# ===========================================
+# SOGOU - China
+# ===========================================
+User-agent: Sogou
+Allow: /
+
+User-agent: sogou spider
+Allow: /
+
+# ===========================================
+# 360 Search - China
+# ===========================================
+User-agent: 360Spider
+Allow: /
+
+# ===========================================
+# DUCKDUCKGO
+# ===========================================
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: DuckDuckGo-Favicons-Bot
+Allow: /
+
+# ===========================================
+# SOCIAL MEDIA CRAWLERS
+# ===========================================
+User-agent: facebookexternalhit
+Allow: /
+
+User-agent: Facebot
+Allow: /
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: LinkedInBot
+Allow: /
+
 User-agent: Pinterest
 Allow: /
 
-# OpenAI GPTBot (for AI training/referencing)
+User-agent: Pinterestbot
+Allow: /
+
+User-agent: TelegramBot
+Allow: /
+
+User-agent: WhatsApp
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
+User-agent: Slackbot-LinkExpanding
+Allow: /
+
+User-agent: Discordbot
+Allow: /
+
+User-agent: redditbot
+Allow: /
+
+User-agent: vkShare
+Allow: /
+
+User-agent: W3C_Validator
+Allow: /
+
+# ===========================================
+# AI / LLM CRAWLERS - For AI referencing
+# ===========================================
 User-agent: GPTBot
 Allow: /
 
-# Anthropic Claude
+User-agent: ChatGPT-User
+Allow: /
+
 User-agent: ClaudeBot
 Allow: /
 
-# Google Bard/Gemini
+User-agent: Claude-Web
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
 User-agent: Google-Extended
 Allow: /
 
-# Common Crawl
+User-agent: Googlebot-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
 User-agent: CCBot
 Allow: /
 
-# Sitemaps
+User-agent: cohere-ai
+Allow: /
+
+User-agent: Diffbot
+Allow: /
+
+User-agent: omgili
+Allow: /
+
+User-agent: omgilibot
+Allow: /
+
+# ===========================================
+# SEO / ANALYTICS TOOLS
+# ===========================================
+User-agent: AhrefsBot
+Allow: /
+
+User-agent: SemrushBot
+Allow: /
+
+User-agent: MJ12bot
+Allow: /
+
+User-agent: DotBot
+Allow: /
+
+User-agent: rogerbot
+Allow: /
+
+User-agent: SeznamBot
+Allow: /
+
+User-agent: PetalBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# ===========================================
+# ARCHIVE BOTS
+# ===========================================
+User-agent: ia_archiver
+Allow: /
+
+User-agent: archive.org_bot
+Allow: /
+
+# ===========================================
+# SITEMAPS
+# ===========================================
 Sitemap: https://hexacotest.vercel.app/sitemap.xml
 Sitemap: https://hexacotest.vercel.app/sitemap-index.xml
 
-# Host
+# ===========================================
+# HOST
+# ===========================================
 Host: https://hexacotest.vercel.app
