@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/"
+     xmlns:media="http://search.yahoo.com/mrss/">
+  <channel>
+    <title>HEXACO 성격 테스트 | HEXACO Personality Test</title>
+    <link>https://hexacotest.vercel.app</link>
+    <description>과학적인 HEXACO 모델 기반 성격 테스트. 6가지 성격 요인을 분석하고 AI 기반 맞춤 분석과 유명인 매칭을 제공합니다. Scientific personality assessment based on HEXACO-PI-R model.</description>
+    <language>ko</language>
+    <lastBuildDate>Fri, 27 Dec 2024 00:00:00 +0900</lastBuildDate>
+    <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+    <ttl>1440</ttl>
+    <copyright>Copyright 2024 HEXACO Test. All rights reserved.</copyright>
+    <managingEditor>hexacotest@example.com (HEXACO Test Team)</managingEditor>
+    <webMaster>hexacotest@example.com (HEXACO Test Team)</webMaster>
+    <generator>HEXACO Test RSS Generator</generator>
+    <docs>https://www.rssboard.org/rss-specification</docs>
+
+    <atom:link href="https://hexacotest.vercel.app/rss.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://hexacotest.vercel.app/feed.xml" rel="alternate" type="application/rss+xml"/>
+
+    <image>
+      <url>https://hexacotest.vercel.app/hexagon.svg</url>
+      <title>HEXACO 성격 테스트</title>
+      <link>https://hexacotest.vercel.app</link>
+      <width>144</width>
+      <height>144</height>
+    </image>
+
+    <category>Psychology</category>
+    <category>Personality Test</category>
+    <category>Self-Discovery</category>
+    <category>Mental Health</category>
+
+    <!-- Main Test Page -->
+    <item>
+      <title>HEXACO 성격 테스트 - 무료 과학적 심리검사</title>
+      <link>https://hexacotest.vercel.app/</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/</guid>
+      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <description>HEXACO 성격 테스트로 당신의 진짜 성격을 발견하세요! 6가지 요인(정직성-겸손성, 정서성, 외향성, 원만성, 성실성, 개방성)으로 분석하는 과학적 심리검사. AI 기반 맞춤 분석과 유명인 매칭 제공.</description>
+      <content:encoded><![CDATA[
+        <h2>HEXACO 성격 테스트</h2>
+        <p>HEXACO는 Ashton과 Lee가 개발한 과학적 성격 모델로, 6가지 요인으로 성격을 분석합니다:</p>
+        <ul>
+          <li><strong>H (정직성-겸손성)</strong>: 진실성, 공정성, 탐욕 회피, 겸손함</li>
+          <li><strong>E (정서성)</strong>: 두려움, 불안, 의존성, 감상성</li>
+          <li><strong>X (외향성)</strong>: 사회적 자신감, 활발함, 대담함</li>
+          <li><strong>A (원만성)</strong>: 관용, 온화함, 유연성, 인내심</li>
+          <li><strong>C (성실성)</strong>: 조직력, 근면성, 완벽주의, 신중함</li>
+          <li><strong>O (개방성)</strong>: 미적 감상, 호기심, 창의성, 비관습성</li>
+        </ul>
+        <p>60/120/180 문항 버전 선택 가능. AI 기반 상세 분석과 유명인 매칭 제공. 완전 무료!</p>
+      ]]></content:encoded>
+      <dc:creator>HEXACO Test Team</dc:creator>
+      <category>Personality Test</category>
+      <category>Psychology</category>
+      <media:thumbnail url="https://hexacotest.vercel.app/hexagon.svg"/>
+    </item>
+
+    <!-- 60 Question Version -->
+    <item>
+      <title>HEXACO 빠른 테스트 (60문항) - 5분 완료</title>
+      <link>https://hexacotest.vercel.app/test?version=60</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/test?version=60</guid>
+      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <description>60문항으로 구성된 빠른 HEXACO 성격 테스트. 약 5분 소요. 기본적인 성격 분석과 유명인 매칭을 제공합니다.</description>
+      <dc:creator>HEXACO Test Team</dc:creator>
+      <category>Quick Test</category>
+    </item>
+
+    <!-- 120 Question Version -->
+    <item>
+      <title>HEXACO 표준 테스트 (120문항) - 10분 완료</title>
+      <link>https://hexacotest.vercel.app/test?version=120</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/test?version=120</guid>
+      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <description>120문항으로 구성된 표준 HEXACO 성격 테스트. 약 10분 소요. 더 정확한 성격 분석과 상세한 AI 리포트를 제공합니다.</description>
+      <dc:creator>HEXACO Test Team</dc:creator>
+      <category>Standard Test</category>
+    </item>
+
+    <!-- 180 Question Version -->
+    <item>
+      <title>HEXACO 정밀 테스트 (180문항) - 15분 완료</title>
+      <link>https://hexacotest.vercel.app/test?version=180</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/test?version=180</guid>
+      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <description>180문항으로 구성된 정밀 HEXACO 성격 테스트. 약 15분 소요. 가장 정확한 성격 분석과 심층 AI 분석을 제공합니다.</description>
+      <dc:creator>HEXACO Test Team</dc:creator>
+      <category>Comprehensive Test</category>
+    </item>
+
+    <!-- English Version -->
+    <item>
+      <title>HEXACO Personality Test - Free Scientific Assessment (English)</title>
+      <link>https://hexacotest.vercel.app/?lang=en</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/?lang=en</guid>
+      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <description>Discover your true personality with the HEXACO Personality Test! Scientific assessment measuring 6 factors: Honesty-Humility, Emotionality, eXtraversion, Agreeableness, Conscientiousness, Openness.</description>
+      <dc:creator>HEXACO Test Team</dc:creator>
+      <category>English</category>
+    </item>
+
+    <!-- Japanese Version -->
+    <item>
+      <title>HEXACO性格テスト - 無料科学的診断 (日本語)</title>
+      <link>https://hexacotest.vercel.app/?lang=ja</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/?lang=ja</guid>
+      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <description>HEXACO性格テストであなたの本当の性格を発見しましょう！6つの要因で性格を分析する科学的な心理テスト。AI分析と有名人マッチング機能付き。</description>
+      <dc:creator>HEXACO Test Team</dc:creator>
+      <category>Japanese</category>
+    </item>
+
+    <!-- Chinese Version -->
+    <item>
+      <title>HEXACO性格测试 - 免费科学测评 (中文)</title>
+      <link>https://hexacotest.vercel.app/?lang=zh</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/?lang=zh</guid>
+      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <description>通过HEXACO性格测试发现你真正的性格！基于6个因素分析性格的科学心理测试。提供AI分析和名人匹配功能。</description>
+      <dc:creator>HEXACO Test Team</dc:creator>
+      <category>Chinese</category>
+    </item>
+
+    <!-- About HEXACO -->
+    <item>
+      <title>HEXACO 모델이란? - 과학적 성격 이론 소개</title>
+      <link>https://hexacotest.vercel.app/#about</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/#about</guid>
+      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <description>HEXACO는 캐나다의 심리학자 Michael Ashton과 Kibeom Lee가 개발한 성격 모델입니다. Big Five 모델을 확장하여 정직성-겸손성(Honesty-Humility) 요인을 추가한 것이 특징입니다.</description>
+      <content:encoded><![CDATA[
+        <h2>HEXACO 모델 소개</h2>
+        <p>HEXACO는 캐나다의 심리학자 Michael Ashton과 Kibeom Lee가 개발한 성격 모델입니다.</p>
+        <h3>HEXACO vs MBTI</h3>
+        <p>HEXACO는 과학적으로 검증된 연속적 점수 기반 모델이며, MBTI는 유형 분류 방식입니다. HEXACO는 심리학 연구에서 더 널리 인정받는 모델입니다.</p>
+        <h3>HEXACO vs Big Five</h3>
+        <p>HEXACO는 Big Five 모델을 확장하여 정직성-겸손성(Honesty-Humility) 요인을 추가했습니다. 이 요인은 도덕적 행동과 밀접한 관련이 있습니다.</p>
+      ]]></content:encoded>
+      <dc:creator>HEXACO Test Team</dc:creator>
+      <category>Education</category>
+      <category>Psychology</category>
+    </item>
+
+  </channel>
+</rss>
