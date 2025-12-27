@@ -15,7 +15,8 @@
       "Bash(git commit:*)",
       "Bash(cat:*)",
       "Bash(curl:*)",
-      "Bash(npx vercel:*)"
+      "Bash(npx vercel:*)",
+      "Bash(ls:*)"
     ]
   }
 }
