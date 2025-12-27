@@ -4,6 +4,8 @@
   "outputDirectory": "dist",
   "installCommand": "npm install",
   "framework": null,
+  "cleanUrls": false,
+  "trailingSlash": false,
   "functions": {
     "api/*.ts": {
       "runtime": "@vercel/node@3"
@@ -11,14 +13,12 @@
   },
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/google2e375c8dd7f15496.html", "dest": "/google2e375c8dd7f15496.html" },
-    { "src": "/ads.txt", "dest": "/ads.txt" },
-    { "src": "/robots.txt", "dest": "/robots.txt" },
-    { "src": "/sitemap.xml", "dest": "/sitemap.xml" },
+    { "src": "/google2e375c8dd7f15496.html", "headers": { "Content-Type": "text/html" }, "dest": "/google2e375c8dd7f15496.html" },
+    { "src": "/ads.txt", "headers": { "Content-Type": "text/plain" }, "dest": "/ads.txt" },
+    { "src": "/robots.txt", "headers": { "Content-Type": "text/plain" }, "dest": "/robots.txt" },
+    { "src": "/sitemap.xml", "headers": { "Content-Type": "application/xml" }, "dest": "/sitemap.xml" },
     { "src": "/hexagon.svg", "dest": "/hexagon.svg" },
     { "src": "/assets/(.*)", "dest": "/assets/$1" },
-    { "src": "/(.*)\\.js", "dest": "/$1.js" },
-    { "src": "/(.*)\\.css", "dest": "/$1.css" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    { "src": "^/(?!.*\\.).*$", "dest": "/index.html" }
   ]
 }
