@@ -9,8 +9,8 @@
     <link>https://hexacotest.vercel.app</link>
     <description>과학적인 HEXACO 모델 기반 성격 테스트. 6가지 성격 요인을 분석하고 AI 기반 맞춤 분석과 유명인 매칭을 제공합니다. Scientific personality assessment based on HEXACO-PI-R model.</description>
     <language>ko</language>
-    <lastBuildDate>Fri, 27 Dec 2024 00:00:00 +0900</lastBuildDate>
-    <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+    <lastBuildDate>Sat, 28 Dec 2024 00:00:00 +0900</lastBuildDate>
+    <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
     <ttl>1440</ttl>
     <copyright>Copyright 2024 HEXACO Test. All rights reserved.</copyright>
     <managingEditor>hexacotest@example.com (HEXACO Test Team)</managingEditor>
@@ -19,7 +19,6 @@
     <docs>https://www.rssboard.org/rss-specification</docs>
 
     <atom:link href="https://hexacotest.vercel.app/rss.xml" rel="self" type="application/rss+xml"/>
-    <atom:link href="https://hexacotest.vercel.app/feed.xml" rel="alternate" type="application/rss+xml"/>
 
     <image>
       <url>https://hexacotest.vercel.app/hexagon.svg</url>
@@ -34,12 +33,12 @@
     <category>Self-Discovery</category>
     <category>Mental Health</category>
 
-    <!-- Main Test Page -->
+    <!-- 메인 페이지 -->
     <item>
       <title>HEXACO 성격 테스트 - 무료 과학적 심리검사</title>
       <link>https://hexacotest.vercel.app/</link>
       <guid isPermaLink="true">https://hexacotest.vercel.app/</guid>
-      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
       <description>HEXACO 성격 테스트로 당신의 진짜 성격을 발견하세요! 6가지 요인(정직성-겸손성, 정서성, 외향성, 원만성, 성실성, 개방성)으로 분석하는 과학적 심리검사. AI 기반 맞춤 분석과 유명인 매칭 제공.</description>
       <content:encoded><![CDATA[
         <h2>HEXACO 성격 테스트</h2>
@@ -60,90 +59,103 @@
       <media:thumbnail url="https://hexacotest.vercel.app/hexagon.svg"/>
     </item>
 
-    <!-- 60 Question Version -->
+    <!-- 테스트 페이지 -->
+    <item>
+      <title>HEXACO 테스트 시작하기</title>
+      <link>https://hexacotest.vercel.app/test</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/test</guid>
+      <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
+      <description>지금 바로 HEXACO 성격 테스트를 시작하세요. 60/120/180 문항 중 선택 가능. 모바일에서도 편하게 테스트할 수 있습니다.</description>
+      <dc:creator>HEXACO Test Team</dc:creator>
+      <category>Test</category>
+    </item>
+
+    <!-- 60문항 버전 -->
     <item>
       <title>HEXACO 빠른 테스트 (60문항) - 5분 완료</title>
       <link>https://hexacotest.vercel.app/test?version=60</link>
       <guid isPermaLink="true">https://hexacotest.vercel.app/test?version=60</guid>
-      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
       <description>60문항으로 구성된 빠른 HEXACO 성격 테스트. 약 5분 소요. 기본적인 성격 분석과 유명인 매칭을 제공합니다.</description>
       <dc:creator>HEXACO Test Team</dc:creator>
       <category>Quick Test</category>
     </item>
 
-    <!-- 120 Question Version -->
+    <!-- 120문항 버전 -->
     <item>
       <title>HEXACO 표준 테스트 (120문항) - 10분 완료</title>
       <link>https://hexacotest.vercel.app/test?version=120</link>
       <guid isPermaLink="true">https://hexacotest.vercel.app/test?version=120</guid>
-      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
       <description>120문항으로 구성된 표준 HEXACO 성격 테스트. 약 10분 소요. 더 정확한 성격 분석과 상세한 AI 리포트를 제공합니다.</description>
       <dc:creator>HEXACO Test Team</dc:creator>
       <category>Standard Test</category>
     </item>
 
-    <!-- 180 Question Version -->
+    <!-- 180문항 버전 -->
     <item>
       <title>HEXACO 정밀 테스트 (180문항) - 15분 완료</title>
       <link>https://hexacotest.vercel.app/test?version=180</link>
       <guid isPermaLink="true">https://hexacotest.vercel.app/test?version=180</guid>
-      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
       <description>180문항으로 구성된 정밀 HEXACO 성격 테스트. 약 15분 소요. 가장 정확한 성격 분석과 심층 AI 분석을 제공합니다.</description>
       <dc:creator>HEXACO Test Team</dc:creator>
       <category>Comprehensive Test</category>
     </item>
 
-    <!-- English Version -->
+    <!-- 결과 페이지 -->
+    <item>
+      <title>HEXACO 테스트 결과 분석</title>
+      <link>https://hexacotest.vercel.app/result</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/result</guid>
+      <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
+      <description>HEXACO 성격 테스트 결과를 확인하세요. 6가지 성격 요인 점수, AI 맞춤 분석, 나와 닮은 유명인 매칭 결과를 제공합니다.</description>
+      <dc:creator>HEXACO Test Team</dc:creator>
+      <category>Result</category>
+    </item>
+
+    <!-- 영어 버전 -->
     <item>
       <title>HEXACO Personality Test - Free Scientific Assessment (English)</title>
       <link>https://hexacotest.vercel.app/?lang=en</link>
       <guid isPermaLink="true">https://hexacotest.vercel.app/?lang=en</guid>
-      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
       <description>Discover your true personality with the HEXACO Personality Test! Scientific assessment measuring 6 factors: Honesty-Humility, Emotionality, eXtraversion, Agreeableness, Conscientiousness, Openness.</description>
       <dc:creator>HEXACO Test Team</dc:creator>
       <category>English</category>
     </item>
 
-    <!-- Japanese Version -->
+    <!-- 일본어 버전 -->
     <item>
       <title>HEXACO性格テスト - 無料科学的診断 (日本語)</title>
       <link>https://hexacotest.vercel.app/?lang=ja</link>
       <guid isPermaLink="true">https://hexacotest.vercel.app/?lang=ja</guid>
-      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
       <description>HEXACO性格テストであなたの本当の性格を発見しましょう！6つの要因で性格を分析する科学的な心理テスト。AI分析と有名人マッチング機能付き。</description>
       <dc:creator>HEXACO Test Team</dc:creator>
       <category>Japanese</category>
     </item>
 
-    <!-- Chinese Version -->
+    <!-- 중국어 버전 -->
     <item>
       <title>HEXACO性格测试 - 免费科学测评 (中文)</title>
       <link>https://hexacotest.vercel.app/?lang=zh</link>
       <guid isPermaLink="true">https://hexacotest.vercel.app/?lang=zh</guid>
-      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
+      <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
       <description>通过HEXACO性格测试发现你真正的性格！基于6个因素分析性格的科学心理测试。提供AI分析和名人匹配功能。</description>
       <dc:creator>HEXACO Test Team</dc:creator>
       <category>Chinese</category>
     </item>
 
-    <!-- About HEXACO -->
+    <!-- 개인정보처리방침 -->
     <item>
-      <title>HEXACO 모델이란? - 과학적 성격 이론 소개</title>
-      <link>https://hexacotest.vercel.app/#about</link>
-      <guid isPermaLink="true">https://hexacotest.vercel.app/#about</guid>
-      <pubDate>Fri, 27 Dec 2024 00:00:00 +0900</pubDate>
-      <description>HEXACO는 캐나다의 심리학자 Michael Ashton과 Kibeom Lee가 개발한 성격 모델입니다. Big Five 모델을 확장하여 정직성-겸손성(Honesty-Humility) 요인을 추가한 것이 특징입니다.</description>
-      <content:encoded><![CDATA[
-        <h2>HEXACO 모델 소개</h2>
-        <p>HEXACO는 캐나다의 심리학자 Michael Ashton과 Kibeom Lee가 개발한 성격 모델입니다.</p>
-        <h3>HEXACO vs MBTI</h3>
-        <p>HEXACO는 과학적으로 검증된 연속적 점수 기반 모델이며, MBTI는 유형 분류 방식입니다. HEXACO는 심리학 연구에서 더 널리 인정받는 모델입니다.</p>
-        <h3>HEXACO vs Big Five</h3>
-        <p>HEXACO는 Big Five 모델을 확장하여 정직성-겸손성(Honesty-Humility) 요인을 추가했습니다. 이 요인은 도덕적 행동과 밀접한 관련이 있습니다.</p>
-      ]]></content:encoded>
+      <title>개인정보처리방침 | Privacy Policy</title>
+      <link>https://hexacotest.vercel.app/privacy</link>
+      <guid isPermaLink="true">https://hexacotest.vercel.app/privacy</guid>
+      <pubDate>Sat, 28 Dec 2024 00:00:00 +0900</pubDate>
+      <description>HEXACO 성격 테스트 개인정보처리방침. 수집하는 정보, 이용 목적, 보관 기간 등을 안내합니다.</description>
       <dc:creator>HEXACO Test Team</dc:creator>
-      <category>Education</category>
-      <category>Psychology</category>
+      <category>Legal</category>
     </item>
 
   </channel>

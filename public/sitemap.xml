@@ -3,10 +3,10 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 
-  <!-- Main Pages -->
+  <!-- 메인 페이지 (랜딩) -->
   <url>
     <loc>https://hexacotest.vercel.app/</loc>
-    <lastmod>2024-12-27</lastmod>
+    <lastmod>2024-12-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="ko" href="https://hexacotest.vercel.app/"/>
@@ -17,13 +17,14 @@
     <image:image>
       <image:loc>https://hexacotest.vercel.app/hexagon.svg</image:loc>
       <image:title>HEXACO Personality Test Logo</image:title>
-      <image:caption>HEXACO 성격 테스트 로고</image:caption>
+      <image:caption>HEXACO 성격 테스트 - 무료 과학적 심리검사</image:caption>
     </image:image>
   </url>
 
+  <!-- 테스트 페이지 (메인) -->
   <url>
     <loc>https://hexacotest.vercel.app/test</loc>
-    <lastmod>2024-12-27</lastmod>
+    <lastmod>2024-12-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
     <xhtml:link rel="alternate" hreflang="ko" href="https://hexacotest.vercel.app/test"/>
@@ -32,75 +33,87 @@
     <xhtml:link rel="alternate" hreflang="zh" href="https://hexacotest.vercel.app/test?lang=zh"/>
   </url>
 
+  <!-- 60문항 테스트 -->
+  <url>
+    <loc>https://hexacotest.vercel.app/test?version=60</loc>
+    <lastmod>2024-12-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://hexacotest.vercel.app/test?version=60"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hexacotest.vercel.app/test?version=60&amp;lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://hexacotest.vercel.app/test?version=60&amp;lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://hexacotest.vercel.app/test?version=60&amp;lang=zh"/>
+  </url>
+
+  <!-- 120문항 테스트 -->
+  <url>
+    <loc>https://hexacotest.vercel.app/test?version=120</loc>
+    <lastmod>2024-12-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://hexacotest.vercel.app/test?version=120"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hexacotest.vercel.app/test?version=120&amp;lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://hexacotest.vercel.app/test?version=120&amp;lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://hexacotest.vercel.app/test?version=120&amp;lang=zh"/>
+  </url>
+
+  <!-- 180문항 테스트 -->
+  <url>
+    <loc>https://hexacotest.vercel.app/test?version=180</loc>
+    <lastmod>2024-12-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://hexacotest.vercel.app/test?version=180"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://hexacotest.vercel.app/test?version=180&amp;lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://hexacotest.vercel.app/test?version=180&amp;lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://hexacotest.vercel.app/test?version=180&amp;lang=zh"/>
+  </url>
+
+  <!-- 결과 페이지 -->
   <url>
     <loc>https://hexacotest.vercel.app/result</loc>
-    <lastmod>2024-12-27</lastmod>
+    <lastmod>2024-12-28</lastmod>
     <changefreq>daily</changefreq>
-    <priority>0.9</priority>
+    <priority>0.85</priority>
     <xhtml:link rel="alternate" hreflang="ko" href="https://hexacotest.vercel.app/result"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://hexacotest.vercel.app/result?lang=en"/>
     <xhtml:link rel="alternate" hreflang="ja" href="https://hexacotest.vercel.app/result?lang=ja"/>
     <xhtml:link rel="alternate" hreflang="zh" href="https://hexacotest.vercel.app/result?lang=zh"/>
   </url>
 
-  <!-- Test Versions -->
-  <url>
-    <loc>https://hexacotest.vercel.app/test?version=60</loc>
-    <lastmod>2024-12-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-
-  <url>
-    <loc>https://hexacotest.vercel.app/test?version=120</loc>
-    <lastmod>2024-12-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-
-  <url>
-    <loc>https://hexacotest.vercel.app/test?version=180</loc>
-    <lastmod>2024-12-27</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-
-  <!-- Language Variations - Korean (Default) -->
+  <!-- 언어별 랜딩 페이지 -->
   <url>
     <loc>https://hexacotest.vercel.app/?lang=ko</loc>
-    <lastmod>2024-12-27</lastmod>
+    <lastmod>2024-12-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Language Variations - English -->
   <url>
     <loc>https://hexacotest.vercel.app/?lang=en</loc>
-    <lastmod>2024-12-27</lastmod>
+    <lastmod>2024-12-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Language Variations - Japanese -->
   <url>
     <loc>https://hexacotest.vercel.app/?lang=ja</loc>
-    <lastmod>2024-12-27</lastmod>
+    <lastmod>2024-12-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Language Variations - Chinese -->
   <url>
     <loc>https://hexacotest.vercel.app/?lang=zh</loc>
-    <lastmod>2024-12-27</lastmod>
+    <lastmod>2024-12-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Privacy Policy -->
+  <!-- 개인정보처리방침 -->
   <url>
     <loc>https://hexacotest.vercel.app/privacy</loc>
-    <lastmod>2024-12-27</lastmod>
+    <lastmod>2024-12-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
   </url>
