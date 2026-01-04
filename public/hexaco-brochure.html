@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HEXACO 성격 테스트 | 무료 성격 분석 - Print Version</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            /* HEXACO Purple Palette */
+            --primary-900: #4c1d95;
+            --primary-800: #5b21b6;
+            --primary-700: #6d28d9;
+            --primary-600: #7c3aed;
+            --primary-500: #8b5cf6;
+            --primary-400: #a78bfa;
+            --primary-300: #c4b5fd;
+            --primary-200: #ddd6fe;
+            --primary-100: #ede9fe;
+            --primary-50: #f5f3ff;
+
+            /* Pink Accent */
+            --accent-600: #db2777;
+            --accent-500: #ec4899;
+            --accent-400: #f472b6;
+            --accent-300: #f9a8d4;
+
+            /* Neutral Palette */
+            --neutral-950: #0a0a0f;
+            --neutral-900: #0f0f23;
+            --neutral-800: #1a1a2e;
+            --neutral-700: #2d2d44;
+            --neutral-600: #4b5563;
+            --neutral-500: #6b7280;
+            --neutral-400: #9ca3af;
+            --neutral-300: #d1d5db;
+            --neutral-200: #e5e7eb;
+            --neutral-100: #f3f4f6;
+            --neutral-50: #f9fafb;
+
+            /* HEXACO Factor Colors */
+            --h-color: #8b5cf6;
+            --e-color: #ec4899;
+            --x-color: #f97316;
+            --a-color: #22c55e;
+            --c-color: #3b82f6;
+            --o-color: #06b6d4;
+
+            /* Gradients */
+            --gradient-primary: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-500) 50%, var(--accent-500) 100%);
+            --gradient-dark: linear-gradient(180deg, var(--neutral-900) 0%, var(--neutral-950) 100%);
+            --gradient-mesh: radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                           radial-gradient(ellipse at 80% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+
+            /* Shadows */
+            --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.3);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Noto Sans KR', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--neutral-100);
+            color: var(--neutral-800);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        #print-container {
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ========== INTRO PAGE (Cover) ========== */
+        .intro-page {
+            width: 210mm;
+            height: 297mm;
+            background: var(--gradient-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            page-break-after: always;
+        }
+
+        .intro-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .intro-bg::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(90deg, transparent 49%, rgba(139, 92, 246, 0.03) 50%, transparent 51%),
+                linear-gradient(0deg, transparent 49%, rgba(139, 92, 246, 0.03) 50%, transparent 51%);
+            background-size: 50px 50px;
+        }
+
+        .intro-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+        }
+
+        .intro-orb-1 {
+            width: 400px;
+            height: 400px;
+            background: rgba(139, 92, 246, 0.25);
+            top: 10%;
+            left: 10%;
+        }
+
+        .intro-orb-2 {
+            width: 300px;
+            height: 300px;
+            background: rgba(236, 72, 153, 0.2);
+            bottom: 20%;
+            right: 15%;
+        }
+
+        .intro-orb-3 {
+            width: 200px;
+            height: 200px;
+            background: rgba(6, 182, 212, 0.15);
+            top: 50%;
+            right: 30%;
+        }
+
+        .intro-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 800px;
+            padding: 40px;
+        }
+
+        .intro-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 48px;
+        }
+
+        .intro-logo-icon {
+            width: 72px;
+            height: 72px;
+            background: var(--gradient-primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .intro-logo-icon i {
+            font-size: 32px;
+            color: white;
+        }
+
+        .intro-logo-text {
+            font-size: 48px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .intro-logo-text span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .intro-headline {
+            font-size: 52px;
+            font-weight: 800;
+            color: white;
+            line-height: 1.2;
+            margin-bottom: 24px;
+            letter-spacing: -0.03em;
+        }
+
+        .intro-headline .highlight {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .intro-subheadline {
+            font-size: 20px;
+            color: var(--neutral-400);
+            font-weight: 400;
+            margin-bottom: 48px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .intro-stats {
+            display: flex;
+            justify-content: center;
+            gap: 48px;
+        }
+
+        .intro-stat {
+            text-align: center;
+        }
+
+        .intro-stat-value {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--primary-400);
+            font-family: 'Inter', monospace;
+        }
+
+        .intro-stat-label {
+            font-size: 14px;
+            color: var(--neutral-500);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 4px;
+        }
+
+        .intro-badge {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 32px;
+            letter-spacing: 0.05em;
+        }
+
+        .intro-footer {
+            position: absolute;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .intro-footer-text {
+            color: var(--neutral-500);
+            font-size: 13px;
+        }
+
+        .intro-footer-url {
+            color: var(--primary-400);
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        /* ========== PORTFOLIO PAGES ========== */
+        .page {
+            background: white;
+            width: 210mm;
+            height: 297mm;
+            padding: 20mm;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            page-break-after: always;
+        }
+
+        .page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .logo-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--neutral-900);
+            letter-spacing: -0.01em;
+        }
+
+        .logo-text span {
+            color: var(--primary-600);
+        }
+
+        .section-badge {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--primary-700);
+            background: var(--primary-50);
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .page-footer {
+            position: absolute;
+            bottom: 20mm;
+            left: 20mm;
+            right: 20mm;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: var(--neutral-500);
+            border-top: 1px solid var(--neutral-200);
+            padding-top: 12px;
+        }
+
+        .content { flex: 1; display: flex; flex-direction: column; }
+
+        h1, h2, h3, h4, h5 {
+            font-weight: 700;
+            color: var(--neutral-900);
+            letter-spacing: -0.02em;
+        }
+        h1 { font-size: 36px; line-height: 1.2; }
+        h2 { font-size: 24px; line-height: 1.3; margin-bottom: 16px; }
+        h3 { font-size: 18px; line-height: 1.4; }
+        h4 { font-size: 14px; font-weight: 600; }
+        p { font-size: 13px; line-height: 1.7; color: var(--neutral-600); }
+
+        /* ========== PAGE 1: HEXACO Overview ========== */
+        .hero-visual {
+            height: 160px;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 28px;
+            position: relative;
+            background: var(--gradient-dark);
+        }
+
+        .hero-visual::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--gradient-mesh);
+        }
+
+        .hero-content {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 12px;
+        }
+
+        .hero-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+
+        .title-block { margin-bottom: 24px; }
+
+        .title-block h1 span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--neutral-600);
+            font-weight: 400;
+            margin-top: 8px;
+        }
+
+        .executive-summary {
+            background: var(--primary-50);
+            border-left: 4px solid var(--primary-500);
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 24px;
+        }
+
+        .executive-summary h3 {
+            color: var(--primary-700);
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .executive-summary p {
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .executive-summary strong {
+            color: var(--neutral-900);
+            font-weight: 600;
+        }
+
+        .key-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .metric-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-50);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            color: var(--primary-600);
+            font-size: 18px;
+        }
+
+        .metric-value {
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary-600);
+            line-height: 1;
+        }
+
+        .metric-label {
+            font-size: 11px;
+            color: var(--neutral-600);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+
+        /* ========== PAGE 2: HEXACO Factors ========== */
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .section-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .section-desc {
+            font-size: 13px;
+            color: var(--neutral-600);
+            margin-bottom: 20px;
+        }
+
+        .hexaco-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .factor-card {
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 14px;
+            padding: 18px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .factor-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .factor-card.h-card::before { background: var(--h-color); }
+        .factor-card.e-card::before { background: var(--e-color); }
+        .factor-card.x-card::before { background: var(--x-color); }
+        .factor-card.a-card::before { background: var(--a-color); }
+        .factor-card.c-card::before { background: var(--c-color); }
+        .factor-card.o-card::before { background: var(--o-color); }
+
+        .factor-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .factor-letter {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .h-card .factor-letter { background: var(--h-color); }
+        .e-card .factor-letter { background: var(--e-color); }
+        .x-card .factor-letter { background: var(--x-color); }
+        .a-card .factor-letter { background: var(--a-color); }
+        .c-card .factor-letter { background: var(--c-color); }
+        .o-card .factor-letter { background: var(--o-color); }
+
+        .factor-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--neutral-900);
+        }
+
+        .factor-full {
+            font-size: 11px;
+            color: var(--neutral-500);
+        }
+
+        .factor-desc {
+            font-size: 11px;
+            color: var(--neutral-600);
+            line-height: 1.6;
+        }
+
+        .factor-traits {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .trait-tag {
+            font-size: 10px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+        }
+
+        /* ========== PAGE 3: Features ========== */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .fc-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .fc-icon {
+            width: 38px;
+            height: 38px;
+            background: var(--primary-50);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-600);
+            font-size: 16px;
+        }
+
+        .fc-header h4 {
+            font-size: 14px;
+            color: var(--neutral-900);
+        }
+
+        .feature-card p {
+            font-size: 11px;
+            color: var(--neutral-500);
+            margin-bottom: 12px;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            font-size: 11px;
+            color: var(--neutral-700);
+            padding: 4px 0 4px 20px;
+            position: relative;
+        }
+
+        .feature-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            background: var(--primary-100);
+            border-radius: 50%;
+        }
+
+        .feature-list li::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--primary-500);
+            border-radius: 50%;
+        }
+
+        .comparison-table {
+            background: var(--neutral-50);
+            border-radius: 14px;
+            padding: 18px;
+            margin-top: 20px;
+        }
+
+        .comparison-table h3 {
+            font-size: 14px;
+            margin-bottom: 14px;
+            color: var(--neutral-900);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .comparison-card {
+            background: white;
+            border: 1px solid var(--neutral-200);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .comparison-card.highlight {
+            border-color: var(--primary-400);
+            background: var(--primary-50);
+        }
+
+        .comparison-card h5 {
+            font-size: 16px;
+            color: var(--neutral-900);
+            margin-bottom: 4px;
+        }
+
+        .comparison-card.highlight h5 {
+            color: var(--primary-700);
+        }
+
+        .comparison-card p {
+            font-size: 10px;
+            margin: 0;
+        }
+
+        .comparison-card .time {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-600);
+            margin-top: 8px;
+        }
+
+        /* ========== PAGE 4: CTA ========== */
+        .cta-section {
+            background: var(--gradient-dark);
+            border-radius: 16px;
+            padding: 36px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin-top: auto;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: var(--gradient-mesh);
+        }
+
+        .cta-section h3 {
+            font-size: 26px;
+            color: white;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cta-section > p {
+            color: var(--neutral-400);
+            font-size: 14px;
+            margin-bottom: 24px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cta-url {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 700;
+            position: relative;
+            z-index: 10;
+            text-decoration: none;
+        }
+
+        .qr-section {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 28px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .qr-box {
+            text-align: center;
+        }
+
+        .qr-placeholder {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 40px;
+            color: var(--neutral-400);
+        }
+
+        .qr-label {
+            color: var(--neutral-400);
+            font-size: 12px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .benefit-card {
+            background: var(--neutral-50);
+            border: 1px solid var(--neutral-200);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .benefit-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            color: white;
+            font-size: 20px;
+        }
+
+        .benefit-card h4 {
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .benefit-card p {
+            font-size: 11px;
+            margin: 0;
+        }
+
+        .disclaimer {
+            background: var(--neutral-100);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-top: 20px;
+        }
+
+        .disclaimer p {
+            font-size: 10px;
+            color: var(--neutral-500);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .disclaimer strong {
+            color: var(--neutral-700);
+        }
+
+        /* ========== PRINT STYLES ========== */
+        @media print {
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .intro-page,
+            .page {
+                box-shadow: none;
+                margin: 0;
+                page-break-inside: avoid;
+            }
+
+            .intro-orb {
+                filter: blur(60px);
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        @media screen {
+            #print-container {
+                padding: 30px 0;
+            }
+
+            .intro-page,
+            .page {
+                margin: 15px;
+                box-shadow: var(--shadow-xl);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="print-container">
+
+        <!-- INTRO PAGE (Cover) -->
+        <div class="intro-page">
+            <div class="intro-bg">
+                <div class="intro-orb intro-orb-1"></div>
+                <div class="intro-orb intro-orb-2"></div>
+                <div class="intro-orb intro-orb-3"></div>
+            </div>
+
+            <div class="intro-content">
+                <div class="intro-logo">
+                    <div class="intro-logo-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="intro-logo-text">HEXACO <span>Test</span></div>
+                </div>
+
+                <div class="intro-badge">🎁 완전 무료 · 회원가입 없음</div>
+
+                <h1 class="intro-headline">
+                    진짜 나를 발견하는<br>
+                    <span class="highlight">HEXACO 성격 테스트</span>
+                </h1>
+
+                <p class="intro-subheadline">
+                    과학적으로 검증된 6가지 성격 요인 분석으로<br>
+                    숨겨진 나의 성격을 발견하세요
+                </p>
+
+                <div class="intro-stats">
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">6</div>
+                        <div class="intro-stat-label">성격 요인</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">180</div>
+                        <div class="intro-stat-label">상황 기반 문항</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">AI</div>
+                        <div class="intro-stat-label">맞춤형 분석</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="intro-footer">
+                <div class="intro-footer-text">지금 바로 무료로 테스트하세요</div>
+                <div class="intro-footer-url">hexacotest.vercel.app</div>
+            </div>
+        </div>
+
+        <!-- PAGE 1: Overview -->
+        <div class="page" id="page1">
+            <div class="page-header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                    <div class="logo-text">HEXACO <span>Test</span></div>
+                </div>
+                <div class="section-badge">Service Overview</div>
+            </div>
+
+            <div class="content">
+                <div class="hero-visual">
+                    <div class="hero-content">
+                        <div class="hero-badge">Scientific Personality Analysis</div>
+                        <div class="hero-title">HEXACO 성격 모델 기반 무료 테스트</div>
+                    </div>
+                </div>
+
+                <div class="title-block">
+                    <h1>과학적 <span>성격 분석</span>을 무료로</h1>
+                    <p class="subtitle">Big Five를 확장한 HEXACO 모델로 더 정확한 성격 분석을 제공합니다</p>
+                </div>
+
+                <div class="executive-summary">
+                    <h3>HEXACO란?</h3>
+                    <p>
+                        HEXACO는 <strong>Honesty-Humility(정직-겸손)</strong>, <strong>Emotionality(정서성)</strong>,
+                        <strong>eXtraversion(외향성)</strong>, <strong>Agreeableness(우호성)</strong>,
+                        <strong>Conscientiousness(성실성)</strong>, <strong>Openness(개방성)</strong>의 6가지 성격 요인을
+                        측정하는 과학적 성격 모델입니다. 기존 Big Five에 정직-겸손 요인을 추가하여
+                        <strong>더 정확하고 포괄적인 성격 분석</strong>을 제공합니다.
+                    </p>
+                </div>
+
+                <div class="key-metrics">
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-gift"></i></div>
+                        <div class="metric-value">100%</div>
+                        <div class="metric-label">완전 무료</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-user-slash"></i></div>
+                        <div class="metric-value">NO</div>
+                        <div class="metric-label">회원가입 불필요</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-icon"><i class="fas fa-bolt"></i></div>
+                        <div class="metric-value">즉시</div>
+                        <div class="metric-label">결과 확인</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <span>HEXACO Personality Test | hexacotest.vercel.app</span>
+                <span>1 / 4</span>
+            </div>
+        </div>
+
+        <!-- PAGE 2: HEXACO Factors -->
+        <div class="page" id="page2">
+            <div class="page-header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                    <div class="logo-text">HEXACO <span>Test</span></div>
+                </div>
+                <div class="section-badge">6 Personality Factors</div>
+            </div>
+
+            <div class="content">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fas fa-hexagon"></i></div>
+                    <h2>HEXACO 6가지 성격 요인</h2>
+                </div>
+                <p class="section-desc">각 요인은 0~100% 점수로 측정되며, 나만의 성격 프로필을 형성합니다.</p>
+
+                <div class="hexaco-grid">
+                    <div class="factor-card h-card">
+                        <div class="factor-header">
+                            <div class="factor-letter">H</div>
+                            <div>
+                                <div class="factor-name">정직-겸손</div>
+                                <div class="factor-full">Honesty-Humility</div>
+                            </div>
+                        </div>
+                        <p class="factor-desc">정직하고 겸손한 성향. 이 요인이 높으면 진실하고 남을 속이지 않으며, 물질적 이익보다 도덕적 가치를 중시합니다.</p>
+                        <div class="factor-traits">
+                            <span class="trait-tag">진정성</span>
+                            <span class="trait-tag">공정함</span>
+                            <span class="trait-tag">겸손</span>
+                        </div>
+                    </div>
+
+                    <div class="factor-card e-card">
+                        <div class="factor-header">
+                            <div class="factor-letter">E</div>
+                            <div>
+                                <div class="factor-name">정서성</div>
+                                <div class="factor-full">Emotionality</div>
+                            </div>
+                        </div>
+                        <p class="factor-desc">감정적 민감성과 불안 수준. 높을수록 감정 표현이 풍부하고 타인과의 정서적 유대를 중시합니다.</p>
+                        <div class="factor-traits">
+                            <span class="trait-tag">감정이입</span>
+                            <span class="trait-tag">민감성</span>
+                            <span class="trait-tag">걱정</span>
+                        </div>
+                    </div>
+
+                    <div class="factor-card x-card">
+                        <div class="factor-header">
+                            <div class="factor-letter">X</div>
+                            <div>
+                                <div class="factor-name">외향성</div>
+                                <div class="factor-full">eXtraversion</div>
+                            </div>
+                        </div>
+                        <p class="factor-desc">사회적 활력과 자기표현. 높을수록 사교적이고 적극적이며, 새로운 만남을 즐깁니다.</p>
+                        <div class="factor-traits">
+                            <span class="trait-tag">사교성</span>
+                            <span class="trait-tag">활력</span>
+                            <span class="trait-tag">대담함</span>
+                        </div>
+                    </div>
+
+                    <div class="factor-card a-card">
+                        <div class="factor-header">
+                            <div class="factor-letter">A</div>
+                            <div>
+                                <div class="factor-name">우호성</div>
+                                <div class="factor-full">Agreeableness</div>
+                            </div>
+                        </div>
+                        <p class="factor-desc">협력과 관용의 성향. 높을수록 타인을 쉽게 용서하고 갈등을 피하며 협력을 선호합니다.</p>
+                        <div class="factor-traits">
+                            <span class="trait-tag">관용</span>
+                            <span class="trait-tag">온화함</span>
+                            <span class="trait-tag">인내</span>
+                        </div>
+                    </div>
+
+                    <div class="factor-card c-card">
+                        <div class="factor-header">
+                            <div class="factor-letter">C</div>
+                            <div>
+                                <div class="factor-name">성실성</div>
+                                <div class="factor-full">Conscientiousness</div>
+                            </div>
+                        </div>
+                        <p class="factor-desc">계획성과 자기조절. 높을수록 체계적이고 목표지향적이며, 책임감이 강합니다.</p>
+                        <div class="factor-traits">
+                            <span class="trait-tag">조직력</span>
+                            <span class="trait-tag">근면</span>
+                            <span class="trait-tag">신중함</span>
+                        </div>
+                    </div>
+
+                    <div class="factor-card o-card">
+                        <div class="factor-header">
+                            <div class="factor-letter">O</div>
+                            <div>
+                                <div class="factor-name">개방성</div>
+                                <div class="factor-full">Openness to Experience</div>
+                            </div>
+                        </div>
+                        <p class="factor-desc">창의성과 지적 호기심. 높을수록 새로운 아이디어와 예술적 경험에 열려 있습니다.</p>
+                        <div class="factor-traits">
+                            <span class="trait-tag">창의성</span>
+                            <span class="trait-tag">호기심</span>
+                            <span class="trait-tag">독창성</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <span>HEXACO Personality Test | hexacotest.vercel.app</span>
+                <span>2 / 4</span>
+            </div>
+        </div>
+
+        <!-- PAGE 3: Features -->
+        <div class="page" id="page3">
+            <div class="page-header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                    <div class="logo-text">HEXACO <span>Test</span></div>
+                </div>
+                <div class="section-badge">Test Features</div>
+            </div>
+
+            <div class="content">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fas fa-sparkles"></i></div>
+                    <h2>테스트 주요 기능</h2>
+                </div>
+                <p class="section-desc">상황 기반 질문과 AI 분석으로 정확한 성격 프로필을 제공합니다.</p>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="fc-header">
+                            <div class="fc-icon"><i class="fas fa-comments"></i></div>
+                            <h4>상황 기반 질문</h4>
+                        </div>
+                        <p>"나는 정직하다" 대신 실제 상황에서 어떻게 행동할지 묻습니다</p>
+                        <ul class="feature-list">
+                            <li>사회적 바람직성 편향 감소</li>
+                            <li>더 정확한 성격 파악</li>
+                            <li>실제 행동 패턴 예측</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="fc-header">
+                            <div class="fc-icon"><i class="fas fa-robot"></i></div>
+                            <h4>AI 맞춤 분석</h4>
+                        </div>
+                        <p>LLM 기반 개인화된 성격 분석 리포트 제공</p>
+                        <ul class="feature-list">
+                            <li>강점과 성장 포인트 분석</li>
+                            <li>요인별 상세 해석</li>
+                            <li>맞춤형 조언 제공</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="fc-header">
+                            <div class="fc-icon"><i class="fas fa-users"></i></div>
+                            <h4>유명인 매칭</h4>
+                        </div>
+                        <p>나와 비슷한 성격의 유명인/위인을 찾아줍니다</p>
+                        <ul class="feature-list">
+                            <li>12명 이상의 유명인 DB</li>
+                            <li>유사도 % 표시</li>
+                            <li>성격 유형별 설명</li>
+                        </ul>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="fc-header">
+                            <div class="fc-icon"><i class="fas fa-share-nodes"></i></div>
+                            <h4>결과 공유</h4>
+                        </div>
+                        <p>친구와 결과를 공유하고 비교해보세요</p>
+                        <ul class="feature-list">
+                            <li>URL로 결과 공유</li>
+                            <li>이미지로 저장</li>
+                            <li>SNS 공유 기능</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="comparison-table">
+                    <h3>테스트 버전 선택</h3>
+                    <div class="comparison-grid">
+                        <div class="comparison-card">
+                            <h5>60문항</h5>
+                            <p>빠른 테스트</p>
+                            <div class="time">~5분</div>
+                        </div>
+                        <div class="comparison-card">
+                            <h5>120문항</h5>
+                            <p>균형잡힌 분석</p>
+                            <div class="time">~10분</div>
+                        </div>
+                        <div class="comparison-card highlight">
+                            <h5>180문항 ⭐</h5>
+                            <p>가장 정확한 분석</p>
+                            <div class="time">~15분</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <span>HEXACO Personality Test | hexacotest.vercel.app</span>
+                <span>3 / 4</span>
+            </div>
+        </div>
+
+        <!-- PAGE 4: CTA -->
+        <div class="page" id="page4">
+            <div class="page-header">
+                <div class="logo">
+                    <div class="logo-icon"><i class="fas fa-brain"></i></div>
+                    <div class="logo-text">HEXACO <span>Test</span></div>
+                </div>
+                <div class="section-badge">Start Now</div>
+            </div>
+
+            <div class="content">
+                <div class="section-header">
+                    <div class="section-icon"><i class="fas fa-rocket"></i></div>
+                    <h2>지금 바로 시작하세요</h2>
+                </div>
+                <p class="section-desc">회원가입 없이 무료로 진짜 나를 발견하세요.</p>
+
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <div class="benefit-icon"><i class="fas fa-gift"></i></div>
+                        <h4>완전 무료</h4>
+                        <p>숨겨진 비용 없음</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon"><i class="fas fa-lock"></i></div>
+                        <h4>개인정보 보호</h4>
+                        <p>데이터 수집 없음</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon"><i class="fas fa-mobile-screen"></i></div>
+                        <h4>모바일 최적화</h4>
+                        <p>어디서나 테스트</p>
+                    </div>
+                    <div class="benefit-card">
+                        <div class="benefit-icon"><i class="fas fa-language"></i></div>
+                        <h4>한국어/영어</h4>
+                        <p>다국어 지원</p>
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <h3>진짜 나를 발견할 준비가 되셨나요?</h3>
+                    <p>과학적 성격 분석으로 숨겨진 나의 모습을 확인하세요</p>
+                    <a href="https://hexacotest.vercel.app" class="cta-url">hexacotest.vercel.app</a>
+                    <div class="qr-section">
+                        <div class="qr-box">
+                            <div class="qr-placeholder"><i class="fas fa-qrcode"></i></div>
+                            <div class="qr-label">QR 코드로 접속</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="disclaimer">
+                    <p>
+                        <strong>※ 법적 고지:</strong> 본 테스트는 비공식 테스트이며 공식 HEXACO-PI-R 검사와 무관합니다.
+                        오락 및 자기 이해 목적으로만 제공되며, 학술 연구나 임상 진단용으로 사용할 수 없습니다.
+                        유명인 매칭은 공개 정보 기반 추정치이며 실제 해당 인물의 성격을 대표하지 않습니다.
+                        본 테스트는 전문적인 심리 평가를 대체할 수 없습니다.
+                    </p>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <span>HEXACO Personality Test | hexacotest.vercel.app</span>
+                <span>4 / 4</span>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
