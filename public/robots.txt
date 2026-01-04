@@ -1,6 +1,15 @@
 # HEXACO Personality Test - robots.txt
 # https://hexacotest.vercel.app
-# Last updated: 2024-12-27
+# Last updated: 2024-12-28
+
+# ===========================================
+# BLOCKED CRAWLERS
+# ===========================================
+User-agent: iubenda-radar
+Disallow: /
+
+User-agent: iubenda
+Disallow: /
 
 # ===========================================
 # DEFAULT: Allow everything for all crawlers
