@@ -824,6 +824,42 @@
             font-size: 12px;
         }
 
+        .cta-contacts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 16px 28px;
+            max-width: 520px;
+            margin: 24px auto 0;
+            position: relative;
+            z-index: 10;
+        }
+
+        .cta-contacts span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--neutral-300);
+            font-size: 11px;
+        }
+
+        .cta-contacts i {
+            width: 28px;
+            height: 28px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-400);
+            font-size: 12px;
+        }
+
+        .cta-contacts .wide {
+            flex-basis: 100%;
+            justify-content: center;
+        }
+
         .benefits-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -1301,6 +1337,12 @@
                             <div class="qr-placeholder"><i class="fas fa-qrcode"></i></div>
                             <div class="qr-label">QR 코드로 접속</div>
                         </div>
+                    </div>
+                    <div class="cta-contacts">
+                        <span><i class="fas fa-building"></i> 상호: U2DIA</span>
+                        <span><i class="fas fa-user-tie"></i> 대표: 최유이</span>
+                        <span><i class="fas fa-id-card"></i> 사업자등록번호: 749-58-00902</span>
+                        <span class="wide"><i class="fas fa-location-dot"></i> 인천광역시 서구 완정로 179, 6층 601-792호(왕길동, 제이원검단메디컬프라자)</span>
                     </div>
                 </div>
 
