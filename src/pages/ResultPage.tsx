@@ -6,13 +6,14 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis,
   PolarRadiusAxis, ResponsiveContainer
 } from 'recharts'
-import { Download, Link2, RotateCcw, Home, Check, Twitter } from 'lucide-react'
+import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import { decodeResults, useTestStore } from '../stores/testStore'
 import { factorColors, factors, Factor } from '../data/questions'
 import { findTopMatches, MatchResult } from '../utils/matching'
 import { categoryColors } from '../data/personas'
 import LoadingSpinner from '../components/common/LoadingSpinner'
+import { CelebrityDisclaimer } from '../components/common/DisclaimerSection'
 
 interface AnalysisFactor {
   factor: Factor
@@ -418,8 +419,35 @@ export default function ResultPage() {
                   </div>
                 ))}
               </div>
+
+              {/* Celebrity Disclaimer */}
+              <CelebrityDisclaimer />
             </motion.div>
           )}
+
+          {/* Bottom Disclaimer */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="mt-6 text-center text-xs text-gray-500 space-y-1"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <AlertTriangle className="w-3 h-3" />
+              <span>
+                {i18n.language === 'ko'
+                  ? '비공식 테스트 | 오락 목적 | 전문 심리 평가를 대체하지 않음'
+                  : 'Unofficial Test | Entertainment Purpose | Does not replace professional assessment'
+                }
+              </span>
+            </div>
+            <p>
+              {i18n.language === 'ko'
+                ? 'HEXACO 이론 기반 (Ashton & Lee) - 공식 HEXACO-PI-R과 무관'
+                : 'Based on HEXACO theory (Ashton & Lee) - Not affiliated with official HEXACO-PI-R'
+              }
+            </p>
+          </motion.div>
         </div>
 
         {/* Share Buttons */}

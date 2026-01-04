@@ -26,10 +26,13 @@ export default function PrivacyPage() {
             {/* Last Updated */}
             <div className="bg-dark-card rounded-lg p-4 border border-gray-700">
               <p className="text-sm text-gray-400">
-                <strong>Last Updated / 최종 수정일:</strong> December 28, 2024
+                <strong>Last Updated / 최종 수정일:</strong> January 4, 2026
               </p>
               <p className="text-sm text-gray-400">
                 <strong>Effective Date / 시행일:</strong> December 25, 2024
+              </p>
+              <p className="text-sm text-gray-400 mt-2">
+                <strong>Version / 버전:</strong> 2.0 (Added Legal Disclaimers / 법적 고지 추가)
               </p>
             </div>
 
@@ -221,6 +224,97 @@ export default function PrivacyPage() {
               </p>
               <p className="mt-2">
                 개인정보 관련 문의나 권리 행사는 웹사이트를 통해 연락해 주시기 바랍니다.
+              </p>
+            </section>
+
+            {/* Legal Disclaimer */}
+            <section>
+              <h2 className="text-xl font-semibold text-white mb-3">14. Legal Disclaimer / 법적 고지</h2>
+
+              <h3 className="text-lg font-medium text-white mt-4 mb-2">14.1 Unofficial Test / 비공식 테스트</h3>
+              <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4 mb-4">
+                <p className="mb-2">
+                  <strong>This is an unofficial test and is NOT affiliated with the official HEXACO-PI-R assessment.</strong>
+                </p>
+                <p>
+                  <strong>본 테스트는 비공식 테스트이며, 공식 HEXACO-PI-R 검사와 무관합니다.</strong>
+                </p>
+              </div>
+
+              <h3 className="text-lg font-medium text-white mt-4 mb-2">14.2 Original Questions / 자체 제작 문항</h3>
+              <p className="mb-3">
+                All test questions are original situation-based items created independently. We do not use or copy questions from the official HEXACO-PI-R inventory developed by Ashton & Lee.
+              </p>
+              <p className="mb-3">
+                모든 테스트 문항은 독자적으로 제작된 상황 기반 문항입니다. Ashton & Lee가 개발한 공식 HEXACO-PI-R 검사의 문항을 사용하거나 복제하지 않습니다.
+              </p>
+
+              <h3 className="text-lg font-medium text-white mt-4 mb-2">14.3 Entertainment Purpose Only / 오락 목적</h3>
+              <p className="mb-3">
+                This test is provided solely for entertainment and self-understanding purposes. It is NOT intended for:
+              </p>
+              <ul className="list-disc pl-5 space-y-2 mb-3">
+                <li>Academic or scientific research</li>
+                <li>Clinical or medical diagnosis</li>
+                <li>Employment screening or personnel decisions</li>
+                <li>Legal or forensic evaluations</li>
+              </ul>
+              <p className="mb-3">
+                본 테스트는 오락 및 자기 이해 목적으로만 제공됩니다. 다음 용도로 사용할 수 없습니다:
+              </p>
+              <ul className="list-disc pl-5 space-y-2">
+                <li>학술적 또는 과학적 연구</li>
+                <li>임상 또는 의료 진단</li>
+                <li>채용 심사 또는 인사 결정</li>
+                <li>법적 또는 법의학적 평가</li>
+              </ul>
+
+              <h3 className="text-lg font-medium text-white mt-4 mb-2">14.4 Celebrity Personality Estimates / 유명인 성격 추정</h3>
+              <p className="mb-3">
+                Celebrity personality matches are estimates based on publicly available information and do not represent the actual personalities of those individuals. These matches are provided for entertainment purposes only.
+              </p>
+              <p className="mb-3">
+                유명인 성격 매칭은 공개적으로 이용 가능한 정보를 바탕으로 한 추정치이며, 실제 해당 인물의 성격을 대표하지 않습니다. 이 매칭은 오락 목적으로만 제공됩니다.
+              </p>
+
+              <h3 className="text-lg font-medium text-white mt-4 mb-2">14.5 Professional Assessment / 전문 평가</h3>
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                <p className="mb-2">
+                  <strong>This test cannot replace professional psychological assessment.</strong> If you have concerns about your mental health or personality, please consult a qualified mental health professional.
+                </p>
+                <p>
+                  <strong>본 테스트는 전문적인 심리 평가를 대체할 수 없습니다.</strong> 정신 건강이나 성격에 대한 우려가 있으시면 자격을 갖춘 정신건강 전문가와 상담하시기 바랍니다.
+                </p>
+              </div>
+
+              <h3 className="text-lg font-medium text-white mt-4 mb-2">14.6 HEXACO Model Attribution / HEXACO 모델 출처</h3>
+              <p className="mb-3">
+                The HEXACO model of personality structure was developed by Professors Michael C. Ashton and Kibeom Lee. We gratefully acknowledge their work while clarifying that this test is an independent implementation not endorsed by the original researchers.
+              </p>
+              <p className="mb-3">
+                HEXACO 성격 구조 모델은 Michael C. Ashton 교수와 Kibeom Lee 교수가 개발했습니다. 그들의 연구에 감사드리며, 본 테스트는 원 연구자들의 승인을 받지 않은 독립적인 구현임을 명시합니다.
+              </p>
+              <p className="text-sm text-gray-500">
+                Reference: Ashton, M. C., & Lee, K. (2007). Empirical, theoretical, and practical advantages of the HEXACO model of personality structure. Personality and Social Psychology Review, 11(2), 150-166.
+              </p>
+
+              <h3 className="text-lg font-medium text-white mt-4 mb-2">14.7 Limitation of Liability / 책임 제한</h3>
+              <p className="mb-3">
+                We provide this test "as is" without any warranties. We are not liable for any decisions made based on test results or any damages arising from the use of this service.
+              </p>
+              <p>
+                본 테스트는 어떠한 보증 없이 "있는 그대로" 제공됩니다. 테스트 결과를 바탕으로 한 결정이나 본 서비스 이용으로 인한 손해에 대해 책임지지 않습니다.
+              </p>
+            </section>
+
+            {/* Trademark Notice */}
+            <section>
+              <h2 className="text-xl font-semibold text-white mb-3">15. Trademark Notice / 상표 고지</h2>
+              <p className="mb-3">
+                HEXACO and HEXACO-PI-R are trademarks associated with the work of Ashton & Lee. Our use of the term "HEXACO" is solely to describe the personality model framework and does not imply any official endorsement or affiliation.
+              </p>
+              <p>
+                HEXACO 및 HEXACO-PI-R은 Ashton & Lee의 연구와 관련된 상표입니다. "HEXACO"라는 용어의 사용은 성격 모델 프레임워크를 설명하기 위한 것일 뿐 공식적인 승인이나 제휴를 의미하지 않습니다.
               </p>
             </section>
 

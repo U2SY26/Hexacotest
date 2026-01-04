@@ -2,11 +2,12 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Brain, Users, Share2, Sparkles, ChevronRight, Hexagon, Clock, Zap, Target, Star, TrendingUp, Globe, CheckCircle } from 'lucide-react'
+import { Brain, Users, Share2, Sparkles, ChevronRight, Hexagon, Clock, Zap, Target, Star, TrendingUp, Globe, CheckCircle, AlertTriangle } from 'lucide-react'
 import { useTestStore } from '../stores/testStore'
 import { testVersions } from '../data/questions'
 import ElectricBorder from '../components/ElectricBorder'
 import DecryptedText from '../components/DecryptedText'
+import DisclaimerSection from '../components/common/DisclaimerSection'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -768,16 +769,48 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Legal Disclaimer Section */}
+      <section className="py-16 border-t border-dark-border">
+        <div className="max-w-4xl mx-auto px-4">
+          <DisclaimerSection variant="full" />
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="py-8 border-t border-dark-border">
         <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
           <p>HEXACO Personality Test</p>
-          <p className="mt-1">Based on HEXACO-PI-R by Ashton & Lee</p>
-          <p className="mt-3">
+          <p className="mt-1">
+            {i18n.language === 'ko'
+              ? 'HEXACO 이론 기반 (Ashton & Lee) | 비공식 테스트'
+              : 'Based on HEXACO theory (Ashton & Lee) | Unofficial Test'
+            }
+          </p>
+          <div className="mt-3 flex flex-wrap justify-center gap-4">
             <Link to="/privacy" className="hover:text-purple-400 transition-colors">
               {i18n.language === 'ko' ? '개인정보처리방침' : 'Privacy Policy'}
             </Link>
-          </p>
+            <span className="text-gray-600">|</span>
+            <a
+              href="https://www.google.com/settings/ads"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-purple-400 transition-colors"
+            >
+              {i18n.language === 'ko' ? '광고 설정' : 'Ad Settings'}
+            </a>
+          </div>
+          <div className="mt-4 pt-4 border-t border-gray-800 text-xs text-gray-600">
+            <div className="flex items-center justify-center gap-2">
+              <AlertTriangle className="w-3 h-3" />
+              <span>
+                {i18n.language === 'ko'
+                  ? '본 테스트는 오락 목적이며 전문적인 심리 평가를 대체하지 않습니다.'
+                  : 'This test is for entertainment and does not replace professional psychological assessment.'
+                }
+              </span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>
