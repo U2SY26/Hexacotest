@@ -40,15 +40,18 @@ class PrimaryButton extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Padding(
-                padding: padding,
-                child: DefaultTextStyle(
-                  style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white) ??
-                      const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                  child: Center(child: child),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48),
+                child: Padding(
+                  padding: padding,
+                  child: DefaultTextStyle(
+                    style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white) ??
+                        const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+                    child: Center(child: child),
+                  ),
                 ),
               ),
             ),
@@ -91,15 +94,18 @@ class SecondaryButton extends StatelessWidget {
                 borderRadius: BorderRadius.circular(radius),
                 border: Border.all(color: AppColors.darkBorder),
               ),
-              child: Padding(
-                padding: padding,
-                child: DefaultTextStyle(
-                  style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white70) ??
-                      const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
-                  child: Center(child: child),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: 48),
+                child: Padding(
+                  padding: padding,
+                  child: DefaultTextStyle(
+                    style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w600, color: Colors.white70) ??
+                        const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600),
+                    child: Center(child: child),
+                  ),
                 ),
               ),
             ),

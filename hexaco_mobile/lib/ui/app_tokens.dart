@@ -21,7 +21,9 @@ class AppColors {
 
   static const gray400 = Color(0xFF9CA3AF);
   static const gray500 = Color(0xFF6B7280);
+  static const gray600 = Color(0xFF4B5563);
   static const gray700 = Color(0xFF374151);
+  static const gray300 = Color(0xFFD1D5DB);
 }
 
 class AppGradients {
