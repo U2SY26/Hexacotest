@@ -13,6 +13,7 @@ import '../widgets/ad_banner.dart';
 import '../config/admob_ids.dart';
 import '../widgets/gradient_text.dart';
 import '../widgets/glass_container.dart';
+import '../services/history_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final TestController controller;
@@ -95,6 +96,39 @@ class _HomeScreenState extends State<HomeScreen> {
                           .textTheme
                           .bodySmall
                           ?.copyWith(color: AppColors.gray400),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      isKo
+                          ? '모든 결과는 기기 내에만 저장되며 서버로 전송되지 않습니다.'
+                          : 'All results are stored locally on your device and are not sent to a server.',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.gray400),
+                    ),
+                    const SizedBox(height: 12),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: SecondaryButton(
+                        onPressed: () async {
+                          await HistoryService.clear();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  isKo ? '저장된 기록을 삭제했어요.' : 'Local history cleared.',
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                        child: Text(
+                          isKo ? '로컬 기록 삭제' : 'Clear local history',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ),
                   ],
                 ),
