@@ -1,7 +1,7 @@
 ﻿import 'package:flutter/foundation.dart';
 
-const String admobAppId = 'ca-app-pub-2988937021017804~9158623849';
-const String bannerAdUnitId = 'ca-app-pub-2988937021017804/4976987632';
+const String admobAppId = 'ca-app-pub-3715008468517611~7590886146';
+const String bannerAdUnitId = 'ca-app-pub-3715008468517611/5799114717';
 
 const String testBannerAdUnitIdAndroid = 'ca-app-pub-3940256099942544/6300978111';
 const String testBannerAdUnitIdIos = 'ca-app-pub-3940256099942544/2934735716';

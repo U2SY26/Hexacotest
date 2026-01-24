@@ -67,29 +67,6 @@ class _ResultScreenState extends State<ResultScreen> {
     return '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')}';
   }
 
-  List<_TraitTag> _buildTraitTags(bool isKo) {
-    final entries = scores.toMap().entries.toList();
-    entries.sort((a, b) => b.value.compareTo(a.value));
-    final high = entries.take(2).toList();
-    final low = entries.reversed.take(2).toList();
-    final tags = <_TraitTag>[];
-    for (final item in high) {
-      tags.add(_TraitTag(
-        factor: item.key,
-        label: isKo ? '${factorNamesKo[item.key]} 높음' : 'High ${factorNamesEn[item.key]}',
-        color: factorColors[item.key] ?? AppColors.purple500,
-      ));
-    }
-    for (final item in low) {
-      tags.add(_TraitTag(
-        factor: item.key,
-        label: isKo ? '${factorNamesKo[item.key]} 낮음' : 'Low ${factorNamesEn[item.key]}',
-        color: (factorColors[item.key] ?? AppColors.purple500).withValues(alpha: 0.8),
-      ));
-    }
-    return tags;
-  }
-
   Future<void> _shareSummary(bool isKo) async {
     final topMatch = matches.first;
     final text = isKo
@@ -107,7 +84,7 @@ class _ResultScreenState extends State<ResultScreen> {
   Widget build(BuildContext context) {
     final isKo = widget.controller.language == 'ko';
     final topMatch = matches.first;
-    final traitTags = _buildTraitTags(isKo);
+    final historyPreview = _history.take(5).toList(growable: false);
 
     return AppScaffold(
       appBar: AppHeader(controller: widget.controller),
@@ -115,14 +92,14 @@ class _ResultScreenState extends State<ResultScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GradientText(
-            isKo ? '결과 분석' : 'Your Results',
+            isKo ? '결과' : 'Results',
             style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
           ),
           const SizedBox(height: 8),
           Text(
             isKo
                 ? '100가지 유형 중 가장 가까운 유형을 추천합니다.'
-                : 'We recommend the closest matches among 100 types.',
+                : 'We recommend the closest match among 100 types.',
             style: Theme.of(context)
                 .textTheme
                 .bodyMedium
@@ -136,267 +113,157 @@ class _ResultScreenState extends State<ResultScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isKo ? '나의 HEXACO 프로필' : 'My HEXACO Profile',
-                  style: Theme.of(context).textTheme.titleLarge,
+                  isKo ? '가장 가까운 유형' : 'Closest Match',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(color: AppColors.gray400),
                 ),
-                const SizedBox(height: 16),
-                Center(child: RadarChart(scores: scores.toMap(), size: 260)),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Text(
                   isKo ? topMatch.profile.nameKo : topMatch.profile.nameEn,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   isKo ? topMatch.profile.descriptionKo : topMatch.profile.descriptionEn,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
                       ?.copyWith(color: AppColors.gray400),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  isKo ? '유사도 ${topMatch.similarity}%' : 'Similarity ${topMatch.similarity}%',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.purple400),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Text(
+                      '${topMatch.similarity}%',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(color: AppColors.purple400, fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      isKo ? '유사도' : 'Similarity',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: AppColors.gray500),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
           const SizedBox(height: 16),
-          Text(
-            isKo ? '핵심 성향 요약' : 'Key Trait Summary',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: traitTags
-                .map((tag) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: tag.color.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(color: tag.color.withValues(alpha: 0.4)),
-                      ),
-                      child: Text(
-                        tag.label,
-                        style: Theme.of(context)
-                            .textTheme
-                            .labelMedium
-                            ?.copyWith(color: tag.color),
-                      ),
-                    ))
-                .toList(),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            isKo ? '요인 점수' : 'Factor Scores',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 12),
           LayoutBuilder(
             builder: (context, constraints) {
-              final width = constraints.maxWidth;
-              final columns = width >= 820 ? 3 : 2;
-              return GridView.builder(
-                itemCount: factorOrder.length,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: columns,
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  childAspectRatio: 1.15,
-                ),
-                itemBuilder: (context, index) {
-                  final factor = factorOrder[index];
-                  final value = scores.toMap()[factor] ?? 0;
-                  return DarkCard(
-                    padding: const EdgeInsets.all(14),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Text(
-                              factor,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    color: factorColors[factor],
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                isKo ? factorNamesKo[factor] ?? '' : factorNamesEn[factor] ?? '',
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(color: AppColors.gray400),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        Text(
-                          '${value.toStringAsFixed(1)}%',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 6),
-                        LinearProgressIndicator(
-                          value: value / 100,
-                          color: factorColors[factor],
-                          backgroundColor: factorColors[factor]?.withValues(alpha: 0.2),
-                          minHeight: 6,
-                        ),
-                      ],
+              final isWide = constraints.maxWidth >= 820;
+              final chartCard = DarkCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isKo ? '프로필 지도' : 'Profile Map',
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
-                  );
-                },
+                    const SizedBox(height: 12),
+                    Center(child: RadarChart(scores: scores.toMap(), size: 220)),
+                  ],
+                ),
+              );
+              final scoreCard = DarkCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isKo ? '요인 점수' : 'Factor Scores',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    for (var i = 0; i < factorOrder.length; i += 1) ...[
+                      _FactorRow(
+                        factor: factorOrder[i],
+                        value: scores.toMap()[factorOrder[i]] ?? 0,
+                        isKo: isKo,
+                      ),
+                      if (i != factorOrder.length - 1) const SizedBox(height: 12),
+                    ],
+                  ],
+                ),
+              );
+
+              if (isWide) {
+                return Row(
+                  children: [
+                    Expanded(child: chartCard),
+                    const SizedBox(width: 16),
+                    Expanded(child: scoreCard),
+                  ],
+                );
+              }
+              return Column(
+                children: [
+                  chartCard,
+                  const SizedBox(height: 16),
+                  scoreCard,
+                ],
               );
             },
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
           Text(
             isKo ? '추천 유형 TOP 5' : 'Top 5 Matches',
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          const SizedBox(height: 12),
-          Column(
-            children: matches.map((match) {
-              final initials = (isKo ? match.profile.nameKo : match.profile.nameEn).characters.first;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: DarkCard(
-                  padding: const EdgeInsets.all(14),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 52,
-                        height: 52,
-                        decoration: BoxDecoration(
-                          gradient: AppGradients.primaryButton,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            initials,
-                            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              isKo ? match.profile.nameKo : match.profile.nameEn,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleSmall,
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              isKo ? match.profile.descriptionKo : match.profile.descriptionEn,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(color: AppColors.gray400),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '${match.similarity}%',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: AppColors.purple400),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-          if (_history.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            Text(
-              isKo ? '최근 기록' : 'Recent Results',
-              style: Theme.of(context).textTheme.titleMedium,
+          const SizedBox(height: 10),
+          DarkCard(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                for (var i = 0; i < matches.length; i += 1) ...[
+                  _MatchRow(match: matches[i], isKo: isKo),
+                  if (i != matches.length - 1) const SizedBox(height: 12),
+                ],
+              ],
             ),
-            const SizedBox(height: 12),
-            Column(
-              children: _history.take(5).map((entry) {
-                final profile = widget.data.types.firstWhere(
-                  (type) => type.id == entry.topMatchId,
-                  orElse: () => widget.data.types.first,
-                );
-                final name = isKo ? profile.nameKo : profile.nameEn;
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: DarkCard(
-                    padding: const EdgeInsets.all(14),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: AppColors.darkBg,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.darkBorder),
-                          ),
-                          child: Center(
-                            child: Text(
-                              name.characters.first,
-                              style: const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleSmall,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                _formatDate(entry.timestamp),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
-                                    ?.copyWith(color: AppColors.gray400),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          '${entry.similarity}%',
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: AppColors.purple400),
-                        ),
-                      ],
+          ),
+          if (historyPreview.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            DarkCard(
+              padding: EdgeInsets.zero,
+              child: ExpansionTile(
+                collapsedIconColor: AppColors.gray400,
+                iconColor: AppColors.gray400,
+                title: Text(
+                  isKo ? '최근 기록' : 'Recent Results',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
+                tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                childrenPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                children: [
+                  for (var i = 0; i < historyPreview.length; i += 1) ...[
+                    _HistoryRow(
+                      name: (() {
+                        final profile = widget.data.types.firstWhere(
+                          (type) => type.id == historyPreview[i].topMatchId,
+                          orElse: () => widget.data.types.first,
+                        );
+                        return isKo ? profile.nameKo : profile.nameEn;
+                      })(),
+                      date: _formatDate(historyPreview[i].timestamp),
+                      similarity: historyPreview[i].similarity,
                     ),
-                  ),
-                );
-              }).toList(),
+                    if (i != historyPreview.length - 1) const SizedBox(height: 12),
+                  ]
+                ],
+              ),
             ),
           ],
           const SizedBox(height: 16),
@@ -434,7 +301,7 @@ class _ResultScreenState extends State<ResultScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          PrimaryButton(
+          SecondaryButton(
             onPressed: () => _shareSummary(isKo),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -473,14 +340,146 @@ class _ResultScreenState extends State<ResultScreen> {
   }
 }
 
-class _TraitTag {
+class _FactorRow extends StatelessWidget {
   final String factor;
-  final String label;
-  final Color color;
+  final double value;
+  final bool isKo;
 
-  const _TraitTag({
+  const _FactorRow({
     required this.factor,
-    required this.label,
-    required this.color,
+    required this.value,
+    required this.isKo,
   });
+
+  @override
+  Widget build(BuildContext context) {
+    final name = isKo ? factorNamesKo[factor] ?? '' : factorNamesEn[factor] ?? '';
+    final color = factorColors[factor] ?? AppColors.purple500;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              factor,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleMedium
+                  ?.copyWith(color: color, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+              ),
+            ),
+            Text(
+              '${value.toStringAsFixed(0)}%',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+            ),
+          ],
+        ),
+        const SizedBox(height: 6),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            value: value / 100,
+            minHeight: 6,
+            color: color,
+            backgroundColor: color.withValues(alpha: 0.2),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _MatchRow extends StatelessWidget {
+  final TypeMatch match;
+  final bool isKo;
+
+  const _MatchRow({required this.match, required this.isKo});
+
+  @override
+  Widget build(BuildContext context) {
+    final name = isKo ? match.profile.nameKo : match.profile.nameEn;
+    final description = isKo ? match.profile.descriptionKo : match.profile.descriptionEn;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                description,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          '${match.similarity}%',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.purple400),
+        ),
+      ],
+    );
+  }
+}
+
+class _HistoryRow extends StatelessWidget {
+  final String name;
+  final String date;
+  final int similarity;
+
+  const _HistoryRow({
+    required this.name,
+    required this.date,
+    required this.similarity,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                date,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+              ),
+            ],
+          ),
+        ),
+        Text(
+          '$similarity%',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.purple400),
+        ),
+      ],
+    );
+  }
 }

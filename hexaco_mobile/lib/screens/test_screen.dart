@@ -8,7 +8,6 @@ import '../widgets/app_header.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/buttons.dart';
 import '../widgets/dark_card.dart';
-import '../widgets/gradient_text.dart';
 
 class TestScreen extends StatelessWidget {
   final TestController controller;
@@ -32,35 +31,29 @@ class TestScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _ProgressIndicator(
+              _ProgressHeader(
                 currentIndex: controller.currentIndex,
                 total: questions.length,
                 progress: controller.progress,
                 factor: question.factor,
                 isKo: isKo,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 20),
               Expanded(
                 child: ListView(
                   children: [
                     _QuestionCard(question: question, isKo: isKo),
-                    const SizedBox(height: 16),
-                    ...List.generate(5, (index) {
-                      final value = index + 1;
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: _AnswerOption(
-                          value: value,
-                          label: isKo ? scaleLabelsKo[value]! : scaleLabelsEn[value]!,
-                          isSelected: currentAnswer == value,
-                          onTap: () => controller.setAnswer(question.id, value),
-                        ),
-                      );
-                    }),
+                    const SizedBox(height: 18),
+                    _AnswerScale(
+                      isKo: isKo,
+                      factor: question.factor,
+                      currentAnswer: currentAnswer,
+                      onSelect: (value) => controller.setAnswer(question.id, value),
+                    ),
                   ],
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               Row(
                 children: [
                   Expanded(
@@ -94,12 +87,10 @@ class TestScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
               Center(
                 child: Text(
-                  isKo
-                      ? '1-5를 눌러 빠르게 응답할 수 있어요.'
-                      : 'Use 1-5 keys to answer faster.',
+                  isKo ? '답변은 언제든 변경할 수 있어요.' : 'You can change any answer anytime.',
                   style: Theme.of(context)
                       .textTheme
                       .bodySmall
@@ -114,14 +105,14 @@ class TestScreen extends StatelessWidget {
   }
 }
 
-class _ProgressIndicator extends StatelessWidget {
+class _ProgressHeader extends StatelessWidget {
   final int currentIndex;
   final int total;
   final double progress;
   final String factor;
   final bool isKo;
 
-  const _ProgressIndicator({
+  const _ProgressHeader({
     required this.currentIndex,
     required this.total,
     required this.progress,
@@ -132,88 +123,43 @@ class _ProgressIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final percent = (progress * 100).clamp(0, 100).toStringAsFixed(0);
+    final factorName = isKo ? factorNamesKo[factor] ?? '' : factorNamesEn[factor] ?? '';
+    final accent = factorColors[factor] ?? AppColors.purple500;
 
-    return DarkCard(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                isKo ? '질문 ${currentIndex + 1} / $total' : 'Question ${currentIndex + 1} / $total',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
-              ),
-              Text(
-                '$percent%',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
-              ),
-            ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              isKo ? '질문 ${currentIndex + 1} / $total' : 'Question ${currentIndex + 1} / $total',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+            ),
+            Text(
+              '$percent%',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(999),
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: 6,
+            backgroundColor: AppColors.darkBorder,
+            color: accent,
           ),
-          const SizedBox(height: 8),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final width = (constraints.maxWidth * progress)
-                  .clamp(0.0, constraints.maxWidth)
-                  .toDouble();
-              return Stack(
-                children: [
-                  Container(
-                    height: 8,
-                    decoration: BoxDecoration(
-                      color: AppColors.darkBg,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    height: 8,
-                    width: width,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.purple500,
-                          factorColors[factor] ?? AppColors.purple500,
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: factorOrder.map((f) {
-              final active = f == factor;
-              final color = factorColors[f] ?? Colors.white;
-              return AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: active ? color : color.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-                child: Center(
-                  child: Text(
-                    f,
-                    style: TextStyle(
-                      color: active ? Colors.white : color,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 10),
+        Text(
+          isKo ? '$factorName · $factor 요인' : '$factorName · $factor factor',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray500),
+        ),
+      ],
     );
   }
 }
@@ -227,67 +173,77 @@ class _QuestionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = factorColors[question.factor] ?? AppColors.purple500;
+    final factorName = isKo ? factorNamesKo[question.factor] ?? '' : factorNamesEn[question.factor] ?? '';
 
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(AppRadii.xl),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.2),
-                  blurRadius: 40,
-                  offset: const Offset(0, 16),
-                ),
-              ],
-            ),
-          ),
-        ),
-        DarkCard(
-          padding: const EdgeInsets.all(20),
-          radius: AppRadii.xl,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return DarkCard(
+      padding: const EdgeInsets.all(20),
+      radius: AppRadii.xl,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.2),
+                  color: color.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(999),
-                  border: Border.all(color: color.withValues(alpha: 0.6)),
+                  border: Border.all(color: color.withValues(alpha: 0.5)),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      question.factor,
-                      style: TextStyle(color: color, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      isKo ? '질문' : 'Question',
-                      style: TextStyle(color: color),
-                    ),
-                  ],
+                child: Text(
+                  factorName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 12),
                 ),
               ),
-              const SizedBox(height: 16),
+              const Spacer(),
               Text(
-                isKo ? question.ko : question.en,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(height: 1.4),
-              ),
-              const SizedBox(height: 8),
-              GradientText(
-                isKo
-                    ? factorNamesKo[question.factor] ?? ''
-                    : factorNamesEn[question.factor] ?? '',
-                style: Theme.of(context).textTheme.bodySmall,
+                question.factor,
+                style: TextStyle(color: color, fontWeight: FontWeight.bold),
               ),
             ],
           ),
-        ),
-      ],
+          const SizedBox(height: 16),
+          Text(
+            isKo ? question.ko : question.en,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(height: 1.4),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AnswerScale extends StatelessWidget {
+  final bool isKo;
+  final String factor;
+  final int? currentAnswer;
+  final ValueChanged<int> onSelect;
+
+  const _AnswerScale({
+    required this.isKo,
+    required this.factor,
+    required this.currentAnswer,
+    required this.onSelect,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(5, (index) {
+        final value = index + 1;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _AnswerOption(
+            value: value,
+            label: isKo ? scaleLabelsKo[value]! : scaleLabelsEn[value]!,
+            isSelected: currentAnswer == value,
+            accent: factorColors[factor] ?? AppColors.purple500,
+            onTap: () => onSelect(value),
+          ),
+        );
+      }),
     );
   }
 }
@@ -296,33 +252,33 @@ class _AnswerOption extends StatelessWidget {
   final int value;
   final String label;
   final bool isSelected;
+  final Color accent;
   final VoidCallback onTap;
 
   const _AnswerOption({
     required this.value,
     required this.label,
     required this.isSelected,
+    required this.accent,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final style = _scaleStyle(value);
+    final background = isSelected ? accent.withValues(alpha: 0.18) : AppColors.darkCard;
+    final border = isSelected ? accent : AppColors.darkBorder;
+    final textColor = isSelected ? Colors.white : AppColors.gray400;
 
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppRadii.lg),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? LinearGradient(colors: style.gradient)
-              : LinearGradient(colors: [AppColors.darkCard, AppColors.darkCard]),
+          color: background,
           borderRadius: BorderRadius.circular(AppRadii.lg),
-          border: Border.all(
-            color: isSelected ? style.border : AppColors.darkBorder,
-            width: 1.2,
-          ),
+          border: Border.all(color: border, width: 1.2),
         ),
         child: Row(
           children: [
@@ -330,7 +286,7 @@ class _AnswerOption extends StatelessWidget {
               width: 28,
               height: 28,
               decoration: BoxDecoration(
-                color: isSelected ? style.border : AppColors.darkBorder,
+                color: isSelected ? accent : AppColors.darkBorder,
                 shape: BoxShape.circle,
               ),
               child: Center(
@@ -344,57 +300,20 @@ class _AnswerOption extends StatelessWidget {
             Expanded(
               child: Text(
                 label,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: isSelected ? Colors.white : AppColors.gray400,
-                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: textColor),
               ),
             ),
-            Text(
-              value.toString(),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: isSelected ? Colors.white : AppColors.gray500,
-                  ),
-            ),
+            if (isSelected)
+              Icon(
+                Icons.check,
+                size: 18,
+                color: accent,
+              ),
           ],
         ),
       ),
     );
   }
-
-  _ScaleStyle _scaleStyle(int value) {
-    switch (value) {
-      case 1:
-        return _ScaleStyle(
-          gradient: [AppColors.red500.withValues(alpha: 0.25), AppColors.red500.withValues(alpha: 0.15)],
-          border: AppColors.red500,
-        );
-      case 2:
-        return _ScaleStyle(
-          gradient: [AppColors.orange500.withValues(alpha: 0.25), AppColors.orange500.withValues(alpha: 0.15)],
-          border: AppColors.orange500,
-        );
-      case 3:
-        return _ScaleStyle(
-          gradient: [AppColors.gray700.withValues(alpha: 0.4), AppColors.gray700.withValues(alpha: 0.2)],
-          border: AppColors.gray500,
-        );
-      case 4:
-        return _ScaleStyle(
-          gradient: [AppColors.blue500.withValues(alpha: 0.25), AppColors.blue500.withValues(alpha: 0.15)],
-          border: AppColors.blue500,
-        );
-      default:
-        return _ScaleStyle(
-          gradient: [AppColors.emerald500.withValues(alpha: 0.25), AppColors.emerald500.withValues(alpha: 0.15)],
-          border: AppColors.emerald500,
-        );
-    }
-  }
-}
-
-class _ScaleStyle {
-  final List<Color> gradient;
-  final Color border;
-
-  const _ScaleStyle({required this.gradient, required this.border});
 }
