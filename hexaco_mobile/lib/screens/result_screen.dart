@@ -304,6 +304,17 @@ class _ResultScreenState extends State<ResultScreen> {
               ],
             ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            isKo
+                ? '※ 유명인 매칭은 공개 정보 기반 추정치이며 실제 성격과 다를 수 있습니다.'
+                : '※ Celebrity matches are estimates based on public info and may differ from actual personalities.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.gray500,
+                  fontSize: 11,
+                ),
+            textAlign: TextAlign.center,
+          ),
           if (historyPreview.isNotEmpty) ...[
             const SizedBox(height: 16),
             DarkCard(
@@ -405,17 +416,36 @@ class _ResultScreenState extends State<ResultScreen> {
           DarkCard(
             padding: const EdgeInsets.all(12),
             color: AppColors.darkCard.withValues(alpha: 0.7),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info, size: 16, color: AppColors.gray400),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    isKo
-                        ? '결과는 참고용이며 전문 심리 진단을 대체하지 않습니다.'
-                        : 'Results are for reference and do not replace professional assessment.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
-                  ),
+                Row(
+                  children: [
+                    const Icon(Icons.info_outline, size: 16, color: AppColors.gray400),
+                    const SizedBox(width: 8),
+                    Text(
+                      isKo ? '법적 고지' : 'Legal Notice',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.gray400,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  isKo
+                      ? '• 본 테스트는 비공식이며 HEXACO-PI-R과 무관합니다.\n'
+                        '• 결과는 오락 및 자기이해 목적이며 전문 심리 진단을 대체하지 않습니다.\n'
+                        '• 테스트 결과는 기기에만 저장되며 수집하지 않습니다.'
+                      : '• Unofficial test, not affiliated with HEXACO-PI-R.\n'
+                        '• For entertainment/self-understanding only, not professional diagnosis.\n'
+                        '• Results are stored locally and not collected.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.gray500,
+                        fontSize: 11,
+                        height: 1.5,
+                      ),
                 ),
               ],
             ),

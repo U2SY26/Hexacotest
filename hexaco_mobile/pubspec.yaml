@@ -38,6 +38,7 @@ dependencies:
   shared_preferences: ^2.3.2
   share_plus: ^10.0.2
   url_launcher: ^6.3.0
+  video_player: ^2.9.2
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,7 @@ flutter:
     - assets/data/types.json
     - assets/branding/app_icon.png
     - assets/branding/splash.png
+    - assets/video/intro.mp4
     - assets/fonts/Pretendard-Regular.otf
     - assets/fonts/Pretendard-Medium.otf
     - assets/fonts/Pretendard-SemiBold.otf

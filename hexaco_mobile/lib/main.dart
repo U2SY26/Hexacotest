@@ -1,10 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'controllers/test_controller.dart';
 import 'data/data_repository.dart';
 import 'screens/home_screen.dart';
+import 'screens/intro_video_screen.dart';
 import 'screens/test_screen.dart';
 import 'screens/result_screen.dart';
 import 'ui/app_tokens.dart';
@@ -60,6 +61,10 @@ class HexacoApp extends StatelessWidget {
         switch (settings.name) {
           case '/':
             return MaterialPageRoute(
+              builder: (_) => _InitialScreen(controller: controller),
+            );
+          case '/home':
+            return MaterialPageRoute(
               builder: (_) => HomeScreen(controller: controller),
             );
           case '/test':
@@ -77,5 +82,51 @@ class HexacoApp extends StatelessWidget {
         }
       },
     );
+  }
+}
+
+class _InitialScreen extends StatefulWidget {
+  final TestController controller;
+
+  const _InitialScreen({required this.controller});
+
+  @override
+  State<_InitialScreen> createState() => _InitialScreenState();
+}
+
+class _InitialScreenState extends State<_InitialScreen> {
+  bool? _showIntro;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIntro();
+  }
+
+  Future<void> _checkIntro() async {
+    final shouldShow = await IntroVideoScreen.shouldShow();
+    if (mounted) {
+      setState(() => _showIntro = shouldShow);
+    }
+  }
+
+  void _onIntroComplete() {
+    Navigator.of(context).pushReplacementNamed('/home');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_showIntro == null) {
+      return const Scaffold(
+        backgroundColor: AppColors.darkBg,
+        body: Center(child: CircularProgressIndicator(color: AppColors.purple500)),
+      );
+    }
+
+    if (_showIntro!) {
+      return IntroVideoScreen(onComplete: _onIntroComplete);
+    }
+
+    return HomeScreen(controller: widget.controller);
   }
 }

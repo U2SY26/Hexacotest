@@ -532,7 +532,7 @@ class _StatsSection extends StatelessWidget {
             crossAxisCount: columns,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: 1.3,
+            childAspectRatio: 1.1,
           ),
           itemBuilder: (context, index) => _StatCard(item: stats[index]),
         );
@@ -557,30 +557,38 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DarkCard(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 44,
-            height: 44,
+            width: 36,
+            height: 36,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
                 colors: [AppColors.purple500, AppColors.pink500],
               ),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(10),
             ),
-            child: Icon(item.icon, color: Colors.white, size: 22),
+            child: Icon(item.icon, color: Colors.white, size: 18),
           ),
-          const SizedBox(height: 12),
-          Text(
-            item.value,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          const SizedBox(height: 8),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              item.value,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+            ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            item.label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+          const SizedBox(height: 2),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              item.label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400, fontSize: 11),
+              textAlign: TextAlign.center,
+            ),
           ),
         ],
       ),
@@ -1116,7 +1124,7 @@ class _VersionSelectionSection extends StatelessWidget {
                 crossAxisCount: columns,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                childAspectRatio: columns == 1 ? 2.8 : 1.2,
+                childAspectRatio: columns == 1 ? 1.6 : 1.2,
               ),
               itemBuilder: (context, index) {
                 final card = versions[index];
@@ -1239,14 +1247,20 @@ class _DisclaimerSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final notices = isKo
         ? const [
-            '본 테스트는 비공식이며 HEXACO-PI-R과 무관합니다.',
-            '결과는 오락 및 자기이해 목적이며 전문 진단을 대체하지 않습니다.',
-            '모든 문항은 독자적으로 제작된 상황 기반 문항입니다.',
+            '⚠️ 본 테스트는 비공식이며 HEXACO-PI-R과 무관합니다.',
+            '🎭 결과는 오락 및 자기이해 목적이며 전문 심리 진단을 대체하지 않습니다.',
+            '✍️ 모든 문항은 독자적으로 제작된 상황 기반 문항입니다.',
+            '🔒 개인정보를 수집하지 않으며, 테스트 결과는 기기에만 저장됩니다.',
+            '👤 유명인 매칭은 공개 정보 기반 추정치이며 실제 성격과 다를 수 있습니다.',
+            '🔞 본 서비스는 만 16세 이상을 대상으로 합니다.',
           ]
         : const [
-            'This is an unofficial test and not affiliated with HEXACO-PI-R.',
-            'Results are for entertainment/self-understanding only.',
-            'All questions are original situation-based items.',
+            '⚠️ This is an unofficial test and NOT affiliated with HEXACO-PI-R.',
+            '🎭 Results are for entertainment/self-understanding only, not professional diagnosis.',
+            '✍️ All questions are original situation-based items.',
+            '🔒 We do not collect personal data. Results are stored locally on your device.',
+            '👤 Celebrity matches are estimates based on public info, not actual personalities.',
+            '🔞 This service is intended for users aged 16 and above.',
           ];
 
     return DarkCard(

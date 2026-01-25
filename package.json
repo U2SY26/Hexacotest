@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "remotion:studio": "remotion studio remotion/index.ts",
+    "remotion:render:portrait": "remotion render remotion/index.ts HexacoPromo-Portrait out/promo-portrait.mp4",
+    "remotion:render:landscape": "remotion render remotion/index.ts HexacoPromo-Landscape out/promo-landscape.mp4",
+    "remotion:render:all": "npm run remotion:render:portrait && npm run remotion:render:landscape"
   },
   "dependencies": {
     "framer-motion": "^11.15.0",
@@ -23,6 +27,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@remotion/bundler": "^4.0.409",
+    "@remotion/cli": "^4.0.409",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
@@ -32,6 +38,8 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "postcss": "^8.4.49",
+    "remotion": "^4.0.409",
+    "sharp": "^0.34.5",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.6.2",
     "typescript-eslint": "^8.18.2",
