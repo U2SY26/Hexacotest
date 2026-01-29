@@ -1,1502 +1,3002 @@
 [
   {
-    "id": "T001",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "celebrity-001",
+    "nameKo": "아이유",
+    "nameEn": "IU",
+    "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
+    "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 25,
-      "A": 25,
-      "C": 25,
-      "O": 25
+      "H": 45,
+      "E": 70,
+      "X": 46,
+      "A": 61,
+      "C": 71,
+      "O": 87
     }
   },
   {
-    "id": "T002",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "celebrity-002",
+    "nameKo": "지드래곤",
+    "nameEn": "G-Dragon",
+    "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
+    "descriptionEn": "You show high focus and maintain strong concentration in performance.",
     "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 25,
+      "H": 94,
+      "E": 49,
+      "X": 32,
+      "A": 55,
+      "C": 40,
+      "O": 71
+    }
+  },
+  {
+    "id": "celebrity-003",
+    "nameKo": "태연",
+    "nameEn": "Taeyeon",
+    "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
+    "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
+    "scores": {
+      "H": 45,
+      "E": 94,
+      "X": 74,
+      "A": 38,
+      "C": 38,
+      "O": 48
+    }
+  },
+  {
+    "id": "celebrity-004",
+    "nameKo": "손흥민",
+    "nameEn": "Son Heung-min",
+    "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
+    "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
+    "scores": {
+      "H": 35,
+      "E": 27,
+      "X": 45,
+      "A": 76,
+      "C": 39,
+      "O": 91
+    }
+  },
+  {
+    "id": "celebrity-005",
+    "nameKo": "김연아",
+    "nameEn": "Kim Yuna",
+    "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
+    "descriptionEn": "You express feelings and messages clearly with rich communication.",
+    "scores": {
+      "H": 33,
+      "E": 27,
+      "X": 46,
+      "A": 39,
+      "C": 64,
+      "O": 36
+    }
+  },
+  {
+    "id": "celebrity-006",
+    "nameKo": "유재석",
+    "nameEn": "Yoo Jae-suk",
+    "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
+    "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
+    "scores": {
+      "H": 32,
+      "E": 38,
+      "X": 40,
+      "A": 40,
+      "C": 30,
+      "O": 43
+    }
+  },
+  {
+    "id": "celebrity-007",
+    "nameKo": "강호동",
+    "nameEn": "강호동",
+    "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
+    "descriptionEn": "You show high focus and maintain strong concentration in performance.",
+    "scores": {
+      "H": 88,
+      "E": 71,
+      "X": 30,
+      "A": 44,
+      "C": 94,
+      "O": 47
+    }
+  },
+  {
+    "id": "celebrity-008",
+    "nameKo": "박보검",
+    "nameEn": "박보검",
+    "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
+    "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
+    "scores": {
+      "H": 53,
+      "E": 47,
+      "X": 74,
+      "A": 90,
+      "C": 57,
+      "O": 32
+    }
+  },
+  {
+    "id": "celebrity-009",
+    "nameKo": "송중기",
+    "nameEn": "송중기",
+    "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
+    "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
+    "scores": {
+      "H": 29,
+      "E": 89,
+      "X": 28,
+      "A": 49,
+      "C": 44,
+      "O": 37
+    }
+  },
+  {
+    "id": "celebrity-010",
+    "nameKo": "전지현",
+    "nameEn": "전지현",
+    "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
+    "descriptionEn": "You express feelings and messages clearly with rich communication.",
+    "scores": {
+      "H": 32,
+      "E": 47,
+      "X": 75,
+      "A": 44,
+      "C": 54,
+      "O": 54
+    }
+  },
+  {
+    "id": "celebrity-011",
+    "nameKo": "김태희",
+    "nameEn": "김태희",
+    "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
+    "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
+    "scores": {
+      "H": 90,
+      "E": 89,
+      "X": 85,
+      "A": 64,
+      "C": 41,
+      "O": 68
+    }
+  },
+  {
+    "id": "celebrity-012",
+    "nameKo": "정우성",
+    "nameEn": "정우성",
+    "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
+    "descriptionEn": "You show high focus and maintain strong concentration in performance.",
+    "scores": {
+      "H": 56,
+      "E": 59,
+      "X": 93,
+      "A": 44,
+      "C": 38,
+      "O": 47
+    }
+  },
+  {
+    "id": "celebrity-013",
+    "nameKo": "공유",
+    "nameEn": "공유",
+    "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
+    "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
+    "scores": {
+      "H": 89,
+      "E": 50,
+      "X": 40,
+      "A": 55,
+      "C": 84,
+      "O": 27
+    }
+  },
+  {
+    "id": "celebrity-014",
+    "nameKo": "현빈",
+    "nameEn": "현빈",
+    "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
+    "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
+    "scores": {
+      "H": 42,
+      "E": 95,
+      "X": 73,
+      "A": 80,
+      "C": 63,
+      "O": 87
+    }
+  },
+  {
+    "id": "celebrity-015",
+    "nameKo": "손예진",
+    "nameEn": "손예진",
+    "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
+    "descriptionEn": "You express feelings and messages clearly with rich communication.",
+    "scores": {
+      "H": 28,
+      "E": 31,
+      "X": 51,
+      "A": 59,
+      "C": 33,
+      "O": 53
+    }
+  },
+  {
+    "id": "celebrity-016",
+    "nameKo": "박서준",
+    "nameEn": "박서준",
+    "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
+    "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
+    "scores": {
+      "H": 52,
+      "E": 54,
+      "X": 75,
+      "A": 41,
+      "C": 91,
+      "O": 55
+    }
+  },
+  {
+    "id": "celebrity-017",
+    "nameKo": "이정재",
+    "nameEn": "이정재",
+    "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
+    "descriptionEn": "You show high focus and maintain strong concentration in performance.",
+    "scores": {
+      "H": 73,
+      "E": 73,
+      "X": 41,
       "A": 25,
-      "C": 75,
+      "C": 40,
+      "O": 38
+    }
+  },
+  {
+    "id": "celebrity-018",
+    "nameKo": "하정우",
+    "nameEn": "하정우",
+    "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
+    "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
+    "scores": {
+      "H": 77,
+      "E": 53,
+      "X": 85,
+      "A": 85,
+      "C": 59,
+      "O": 51
+    }
+  },
+  {
+    "id": "celebrity-019",
+    "nameKo": "이병헌",
+    "nameEn": "이병헌",
+    "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
+    "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
+    "scores": {
+      "H": 32,
+      "E": 41,
+      "X": 68,
+      "A": 89,
+      "C": 30,
+      "O": 88
+    }
+  },
+  {
+    "id": "celebrity-020",
+    "nameKo": "김수현",
+    "nameEn": "김수현",
+    "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
+    "descriptionEn": "You express feelings and messages clearly with rich communication.",
+    "scores": {
+      "H": 82,
+      "E": 78,
+      "X": 95,
+      "A": 39,
+      "C": 58,
+      "O": 58
+    }
+  },
+  {
+    "id": "celebrity-021",
+    "nameKo": "배수지",
+    "nameEn": "배수지",
+    "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
+    "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
+    "scores": {
+      "H": 35,
+      "E": 70,
+      "X": 93,
+      "A": 68,
+      "C": 27,
+      "O": 38
+    }
+  },
+  {
+    "id": "celebrity-022",
+    "nameKo": "이효리",
+    "nameEn": "이효리",
+    "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
+    "descriptionEn": "You show high focus and maintain strong concentration in performance.",
+    "scores": {
+      "H": 36,
+      "E": 45,
+      "X": 56,
+      "A": 33,
+      "C": 44,
+      "O": 65
+    }
+  },
+  {
+    "id": "celebrity-023",
+    "nameKo": "보아",
+    "nameEn": "보아",
+    "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
+    "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
+    "scores": {
+      "H": 50,
+      "E": 93,
+      "X": 25,
+      "A": 78,
+      "C": 68,
+      "O": 27
+    }
+  },
+  {
+    "id": "celebrity-024",
+    "nameKo": "임윤아",
+    "nameEn": "임윤아",
+    "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
+    "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
+    "scores": {
+      "H": 65,
+      "E": 27,
+      "X": 32,
+      "A": 73,
+      "C": 35,
+      "O": 42
+    }
+  },
+  {
+    "id": "celebrity-025",
+    "nameKo": "서현진",
+    "nameEn": "서현진",
+    "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
+    "descriptionEn": "You express feelings and messages clearly with rich communication.",
+    "scores": {
+      "H": 55,
+      "E": 56,
+      "X": 77,
+      "A": 47,
+      "C": 88,
       "O": 50
     }
   },
   {
-    "id": "T003",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "celebrity-026",
+    "nameKo": "김고은",
+    "nameEn": "김고은",
+    "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
+    "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 25,
-      "A": 50,
-      "C": 50,
+      "H": 68,
+      "E": 62,
+      "X": 30,
+      "A": 88,
+      "C": 52,
+      "O": 26
+    }
+  },
+  {
+    "id": "celebrity-027",
+    "nameKo": "박신혜",
+    "nameEn": "박신혜",
+    "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
+    "descriptionEn": "You show high focus and maintain strong concentration in performance.",
+    "scores": {
+      "H": 59,
+      "E": 28,
+      "X": 53,
+      "A": 26,
+      "C": 79,
+      "O": 92
+    }
+  },
+  {
+    "id": "celebrity-028",
+    "nameKo": "한지민",
+    "nameEn": "한지민",
+    "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
+    "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
+    "scores": {
+      "H": 56,
+      "E": 68,
+      "X": 81,
+      "A": 53,
+      "C": 37,
+      "O": 87
+    }
+  },
+  {
+    "id": "celebrity-029",
+    "nameKo": "김혜수",
+    "nameEn": "김혜수",
+    "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
+    "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
+    "scores": {
+      "H": 79,
+      "E": 59,
+      "X": 41,
+      "A": 67,
+      "C": 76,
+      "O": 56
+    }
+  },
+  {
+    "id": "celebrity-030",
+    "nameKo": "임영웅",
+    "nameEn": "임영웅",
+    "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
+    "descriptionEn": "You express feelings and messages clearly with rich communication.",
+    "scores": {
+      "H": 31,
+      "E": 26,
+      "X": 65,
+      "A": 73,
+      "C": 29,
       "O": 75
     }
   },
   {
-    "id": "T004",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "celebrity-031",
+    "nameKo": "나훈아",
+    "nameEn": "나훈아",
+    "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
+    "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 25,
-      "A": 75,
-      "C": 50,
-      "O": 25
+      "H": 38,
+      "E": 90,
+      "X": 62,
+      "A": 89,
+      "C": 38,
+      "O": 77
     }
   },
   {
-    "id": "T005",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 50,
-      "A": 25,
-      "C": 25,
-      "O": 50
-    }
-  },
-  {
-    "id": "T006",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 50,
-      "A": 25,
-      "C": 75,
-      "O": 75
-    }
-  },
-  {
-    "id": "T007",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 50,
-      "A": 50,
-      "C": 75,
-      "O": 25
-    }
-  },
-  {
-    "id": "T008",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 50,
-      "A": 75,
-      "C": 50,
-      "O": 50
-    }
-  },
-  {
-    "id": "T009",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 75,
-      "A": 25,
-      "C": 25,
-      "O": 75
-    }
-  },
-  {
-    "id": "T010",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 75,
-      "A": 50,
-      "C": 25,
-      "O": 25
-    }
-  },
-  {
-    "id": "T011",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 75,
-      "A": 50,
-      "C": 75,
-      "O": 50
-    }
-  },
-  {
-    "id": "T012",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 25,
-      "E": 25,
-      "X": 75,
-      "A": 75,
-      "C": 50,
-      "O": 75
-    }
-  },
-  {
-    "id": "T013",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Pragmatic Reserved Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Reserved style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 25,
-      "A": 25,
-      "C": 50,
-      "O": 25
-    }
-  },
-  {
-    "id": "T014",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Pragmatic Reserved Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Reserved style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 25,
-      "A": 50,
-      "C": 25,
-      "O": 50
-    }
-  },
-  {
-    "id": "T015",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Pragmatic Reserved Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Reserved style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 25,
-      "A": 50,
-      "C": 75,
-      "O": 75
-    }
-  },
-  {
-    "id": "T016",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Pragmatic Reserved Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Reserved style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 25,
-      "A": 75,
-      "C": 75,
-      "O": 25
-    }
-  },
-  {
-    "id": "T017",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Pragmatic Direct Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Direct style. The clearest signals appear in Honesty-Humility and Agreeableness.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 50,
-      "A": 25,
-      "C": 50,
-      "O": 50
-    }
-  },
-  {
-    "id": "T018",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Pragmatic Spontaneous Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Spontaneous style. The clearest signals appear in Honesty-Humility and Conscientiousness.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 50,
-      "A": 50,
-      "C": 25,
-      "O": 75
-    }
-  },
-  {
-    "id": "T019",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Gentle Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Gentle style. The clearest signals appear in Honesty-Humility and Agreeableness.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 50,
-      "A": 75,
-      "C": 25,
-      "O": 25
-    }
-  },
-  {
-    "id": "T020",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Pragmatic Gentle Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Gentle style. The clearest signals appear in Honesty-Humility and Agreeableness.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 50,
-      "A": 75,
-      "C": 75,
-      "O": 50
-    }
-  },
-  {
-    "id": "T021",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Pragmatic Outgoing Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Outgoing style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 75,
-      "A": 25,
-      "C": 50,
-      "O": 75
-    }
-  },
-  {
-    "id": "T022",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Pragmatic Outgoing Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Outgoing style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 75,
-      "A": 50,
-      "C": 50,
-      "O": 25
-    }
-  },
-  {
-    "id": "T023",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Pragmatic Outgoing Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Outgoing style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 75,
-      "A": 75,
-      "C": 25,
-      "O": 50
-    }
-  },
-  {
-    "id": "T024",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Pragmatic Outgoing Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Outgoing style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 25,
-      "E": 50,
-      "X": 75,
-      "A": 75,
-      "C": 75,
-      "O": 75
-    }
-  },
-  {
-    "id": "T025",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "celebrity-032",
+    "nameKo": "박세리",
+    "nameEn": "박세리",
+    "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
+    "descriptionEn": "You show high focus and maintain strong concentration in performance.",
     "scores": {
       "H": 25,
       "E": 75,
-      "X": 25,
-      "A": 25,
-      "C": 75,
-      "O": 25
+      "X": 61,
+      "A": 71,
+      "C": 37,
+      "O": 87
     }
   },
   {
-    "id": "T026",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "celebrity-033",
+    "nameKo": "류현진",
+    "nameEn": "류현진",
+    "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
+    "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
+    "scores": {
+      "H": 79,
+      "E": 42,
+      "X": 66,
+      "A": 81,
+      "C": 44,
+      "O": 46
+    }
+  },
+  {
+    "id": "celebrity-034",
+    "nameKo": "박지성",
+    "nameEn": "박지성",
+    "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
+    "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
+    "scores": {
+      "H": 88,
+      "E": 63,
+      "X": 82,
+      "A": 53,
+      "C": 35,
+      "O": 94
+    }
+  },
+  {
+    "id": "celebrity-035",
+    "nameKo": "이강인",
+    "nameEn": "이강인",
+    "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
+    "descriptionEn": "You express feelings and messages clearly with rich communication.",
+    "scores": {
+      "H": 67,
+      "E": 32,
+      "X": 61,
+      "A": 43,
+      "C": 49,
+      "O": 88
+    }
+  },
+  {
+    "id": "celebrity-036",
+    "nameKo": "황희찬",
+    "nameEn": "황희찬",
+    "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
+    "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
+    "scores": {
+      "H": 56,
+      "E": 59,
+      "X": 89,
+      "A": 52,
+      "C": 42,
+      "O": 77
+    }
+  },
+  {
+    "id": "celebrity-037",
+    "nameKo": "김민재",
+    "nameEn": "김민재",
+    "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
+    "descriptionEn": "You show high focus and maintain strong concentration in performance.",
+    "scores": {
+      "H": 39,
+      "E": 53,
+      "X": 35,
+      "A": 50,
+      "C": 87,
+      "O": 74
+    }
+  },
+  {
+    "id": "celebrity-038",
+    "nameKo": "안세영",
+    "nameEn": "안세영",
+    "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
+    "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
+    "scores": {
+      "H": 78,
+      "E": 73,
+      "X": 68,
+      "A": 66,
+      "C": 48,
+      "O": 81
+    }
+  },
+  {
+    "id": "celebrity-039",
+    "nameKo": "박찬호",
+    "nameEn": "박찬호",
+    "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
+    "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
+    "scores": {
+      "H": 71,
+      "E": 38,
+      "X": 94,
+      "A": 95,
+      "C": 76,
+      "O": 59
+    }
+  },
+  {
+    "id": "celebrity-040",
+    "nameKo": "추신수",
+    "nameEn": "추신수",
+    "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
+    "descriptionEn": "You express feelings and messages clearly with rich communication.",
+    "scores": {
+      "H": 46,
+      "E": 58,
+      "X": 64,
+      "A": 69,
+      "C": 55,
+      "O": 32
+    }
+  },
+  {
+    "id": "celebrity-041",
+    "nameKo": "이승기",
+    "nameEn": "이승기",
+    "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
+    "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
+    "scores": {
+      "H": 87,
+      "E": 29,
+      "X": 81,
+      "A": 83,
+      "C": 81,
+      "O": 27
+    }
+  },
+  {
+    "id": "celebrity-042",
+    "nameKo": "장근석",
+    "nameEn": "장근석",
+    "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
+    "descriptionEn": "You show high focus and maintain strong concentration in performance.",
+    "scores": {
+      "H": 95,
+      "E": 94,
+      "X": 29,
+      "A": 59,
+      "C": 91,
+      "O": 70
+    }
+  },
+  {
+    "id": "celebrity-043",
+    "nameKo": "정해인",
+    "nameEn": "정해인",
+    "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
+    "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
+    "scores": {
+      "H": 66,
+      "E": 37,
+      "X": 33,
+      "A": 45,
+      "C": 48,
+      "O": 56
+    }
+  },
+  {
+    "id": "celebrity-044",
+    "nameKo": "이민호",
+    "nameEn": "이민호",
+    "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
+    "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
+    "scores": {
+      "H": 69,
+      "E": 45,
+      "X": 52,
+      "A": 74,
+      "C": 68,
+      "O": 28
+    }
+  },
+  {
+    "id": "celebrity-045",
+    "nameKo": "황정민",
+    "nameEn": "황정민",
+    "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
+    "descriptionEn": "You express feelings and messages clearly with rich communication.",
+    "scores": {
+      "H": 63,
+      "E": 63,
+      "X": 80,
+      "A": 65,
+      "C": 93,
+      "O": 66
+    }
+  },
+  {
+    "id": "celebrity-046",
+    "nameKo": "임창정",
+    "nameEn": "임창정",
+    "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
+    "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
+    "scores": {
+      "H": 49,
+      "E": 84,
+      "X": 49,
+      "A": 72,
+      "C": 69,
+      "O": 93
+    }
+  },
+  {
+    "id": "celebrity-047",
+    "nameKo": "싸이",
+    "nameEn": "PSY",
+    "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
+    "descriptionEn": "You show high focus and maintain strong concentration in performance.",
+    "scores": {
+      "H": 74,
+      "E": 26,
+      "X": 63,
+      "A": 46,
+      "C": 67,
+      "O": 86
+    }
+  },
+  {
+    "id": "celebrity-048",
+    "nameKo": "정지훈",
+    "nameEn": "정지훈",
+    "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
+    "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
+    "scores": {
+      "H": 40,
+      "E": 84,
+      "X": 95,
+      "A": 42,
+      "C": 66,
+      "O": 34
+    }
+  },
+  {
+    "id": "celebrity-049",
+    "nameKo": "지민(방탄소년단)",
+    "nameEn": "BTS Jimin",
+    "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
+    "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
+    "scores": {
+      "H": 73,
+      "E": 70,
+      "X": 41,
+      "A": 26,
+      "C": 89,
+      "O": 74
+    }
+  },
+  {
+    "id": "celebrity-050",
+    "nameKo": "장윤정",
+    "nameEn": "장윤정",
+    "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
+    "descriptionEn": "You express feelings and messages clearly with rich communication.",
+    "scores": {
+      "H": 78,
+      "E": 81,
+      "X": 29,
+      "A": 77,
+      "C": 86,
+      "O": 93
+    }
+  },
+  {
+    "id": "artist-001",
+    "nameKo": "빈센트 반 고흐",
+    "nameEn": "Vincent van Gogh",
+    "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
+    "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
     "scores": {
       "H": 25,
-      "E": 75,
-      "X": 25,
-      "A": 50,
-      "C": 50,
-      "O": 50
+      "E": 35,
+      "X": 60,
+      "A": 66,
+      "C": 58,
+      "O": 44
     }
   },
   {
-    "id": "T027",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "artist-002",
+    "nameKo": "레오나르도 다 빈치",
+    "nameEn": "Leonardo da Vinci",
+    "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
+    "descriptionEn": "You expand your body of work through experimentation and deep focus.",
+    "scores": {
+      "H": 72,
+      "E": 40,
+      "X": 61,
+      "A": 40,
+      "C": 64,
+      "O": 57
+    }
+  },
+  {
+    "id": "artist-003",
+    "nameKo": "백남준",
+    "nameEn": "Nam June Paik",
+    "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
+    "descriptionEn": "You emphasize detail through keen observation and subtlety.",
+    "scores": {
+      "H": 57,
+      "E": 46,
+      "X": 59,
+      "A": 60,
+      "C": 81,
+      "O": 29
+    }
+  },
+  {
+    "id": "artist-004",
+    "nameKo": "파블로 피카소",
+    "nameEn": "Pablo Picasso",
+    "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
+    "descriptionEn": "You read the times and propose new aesthetics.",
+    "scores": {
+      "H": 45,
+      "E": 64,
+      "X": 63,
+      "A": 89,
+      "C": 40,
+      "O": 25
+    }
+  },
+  {
+    "id": "artist-005",
+    "nameKo": "프리다 칼로",
+    "nameEn": "Frida Kahlo",
+    "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
+    "descriptionEn": "You translate deep emotion into artistic form.",
+    "scores": {
+      "H": 55,
+      "E": 69,
+      "X": 80,
+      "A": 93,
+      "C": 42,
+      "O": 66
+    }
+  },
+  {
+    "id": "artist-006",
+    "nameKo": "클로드 모네",
+    "nameEn": "클로드 모네",
+    "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
+    "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
+    "scores": {
+      "H": 29,
+      "E": 36,
+      "X": 62,
+      "A": 80,
+      "C": 68,
+      "O": 32
+    }
+  },
+  {
+    "id": "artist-007",
+    "nameKo": "살바도르 달리",
+    "nameEn": "살바도르 달리",
+    "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
+    "descriptionEn": "You expand your body of work through experimentation and deep focus.",
+    "scores": {
+      "H": 90,
+      "E": 48,
+      "X": 67,
+      "A": 80,
+      "C": 66,
+      "O": 38
+    }
+  },
+  {
+    "id": "artist-008",
+    "nameKo": "요하네스 베르메르",
+    "nameEn": "요하네스 베르메르",
+    "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
+    "descriptionEn": "You emphasize detail through keen observation and subtlety.",
     "scores": {
       "H": 25,
-      "E": 75,
-      "X": 25,
-      "A": 75,
-      "C": 25,
-      "O": 75
+      "E": 85,
+      "X": 35,
+      "A": 90,
+      "C": 33,
+      "O": 50
     }
   },
   {
-    "id": "T028",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "artist-009",
+    "nameKo": "렘브란트",
+    "nameEn": "렘브란트",
+    "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
+    "descriptionEn": "You read the times and propose new aesthetics.",
+    "scores": {
+      "H": 33,
+      "E": 30,
+      "X": 55,
+      "A": 62,
+      "C": 72,
+      "O": 82
+    }
+  },
+  {
+    "id": "artist-010",
+    "nameKo": "미켈란젤로",
+    "nameEn": "미켈란젤로",
+    "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
+    "descriptionEn": "You translate deep emotion into artistic form.",
+    "scores": {
+      "H": 47,
+      "E": 26,
+      "X": 27,
+      "A": 35,
+      "C": 57,
+      "O": 41
+    }
+  },
+  {
+    "id": "artist-011",
+    "nameKo": "라파엘로",
+    "nameEn": "라파엘로",
+    "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
+    "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
+    "scores": {
+      "H": 48,
+      "E": 30,
+      "X": 93,
+      "A": 95,
+      "C": 88,
+      "O": 89
+    }
+  },
+  {
+    "id": "artist-012",
+    "nameKo": "폴 세잔",
+    "nameEn": "폴 세잔",
+    "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
+    "descriptionEn": "You expand your body of work through experimentation and deep focus.",
+    "scores": {
+      "H": 63,
+      "E": 71,
+      "X": 83,
+      "A": 53,
+      "C": 67,
+      "O": 26
+    }
+  },
+  {
+    "id": "artist-013",
+    "nameKo": "조르주 쇠라",
+    "nameEn": "조르주 쇠라",
+    "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
+    "descriptionEn": "You emphasize detail through keen observation and subtlety.",
+    "scores": {
+      "H": 32,
+      "E": 53,
+      "X": 44,
+      "A": 45,
+      "C": 28,
+      "O": 63
+    }
+  },
+  {
+    "id": "artist-014",
+    "nameKo": "구스타프 클림트",
+    "nameEn": "구스타프 클림트",
+    "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
+    "descriptionEn": "You read the times and propose new aesthetics.",
+    "scores": {
+      "H": 80,
+      "E": 47,
+      "X": 43,
+      "A": 60,
+      "C": 90,
+      "O": 78
+    }
+  },
+  {
+    "id": "artist-015",
+    "nameKo": "에드바르 뭉크",
+    "nameEn": "에드바르 뭉크",
+    "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
+    "descriptionEn": "You translate deep emotion into artistic form.",
+    "scores": {
+      "H": 71,
+      "E": 57,
+      "X": 47,
+      "A": 80,
+      "C": 58,
+      "O": 79
+    }
+  },
+  {
+    "id": "artist-016",
+    "nameKo": "앤디 워홀",
+    "nameEn": "앤디 워홀",
+    "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
+    "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
+    "scores": {
+      "H": 45,
+      "E": 42,
+      "X": 84,
+      "A": 67,
+      "C": 92,
+      "O": 56
+    }
+  },
+  {
+    "id": "artist-017",
+    "nameKo": "잭슨 폴록",
+    "nameEn": "잭슨 폴록",
+    "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
+    "descriptionEn": "You expand your body of work through experimentation and deep focus.",
+    "scores": {
+      "H": 52,
+      "E": 36,
+      "X": 38,
+      "A": 82,
+      "C": 91,
+      "O": 27
+    }
+  },
+  {
+    "id": "artist-018",
+    "nameKo": "바실리 칸딘스키",
+    "nameEn": "바실리 칸딘스키",
+    "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
+    "descriptionEn": "You emphasize detail through keen observation and subtlety.",
+    "scores": {
+      "H": 56,
+      "E": 68,
+      "X": 25,
+      "A": 92,
+      "C": 34,
+      "O": 94
+    }
+  },
+  {
+    "id": "artist-019",
+    "nameKo": "피에트 몬드리안",
+    "nameEn": "피에트 몬드리안",
+    "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
+    "descriptionEn": "You read the times and propose new aesthetics.",
+    "scores": {
+      "H": 40,
+      "E": 56,
+      "X": 61,
+      "A": 57,
+      "C": 39,
+      "O": 90
+    }
+  },
+  {
+    "id": "artist-020",
+    "nameKo": "마르셀 뒤샹",
+    "nameEn": "마르셀 뒤샹",
+    "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
+    "descriptionEn": "You translate deep emotion into artistic form.",
+    "scores": {
+      "H": 66,
+      "E": 39,
+      "X": 79,
+      "A": 49,
+      "C": 81,
+      "O": 30
+    }
+  },
+  {
+    "id": "artist-021",
+    "nameKo": "장 미셸 바스키아",
+    "nameEn": "장 미셸 바스키아",
+    "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
+    "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
+    "scores": {
+      "H": 36,
+      "E": 32,
+      "X": 76,
+      "A": 44,
+      "C": 89,
+      "O": 35
+    }
+  },
+  {
+    "id": "artist-022",
+    "nameKo": "키스 해링",
+    "nameEn": "키스 해링",
+    "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
+    "descriptionEn": "You expand your body of work through experimentation and deep focus.",
+    "scores": {
+      "H": 28,
+      "E": 29,
+      "X": 71,
+      "A": 58,
+      "C": 41,
+      "O": 85
+    }
+  },
+  {
+    "id": "artist-023",
+    "nameKo": "르 코르뷔지에",
+    "nameEn": "르 코르뷔지에",
+    "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
+    "descriptionEn": "You emphasize detail through keen observation and subtlety.",
+    "scores": {
+      "H": 37,
+      "E": 59,
+      "X": 84,
+      "A": 25,
+      "C": 50,
+      "O": 56
+    }
+  },
+  {
+    "id": "artist-024",
+    "nameKo": "프랭크 로이드 라이트",
+    "nameEn": "프랭크 로이드 라이트",
+    "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
+    "descriptionEn": "You read the times and propose new aesthetics.",
+    "scores": {
+      "H": 56,
+      "E": 39,
+      "X": 45,
+      "A": 82,
+      "C": 68,
+      "O": 62
+    }
+  },
+  {
+    "id": "artist-025",
+    "nameKo": "자하 하디드",
+    "nameEn": "자하 하디드",
+    "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
+    "descriptionEn": "You translate deep emotion into artistic form.",
+    "scores": {
+      "H": 74,
+      "E": 62,
+      "X": 65,
+      "A": 32,
+      "C": 34,
+      "O": 84
+    }
+  },
+  {
+    "id": "artist-026",
+    "nameKo": "루이스 칸",
+    "nameEn": "루이스 칸",
+    "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
+    "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
+    "scores": {
+      "H": 87,
+      "E": 86,
+      "X": 59,
+      "A": 79,
+      "C": 50,
+      "O": 39
+    }
+  },
+  {
+    "id": "artist-027",
+    "nameKo": "김환기",
+    "nameEn": "김환기",
+    "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
+    "descriptionEn": "You expand your body of work through experimentation and deep focus.",
+    "scores": {
+      "H": 84,
+      "E": 39,
+      "X": 52,
+      "A": 72,
+      "C": 88,
+      "O": 69
+    }
+  },
+  {
+    "id": "artist-028",
+    "nameKo": "이중섭",
+    "nameEn": "이중섭",
+    "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
+    "descriptionEn": "You emphasize detail through keen observation and subtlety.",
+    "scores": {
+      "H": 69,
+      "E": 30,
+      "X": 42,
+      "A": 40,
+      "C": 63,
+      "O": 80
+    }
+  },
+  {
+    "id": "artist-029",
+    "nameKo": "박수근",
+    "nameEn": "박수근",
+    "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
+    "descriptionEn": "You read the times and propose new aesthetics.",
+    "scores": {
+      "H": 82,
+      "E": 49,
+      "X": 25,
+      "A": 64,
+      "C": 62,
+      "O": 34
+    }
+  },
+  {
+    "id": "artist-030",
+    "nameKo": "나혜석",
+    "nameEn": "나혜석",
+    "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
+    "descriptionEn": "You translate deep emotion into artistic form.",
+    "scores": {
+      "H": 89,
+      "E": 59,
+      "X": 32,
+      "A": 74,
+      "C": 86,
+      "O": 84
+    }
+  },
+  {
+    "id": "artist-031",
+    "nameKo": "장욱진",
+    "nameEn": "장욱진",
+    "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
+    "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
+    "scores": {
+      "H": 52,
+      "E": 67,
+      "X": 36,
+      "A": 88,
+      "C": 59,
+      "O": 29
+    }
+  },
+  {
+    "id": "artist-032",
+    "nameKo": "윤형근",
+    "nameEn": "윤형근",
+    "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
+    "descriptionEn": "You expand your body of work through experimentation and deep focus.",
+    "scores": {
+      "H": 60,
+      "E": 73,
+      "X": 75,
+      "A": 60,
+      "C": 50,
+      "O": 45
+    }
+  },
+  {
+    "id": "artist-033",
+    "nameKo": "이우환",
+    "nameEn": "이우환",
+    "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
+    "descriptionEn": "You emphasize detail through keen observation and subtlety.",
+    "scores": {
+      "H": 66,
+      "E": 91,
+      "X": 56,
+      "A": 34,
+      "C": 48,
+      "O": 69
+    }
+  },
+  {
+    "id": "artist-034",
+    "nameKo": "안도 타다오",
+    "nameEn": "안도 타다오",
+    "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
+    "descriptionEn": "You read the times and propose new aesthetics.",
+    "scores": {
+      "H": 52,
+      "E": 44,
+      "X": 44,
+      "A": 88,
+      "C": 91,
+      "O": 45
+    }
+  },
+  {
+    "id": "artist-035",
+    "nameKo": "클로드 드뷔시",
+    "nameEn": "클로드 드뷔시",
+    "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
+    "descriptionEn": "You translate deep emotion into artistic form.",
+    "scores": {
+      "H": 93,
+      "E": 74,
+      "X": 80,
+      "A": 89,
+      "C": 42,
+      "O": 25
+    }
+  },
+  {
+    "id": "artist-036",
+    "nameKo": "루트비히 판 베토벤",
+    "nameEn": "루트비히 판 베토벤",
+    "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
+    "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
+    "scores": {
+      "H": 40,
+      "E": 32,
+      "X": 46,
+      "A": 56,
+      "C": 26,
+      "O": 43
+    }
+  },
+  {
+    "id": "artist-037",
+    "nameKo": "볼프강 아마데우스 모차르트",
+    "nameEn": "볼프강 아마데우스 모차르트",
+    "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
+    "descriptionEn": "You expand your body of work through experimentation and deep focus.",
+    "scores": {
+      "H": 54,
+      "E": 25,
+      "X": 72,
+      "A": 62,
+      "C": 39,
+      "O": 53
+    }
+  },
+  {
+    "id": "artist-038",
+    "nameKo": "요한 세바스티안 바흐",
+    "nameEn": "요한 세바스티안 바흐",
+    "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
+    "descriptionEn": "You emphasize detail through keen observation and subtlety.",
+    "scores": {
+      "H": 70,
+      "E": 67,
+      "X": 56,
+      "A": 37,
+      "C": 34,
+      "O": 35
+    }
+  },
+  {
+    "id": "artist-039",
+    "nameKo": "프레데리크 쇼팽",
+    "nameEn": "프레데리크 쇼팽",
+    "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
+    "descriptionEn": "You read the times and propose new aesthetics.",
     "scores": {
       "H": 25,
-      "E": 75,
-      "X": 50,
-      "A": 25,
-      "C": 25,
-      "O": 25
+      "E": 53,
+      "X": 79,
+      "A": 33,
+      "C": 28,
+      "O": 73
     }
   },
   {
-    "id": "T029",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "artist-040",
+    "nameKo": "안토니오 비발디",
+    "nameEn": "안토니오 비발디",
+    "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
+    "descriptionEn": "You translate deep emotion into artistic form.",
+    "scores": {
+      "H": 48,
+      "E": 89,
+      "X": 57,
+      "A": 79,
+      "C": 52,
+      "O": 49
+    }
+  },
+  {
+    "id": "artist-041",
+    "nameKo": "표트르 차이콥스키",
+    "nameEn": "표트르 차이콥스키",
+    "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
+    "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
+    "scores": {
+      "H": 75,
+      "E": 27,
+      "X": 69,
+      "A": 25,
+      "C": 34,
+      "O": 56
+    }
+  },
+  {
+    "id": "artist-042",
+    "nameKo": "프란츠 슈베르트",
+    "nameEn": "프란츠 슈베르트",
+    "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
+    "descriptionEn": "You expand your body of work through experimentation and deep focus.",
+    "scores": {
+      "H": 62,
+      "E": 47,
+      "X": 75,
+      "A": 50,
+      "C": 31,
+      "O": 59
+    }
+  },
+  {
+    "id": "artist-043",
+    "nameKo": "구스타프 말러",
+    "nameEn": "구스타프 말러",
+    "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
+    "descriptionEn": "You emphasize detail through keen observation and subtlety.",
+    "scores": {
+      "H": 54,
+      "E": 92,
+      "X": 56,
+      "A": 81,
+      "C": 32,
+      "O": 75
+    }
+  },
+  {
+    "id": "artist-044",
+    "nameKo": "세르게이 라흐마니노프",
+    "nameEn": "세르게이 라흐마니노프",
+    "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
+    "descriptionEn": "You read the times and propose new aesthetics.",
+    "scores": {
+      "H": 88,
+      "E": 84,
+      "X": 74,
+      "A": 83,
+      "C": 67,
+      "O": 40
+    }
+  },
+  {
+    "id": "artist-045",
+    "nameKo": "이고르 스트라빈스키",
+    "nameEn": "이고르 스트라빈스키",
+    "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
+    "descriptionEn": "You translate deep emotion into artistic form.",
+    "scores": {
+      "H": 67,
+      "E": 42,
+      "X": 92,
+      "A": 70,
+      "C": 55,
+      "O": 79
+    }
+  },
+  {
+    "id": "artist-046",
+    "nameKo": "윌리엄 셰익스피어",
+    "nameEn": "윌리엄 셰익스피어",
+    "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
+    "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
+    "scores": {
+      "H": 77,
+      "E": 45,
+      "X": 69,
+      "A": 68,
+      "C": 34,
+      "O": 43
+    }
+  },
+  {
+    "id": "artist-047",
+    "nameKo": "레프 톨스토이",
+    "nameEn": "레프 톨스토이",
+    "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
+    "descriptionEn": "You expand your body of work through experimentation and deep focus.",
+    "scores": {
+      "H": 41,
+      "E": 67,
+      "X": 82,
+      "A": 49,
+      "C": 93,
+      "O": 64
+    }
+  },
+  {
+    "id": "artist-048",
+    "nameKo": "표도르 도스토옙스키",
+    "nameEn": "표도르 도스토옙스키",
+    "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
+    "descriptionEn": "You emphasize detail through keen observation and subtlety.",
+    "scores": {
+      "H": 56,
+      "E": 95,
+      "X": 51,
+      "A": 47,
+      "C": 27,
+      "O": 91
+    }
+  },
+  {
+    "id": "artist-049",
+    "nameKo": "헤르만 헤세",
+    "nameEn": "헤르만 헤세",
+    "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
+    "descriptionEn": "You read the times and propose new aesthetics.",
+    "scores": {
+      "H": 72,
+      "E": 48,
+      "X": 49,
+      "A": 91,
+      "C": 66,
+      "O": 45
+    }
+  },
+  {
+    "id": "artist-050",
+    "nameKo": "어니스트 헤밍웨이",
+    "nameEn": "어니스트 헤밍웨이",
+    "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
+    "descriptionEn": "You translate deep emotion into artistic form.",
+    "scores": {
+      "H": 56,
+      "E": 62,
+      "X": 65,
+      "A": 46,
+      "C": 72,
+      "O": 58
+    }
+  },
+  {
+    "id": "politician-001",
+    "nameKo": "세종대왕",
+    "nameEn": "King Sejong",
+    "descriptionKo": "공공의 가치와 책임감을 중시하며 균형 있는 결정을 선호합니다.",
+    "descriptionEn": "You value public responsibility and prefer balanced decisions.",
+    "scores": {
+      "H": 71,
+      "E": 38,
+      "X": 71,
+      "A": 39,
+      "C": 84,
+      "O": 49
+    }
+  },
+  {
+    "id": "politician-002",
+    "nameKo": "이승만",
+    "nameEn": "이승만",
+    "descriptionKo": "설득과 조율에 능하며 갈등을 완화하는 리더십을 보입니다.",
+    "descriptionEn": "You are persuasive and reduce conflict through coordination.",
+    "scores": {
+      "H": 82,
+      "E": 89,
+      "X": 47,
+      "A": 91,
+      "C": 36,
+      "O": 76
+    }
+  },
+  {
+    "id": "politician-003",
+    "nameKo": "박정희",
+    "nameEn": "박정희",
+    "descriptionKo": "장기 비전을 세우고 제도적 안정성을 추구합니다.",
+    "descriptionEn": "You build long term vision and seek institutional stability.",
+    "scores": {
+      "H": 35,
+      "E": 27,
+      "X": 30,
+      "A": 27,
+      "C": 64,
+      "O": 45
+    }
+  },
+  {
+    "id": "politician-004",
+    "nameKo": "전두환",
+    "nameEn": "전두환",
+    "descriptionKo": "결단력이 강하고 위기 상황에서 방향을 제시합니다.",
+    "descriptionEn": "You are decisive and provide direction in crisis situations.",
+    "scores": {
+      "H": 37,
+      "E": 47,
+      "X": 80,
+      "A": 88,
+      "C": 41,
+      "O": 68
+    }
+  },
+  {
+    "id": "politician-005",
+    "nameKo": "노태우",
+    "nameEn": "노태우",
+    "descriptionKo": "대중과의 소통을 중시하며 신뢰를 쌓는 편입니다.",
+    "descriptionEn": "You focus on public communication and build trust.",
+    "scores": {
+      "H": 68,
+      "E": 30,
+      "X": 27,
+      "A": 64,
+      "C": 29,
+      "O": 57
+    }
+  },
+  {
+    "id": "politician-006",
+    "nameKo": "김영삼",
+    "nameEn": "김영삼",
+    "descriptionKo": "공공의 가치와 책임감을 중시하며 균형 있는 결정을 선호합니다.",
+    "descriptionEn": "You value public responsibility and prefer balanced decisions.",
+    "scores": {
+      "H": 92,
+      "E": 35,
+      "X": 68,
+      "A": 63,
+      "C": 68,
+      "O": 46
+    }
+  },
+  {
+    "id": "politician-007",
+    "nameKo": "김대중",
+    "nameEn": "김대중",
+    "descriptionKo": "설득과 조율에 능하며 갈등을 완화하는 리더십을 보입니다.",
+    "descriptionEn": "You are persuasive and reduce conflict through coordination.",
+    "scores": {
+      "H": 39,
+      "E": 54,
+      "X": 94,
+      "A": 27,
+      "C": 33,
+      "O": 73
+    }
+  },
+  {
+    "id": "politician-008",
+    "nameKo": "노무현",
+    "nameEn": "노무현",
+    "descriptionKo": "장기 비전을 세우고 제도적 안정성을 추구합니다.",
+    "descriptionEn": "You build long term vision and seek institutional stability.",
+    "scores": {
+      "H": 41,
+      "E": 69,
+      "X": 57,
+      "A": 46,
+      "C": 94,
+      "O": 46
+    }
+  },
+  {
+    "id": "politician-009",
+    "nameKo": "이명박",
+    "nameEn": "이명박",
+    "descriptionKo": "결단력이 강하고 위기 상황에서 방향을 제시합니다.",
+    "descriptionEn": "You are decisive and provide direction in crisis situations.",
+    "scores": {
+      "H": 47,
+      "E": 50,
+      "X": 38,
+      "A": 72,
+      "C": 33,
+      "O": 67
+    }
+  },
+  {
+    "id": "politician-010",
+    "nameKo": "박근혜",
+    "nameEn": "박근혜",
+    "descriptionKo": "대중과의 소통을 중시하며 신뢰를 쌓는 편입니다.",
+    "descriptionEn": "You focus on public communication and build trust.",
+    "scores": {
+      "H": 94,
+      "E": 92,
+      "X": 54,
+      "A": 40,
+      "C": 88,
+      "O": 42
+    }
+  },
+  {
+    "id": "politician-011",
+    "nameKo": "문재인",
+    "nameEn": "문재인",
+    "descriptionKo": "공공의 가치와 책임감을 중시하며 균형 있는 결정을 선호합니다.",
+    "descriptionEn": "You value public responsibility and prefer balanced decisions.",
+    "scores": {
+      "H": 38,
+      "E": 72,
+      "X": 35,
+      "A": 53,
+      "C": 64,
+      "O": 85
+    }
+  },
+  {
+    "id": "politician-012",
+    "nameKo": "윤석열",
+    "nameEn": "윤석열",
+    "descriptionKo": "설득과 조율에 능하며 갈등을 완화하는 리더십을 보입니다.",
+    "descriptionEn": "You are persuasive and reduce conflict through coordination.",
+    "scores": {
+      "H": 58,
+      "E": 29,
+      "X": 59,
+      "A": 91,
+      "C": 79,
+      "O": 76
+    }
+  },
+  {
+    "id": "politician-013",
+    "nameKo": "김구",
+    "nameEn": "김구",
+    "descriptionKo": "장기 비전을 세우고 제도적 안정성을 추구합니다.",
+    "descriptionEn": "You build long term vision and seek institutional stability.",
+    "scores": {
+      "H": 93,
+      "E": 25,
+      "X": 33,
+      "A": 35,
+      "C": 80,
+      "O": 60
+    }
+  },
+  {
+    "id": "politician-014",
+    "nameKo": "안중근",
+    "nameEn": "안중근",
+    "descriptionKo": "결단력이 강하고 위기 상황에서 방향을 제시합니다.",
+    "descriptionEn": "You are decisive and provide direction in crisis situations.",
+    "scores": {
+      "H": 30,
+      "E": 40,
+      "X": 93,
+      "A": 50,
+      "C": 93,
+      "O": 90
+    }
+  },
+  {
+    "id": "politician-015",
+    "nameKo": "반기문",
+    "nameEn": "반기문",
+    "descriptionKo": "대중과의 소통을 중시하며 신뢰를 쌓는 편입니다.",
+    "descriptionEn": "You focus on public communication and build trust.",
+    "scores": {
+      "H": 83,
+      "E": 76,
+      "X": 71,
+      "A": 63,
+      "C": 39,
+      "O": 88
+    }
+  },
+  {
+    "id": "politician-016",
+    "nameKo": "에이브러햄 링컨",
+    "nameEn": "Abraham Lincoln",
+    "descriptionKo": "공공의 가치와 책임감을 중시하며 균형 있는 결정을 선호합니다.",
+    "descriptionEn": "You value public responsibility and prefer balanced decisions.",
+    "scores": {
+      "H": 83,
+      "E": 90,
+      "X": 93,
+      "A": 26,
+      "C": 59,
+      "O": 36
+    }
+  },
+  {
+    "id": "politician-017",
+    "nameKo": "조지 워싱턴",
+    "nameEn": "조지 워싱턴",
+    "descriptionKo": "설득과 조율에 능하며 갈등을 완화하는 리더십을 보입니다.",
+    "descriptionEn": "You are persuasive and reduce conflict through coordination.",
+    "scores": {
+      "H": 38,
+      "E": 38,
+      "X": 43,
+      "A": 28,
+      "C": 31,
+      "O": 79
+    }
+  },
+  {
+    "id": "politician-018",
+    "nameKo": "토머스 제퍼슨",
+    "nameEn": "토머스 제퍼슨",
+    "descriptionKo": "장기 비전을 세우고 제도적 안정성을 추구합니다.",
+    "descriptionEn": "You build long term vision and seek institutional stability.",
+    "scores": {
+      "H": 32,
+      "E": 49,
+      "X": 66,
+      "A": 79,
+      "C": 51,
+      "O": 62
+    }
+  },
+  {
+    "id": "politician-019",
+    "nameKo": "존 F. 케네디",
+    "nameEn": "존 F. 케네디",
+    "descriptionKo": "결단력이 강하고 위기 상황에서 방향을 제시합니다.",
+    "descriptionEn": "You are decisive and provide direction in crisis situations.",
+    "scores": {
+      "H": 77,
+      "E": 36,
+      "X": 86,
+      "A": 74,
+      "C": 68,
+      "O": 53
+    }
+  },
+  {
+    "id": "politician-020",
+    "nameKo": "프랭클린 D. 루스벨트",
+    "nameEn": "프랭클린 D. 루스벨트",
+    "descriptionKo": "대중과의 소통을 중시하며 신뢰를 쌓는 편입니다.",
+    "descriptionEn": "You focus on public communication and build trust.",
+    "scores": {
+      "H": 27,
+      "E": 71,
+      "X": 86,
+      "A": 58,
+      "C": 58,
+      "O": 32
+    }
+  },
+  {
+    "id": "politician-021",
+    "nameKo": "시어도어 루스벨트",
+    "nameEn": "시어도어 루스벨트",
+    "descriptionKo": "공공의 가치와 책임감을 중시하며 균형 있는 결정을 선호합니다.",
+    "descriptionEn": "You value public responsibility and prefer balanced decisions.",
+    "scores": {
+      "H": 62,
+      "E": 45,
+      "X": 91,
+      "A": 48,
+      "C": 63,
+      "O": 26
+    }
+  },
+  {
+    "id": "politician-022",
+    "nameKo": "윈스턴 처칠",
+    "nameEn": "윈스턴 처칠",
+    "descriptionKo": "설득과 조율에 능하며 갈등을 완화하는 리더십을 보입니다.",
+    "descriptionEn": "You are persuasive and reduce conflict through coordination.",
+    "scores": {
+      "H": 92,
+      "E": 37,
+      "X": 29,
+      "A": 40,
+      "C": 69,
+      "O": 57
+    }
+  },
+  {
+    "id": "politician-023",
+    "nameKo": "마거릿 대처",
+    "nameEn": "마거릿 대처",
+    "descriptionKo": "장기 비전을 세우고 제도적 안정성을 추구합니다.",
+    "descriptionEn": "You build long term vision and seek institutional stability.",
+    "scores": {
+      "H": 63,
+      "E": 79,
+      "X": 51,
+      "A": 51,
+      "C": 88,
+      "O": 59
+    }
+  },
+  {
+    "id": "politician-024",
+    "nameKo": "토니 블레어",
+    "nameEn": "토니 블레어",
+    "descriptionKo": "결단력이 강하고 위기 상황에서 방향을 제시합니다.",
+    "descriptionEn": "You are decisive and provide direction in crisis situations.",
+    "scores": {
+      "H": 48,
+      "E": 40,
+      "X": 68,
+      "A": 91,
+      "C": 50,
+      "O": 83
+    }
+  },
+  {
+    "id": "politician-025",
+    "nameKo": "샤를 드골",
+    "nameEn": "샤를 드골",
+    "descriptionKo": "대중과의 소통을 중시하며 신뢰를 쌓는 편입니다.",
+    "descriptionEn": "You focus on public communication and build trust.",
+    "scores": {
+      "H": 42,
+      "E": 91,
+      "X": 26,
+      "A": 66,
+      "C": 26,
+      "O": 28
+    }
+  },
+  {
+    "id": "politician-026",
+    "nameKo": "나폴레옹 보나파르트",
+    "nameEn": "나폴레옹 보나파르트",
+    "descriptionKo": "공공의 가치와 책임감을 중시하며 균형 있는 결정을 선호합니다.",
+    "descriptionEn": "You value public responsibility and prefer balanced decisions.",
+    "scores": {
+      "H": 73,
+      "E": 71,
+      "X": 62,
+      "A": 39,
+      "C": 44,
+      "O": 36
+    }
+  },
+  {
+    "id": "politician-027",
+    "nameKo": "율리우스 카이사르",
+    "nameEn": "율리우스 카이사르",
+    "descriptionKo": "설득과 조율에 능하며 갈등을 완화하는 리더십을 보입니다.",
+    "descriptionEn": "You are persuasive and reduce conflict through coordination.",
+    "scores": {
+      "H": 26,
+      "E": 26,
+      "X": 37,
+      "A": 57,
+      "C": 52,
+      "O": 55
+    }
+  },
+  {
+    "id": "politician-028",
+    "nameKo": "알렉산더 대왕",
+    "nameEn": "알렉산더 대왕",
+    "descriptionKo": "장기 비전을 세우고 제도적 안정성을 추구합니다.",
+    "descriptionEn": "You build long term vision and seek institutional stability.",
+    "scores": {
+      "H": 38,
+      "E": 61,
+      "X": 61,
+      "A": 65,
+      "C": 26,
+      "O": 63
+    }
+  },
+  {
+    "id": "politician-029",
+    "nameKo": "마하트마 간디",
+    "nameEn": "마하트마 간디",
+    "descriptionKo": "결단력이 강하고 위기 상황에서 방향을 제시합니다.",
+    "descriptionEn": "You are decisive and provide direction in crisis situations.",
+    "scores": {
+      "H": 42,
+      "E": 67,
+      "X": 52,
+      "A": 28,
+      "C": 53,
+      "O": 28
+    }
+  },
+  {
+    "id": "politician-030",
+    "nameKo": "자와할랄 네루",
+    "nameEn": "자와할랄 네루",
+    "descriptionKo": "대중과의 소통을 중시하며 신뢰를 쌓는 편입니다.",
+    "descriptionEn": "You focus on public communication and build trust.",
+    "scores": {
+      "H": 89,
+      "E": 92,
+      "X": 30,
+      "A": 40,
+      "C": 78,
+      "O": 50
+    }
+  },
+  {
+    "id": "politician-031",
+    "nameKo": "인디라 간디",
+    "nameEn": "인디라 간디",
+    "descriptionKo": "공공의 가치와 책임감을 중시하며 균형 있는 결정을 선호합니다.",
+    "descriptionEn": "You value public responsibility and prefer balanced decisions.",
+    "scores": {
+      "H": 41,
+      "E": 31,
+      "X": 44,
+      "A": 58,
+      "C": 90,
+      "O": 89
+    }
+  },
+  {
+    "id": "politician-032",
+    "nameKo": "넬슨 만델라",
+    "nameEn": "Nelson Mandela",
+    "descriptionKo": "설득과 조율에 능하며 갈등을 완화하는 리더십을 보입니다.",
+    "descriptionEn": "You are persuasive and reduce conflict through coordination.",
+    "scores": {
+      "H": 92,
+      "E": 40,
+      "X": 38,
+      "A": 56,
+      "C": 39,
+      "O": 43
+    }
+  },
+  {
+    "id": "politician-033",
+    "nameKo": "버락 오바마",
+    "nameEn": "Barack Obama",
+    "descriptionKo": "장기 비전을 세우고 제도적 안정성을 추구합니다.",
+    "descriptionEn": "You build long term vision and seek institutional stability.",
+    "scores": {
+      "H": 69,
+      "E": 33,
+      "X": 75,
+      "A": 62,
+      "C": 30,
+      "O": 51
+    }
+  },
+  {
+    "id": "politician-034",
+    "nameKo": "앙겔라 메르켈",
+    "nameEn": "Angela Merkel",
+    "descriptionKo": "결단력이 강하고 위기 상황에서 방향을 제시합니다.",
+    "descriptionEn": "You are decisive and provide direction in crisis situations.",
+    "scores": {
+      "H": 42,
+      "E": 77,
+      "X": 70,
+      "A": 94,
+      "C": 53,
+      "O": 67
+    }
+  },
+  {
+    "id": "politician-035",
+    "nameKo": "블라디미르 푸틴",
+    "nameEn": "블라디미르 푸틴",
+    "descriptionKo": "대중과의 소통을 중시하며 신뢰를 쌓는 편입니다.",
+    "descriptionEn": "You focus on public communication and build trust.",
+    "scores": {
+      "H": 33,
+      "E": 47,
+      "X": 88,
+      "A": 28,
+      "C": 52,
+      "O": 94
+    }
+  },
+  {
+    "id": "politician-036",
+    "nameKo": "미하일 고르바초프",
+    "nameEn": "미하일 고르바초프",
+    "descriptionKo": "공공의 가치와 책임감을 중시하며 균형 있는 결정을 선호합니다.",
+    "descriptionEn": "You value public responsibility and prefer balanced decisions.",
+    "scores": {
+      "H": 92,
+      "E": 55,
+      "X": 40,
+      "A": 49,
+      "C": 42,
+      "O": 39
+    }
+  },
+  {
+    "id": "politician-037",
+    "nameKo": "블라디미르 레닌",
+    "nameEn": "블라디미르 레닌",
+    "descriptionKo": "설득과 조율에 능하며 갈등을 완화하는 리더십을 보입니다.",
+    "descriptionEn": "You are persuasive and reduce conflict through coordination.",
+    "scores": {
+      "H": 92,
+      "E": 29,
+      "X": 93,
+      "A": 44,
+      "C": 59,
+      "O": 61
+    }
+  },
+  {
+    "id": "politician-038",
+    "nameKo": "쑨원",
+    "nameEn": "쑨원",
+    "descriptionKo": "장기 비전을 세우고 제도적 안정성을 추구합니다.",
+    "descriptionEn": "You build long term vision and seek institutional stability.",
+    "scores": {
+      "H": 51,
+      "E": 51,
+      "X": 61,
+      "A": 38,
+      "C": 66,
+      "O": 93
+    }
+  },
+  {
+    "id": "politician-039",
+    "nameKo": "장제스",
+    "nameEn": "장제스",
+    "descriptionKo": "결단력이 강하고 위기 상황에서 방향을 제시합니다.",
+    "descriptionEn": "You are decisive and provide direction in crisis situations.",
+    "scores": {
+      "H": 64,
+      "E": 94,
+      "X": 67,
+      "A": 36,
+      "C": 93,
+      "O": 88
+    }
+  },
+  {
+    "id": "politician-040",
+    "nameKo": "덩샤오핑",
+    "nameEn": "덩샤오핑",
+    "descriptionKo": "대중과의 소통을 중시하며 신뢰를 쌓는 편입니다.",
+    "descriptionEn": "You focus on public communication and build trust.",
+    "scores": {
+      "H": 57,
+      "E": 76,
+      "X": 31,
+      "A": 67,
+      "C": 25,
+      "O": 42
+    }
+  },
+  {
+    "id": "politician-041",
+    "nameKo": "시진핑",
+    "nameEn": "시진핑",
+    "descriptionKo": "공공의 가치와 책임감을 중시하며 균형 있는 결정을 선호합니다.",
+    "descriptionEn": "You value public responsibility and prefer balanced decisions.",
+    "scores": {
+      "H": 77,
+      "E": 51,
+      "X": 29,
+      "A": 44,
+      "C": 59,
+      "O": 72
+    }
+  },
+  {
+    "id": "politician-042",
+    "nameKo": "마오쩌둥",
+    "nameEn": "마오쩌둥",
+    "descriptionKo": "설득과 조율에 능하며 갈등을 완화하는 리더십을 보입니다.",
+    "descriptionEn": "You are persuasive and reduce conflict through coordination.",
+    "scores": {
+      "H": 28,
+      "E": 73,
+      "X": 34,
+      "A": 65,
+      "C": 71,
+      "O": 94
+    }
+  },
+  {
+    "id": "politician-043",
+    "nameKo": "저스틴 트뤼도",
+    "nameEn": "저스틴 트뤼도",
+    "descriptionKo": "장기 비전을 세우고 제도적 안정성을 추구합니다.",
+    "descriptionEn": "You build long term vision and seek institutional stability.",
+    "scores": {
+      "H": 42,
+      "E": 28,
+      "X": 56,
+      "A": 61,
+      "C": 61,
+      "O": 37
+    }
+  },
+  {
+    "id": "politician-044",
+    "nameKo": "조 바이든",
+    "nameEn": "조 바이든",
+    "descriptionKo": "결단력이 강하고 위기 상황에서 방향을 제시합니다.",
+    "descriptionEn": "You are decisive and provide direction in crisis situations.",
+    "scores": {
+      "H": 46,
+      "E": 41,
+      "X": 41,
+      "A": 59,
+      "C": 39,
+      "O": 59
+    }
+  },
+  {
+    "id": "politician-045",
+    "nameKo": "도널드 트럼프",
+    "nameEn": "도널드 트럼프",
+    "descriptionKo": "대중과의 소통을 중시하며 신뢰를 쌓는 편입니다.",
+    "descriptionEn": "You focus on public communication and build trust.",
+    "scores": {
+      "H": 75,
+      "E": 26,
+      "X": 39,
+      "A": 52,
+      "C": 58,
+      "O": 83
+    }
+  },
+  {
+    "id": "politician-046",
+    "nameKo": "로널드 레이건",
+    "nameEn": "로널드 레이건",
+    "descriptionKo": "공공의 가치와 책임감을 중시하며 균형 있는 결정을 선호합니다.",
+    "descriptionEn": "You value public responsibility and prefer balanced decisions.",
     "scores": {
       "H": 25,
-      "E": 75,
-      "X": 50,
-      "A": 25,
-      "C": 75,
+      "E": 33,
+      "X": 92,
+      "A": 71,
+      "C": 82,
       "O": 50
     }
   },
   {
-    "id": "T030",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "politician-047",
+    "nameKo": "리처드 닉슨",
+    "nameEn": "리처드 닉슨",
+    "descriptionKo": "설득과 조율에 능하며 갈등을 완화하는 리더십을 보입니다.",
+    "descriptionEn": "You are persuasive and reduce conflict through coordination.",
     "scores": {
-      "H": 25,
-      "E": 75,
-      "X": 50,
-      "A": 50,
-      "C": 50,
-      "O": 75
+      "H": 83,
+      "E": 49,
+      "X": 36,
+      "A": 55,
+      "C": 64,
+      "O": 60
     }
   },
   {
-    "id": "T031",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "politician-048",
+    "nameKo": "우드로 윌슨",
+    "nameEn": "우드로 윌슨",
+    "descriptionKo": "장기 비전을 세우고 제도적 안정성을 추구합니다.",
+    "descriptionEn": "You build long term vision and seek institutional stability.",
     "scores": {
-      "H": 25,
-      "E": 75,
-      "X": 50,
-      "A": 75,
-      "C": 50,
-      "O": 25
+      "H": 85,
+      "E": 45,
+      "X": 55,
+      "A": 64,
+      "C": 77,
+      "O": 67
     }
   },
   {
-    "id": "T032",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "politician-049",
+    "nameKo": "시몬 볼리바르",
+    "nameEn": "시몬 볼리바르",
+    "descriptionKo": "결단력이 강하고 위기 상황에서 방향을 제시합니다.",
+    "descriptionEn": "You are decisive and provide direction in crisis situations.",
     "scores": {
-      "H": 25,
-      "E": 75,
-      "X": 75,
-      "A": 25,
+      "H": 53,
+      "E": 67,
+      "X": 59,
+      "A": 79,
+      "C": 39,
+      "O": 79
+    }
+  },
+  {
+    "id": "politician-050",
+    "nameKo": "피델 카스트로",
+    "nameEn": "피델 카스트로",
+    "descriptionKo": "대중과의 소통을 중시하며 신뢰를 쌓는 편입니다.",
+    "descriptionEn": "You focus on public communication and build trust.",
+    "scores": {
+      "H": 48,
+      "E": 89,
+      "X": 58,
+      "A": 65,
+      "C": 32,
+      "O": 73
+    }
+  },
+  {
+    "id": "entrepreneur-001",
+    "nameKo": "스티브 잡스",
+    "nameEn": "Steve Jobs",
+    "descriptionKo": "시장 기회를 빠르게 포착하고 실행으로 옮기는 편입니다.",
+    "descriptionEn": "You spot market opportunities quickly and act on them.",
+    "scores": {
+      "H": 76,
+      "E": 85,
+      "X": 54,
+      "A": 34,
+      "C": 76,
+      "O": 86
+    }
+  },
+  {
+    "id": "entrepreneur-002",
+    "nameKo": "일론 머스크",
+    "nameEn": "Elon Musk",
+    "descriptionKo": "장기 비전과 확장 전략을 기반으로 성장을 이끕니다.",
+    "descriptionEn": "You drive growth with long term vision and expansion strategy.",
+    "scores": {
+      "H": 26,
+      "E": 90,
+      "X": 52,
+      "A": 70,
+      "C": 64,
+      "O": 64
+    }
+  },
+  {
+    "id": "entrepreneur-003",
+    "nameKo": "정주영",
+    "nameEn": "Chung Ju-yung",
+    "descriptionKo": "리스크를 감수하며 혁신을 추진하는 스타일입니다.",
+    "descriptionEn": "You take risks and push innovation forward.",
+    "scores": {
+      "H": 29,
+      "E": 64,
+      "X": 63,
+      "A": 74,
+      "C": 47,
+      "O": 52
+    }
+  },
+  {
+    "id": "entrepreneur-004",
+    "nameKo": "빌 게이츠",
+    "nameEn": "Bill Gates",
+    "descriptionKo": "운영 효율과 조직 문화를 함께 고려합니다.",
+    "descriptionEn": "You consider operational efficiency and organizational culture.",
+    "scores": {
+      "H": 40,
+      "E": 67,
+      "X": 30,
+      "A": 32,
       "C": 25,
-      "O": 50
+      "O": 31
     }
   },
   {
-    "id": "T033",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "entrepreneur-005",
+    "nameKo": "제프 베이조스",
+    "nameEn": "Jeff Bezos",
+    "descriptionKo": "사용자 경험과 품질을 중시하며 제품을 다듬습니다.",
+    "descriptionEn": "You focus on user experience and product quality.",
     "scores": {
-      "H": 25,
-      "E": 75,
-      "X": 75,
+      "H": 80,
+      "E": 74,
+      "X": 90,
+      "A": 83,
+      "C": 34,
+      "O": 40
+    }
+  },
+  {
+    "id": "entrepreneur-006",
+    "nameKo": "워런 버핏",
+    "nameEn": "워런 버핏",
+    "descriptionKo": "시장 기회를 빠르게 포착하고 실행으로 옮기는 편입니다.",
+    "descriptionEn": "You spot market opportunities quickly and act on them.",
+    "scores": {
+      "H": 66,
+      "E": 33,
+      "X": 53,
+      "A": 35,
+      "C": 92,
+      "O": 92
+    }
+  },
+  {
+    "id": "entrepreneur-007",
+    "nameKo": "마크 저커버그",
+    "nameEn": "마크 저커버그",
+    "descriptionKo": "장기 비전과 확장 전략을 기반으로 성장을 이끕니다.",
+    "descriptionEn": "You drive growth with long term vision and expansion strategy.",
+    "scores": {
+      "H": 43,
+      "E": 74,
+      "X": 38,
+      "A": 34,
+      "C": 42,
+      "O": 66
+    }
+  },
+  {
+    "id": "entrepreneur-008",
+    "nameKo": "래리 페이지",
+    "nameEn": "래리 페이지",
+    "descriptionKo": "리스크를 감수하며 혁신을 추진하는 스타일입니다.",
+    "descriptionEn": "You take risks and push innovation forward.",
+    "scores": {
+      "H": 39,
+      "E": 56,
+      "X": 72,
+      "A": 46,
+      "C": 70,
+      "O": 38
+    }
+  },
+  {
+    "id": "entrepreneur-009",
+    "nameKo": "세르게이 브린",
+    "nameEn": "세르게이 브린",
+    "descriptionKo": "운영 효율과 조직 문화를 함께 고려합니다.",
+    "descriptionEn": "You consider operational efficiency and organizational culture.",
+    "scores": {
+      "H": 26,
+      "E": 30,
+      "X": 90,
+      "A": 56,
+      "C": 94,
+      "O": 40
+    }
+  },
+  {
+    "id": "entrepreneur-010",
+    "nameKo": "팀 쿡",
+    "nameEn": "팀 쿡",
+    "descriptionKo": "사용자 경험과 품질을 중시하며 제품을 다듬습니다.",
+    "descriptionEn": "You focus on user experience and product quality.",
+    "scores": {
+      "H": 87,
+      "E": 58,
+      "X": 56,
+      "A": 33,
+      "C": 90,
+      "O": 57
+    }
+  },
+  {
+    "id": "entrepreneur-011",
+    "nameKo": "사티아 나델라",
+    "nameEn": "사티아 나델라",
+    "descriptionKo": "시장 기회를 빠르게 포착하고 실행으로 옮기는 편입니다.",
+    "descriptionEn": "You spot market opportunities quickly and act on them.",
+    "scores": {
+      "H": 94,
+      "E": 34,
+      "X": 35,
+      "A": 54,
+      "C": 55,
+      "O": 27
+    }
+  },
+  {
+    "id": "entrepreneur-012",
+    "nameKo": "순다 피차이",
+    "nameEn": "순다 피차이",
+    "descriptionKo": "장기 비전과 확장 전략을 기반으로 성장을 이끕니다.",
+    "descriptionEn": "You drive growth with long term vision and expansion strategy.",
+    "scores": {
+      "H": 54,
+      "E": 60,
+      "X": 33,
+      "A": 43,
+      "C": 93,
+      "O": 54
+    }
+  },
+  {
+    "id": "entrepreneur-013",
+    "nameKo": "리드 헤이스팅스",
+    "nameEn": "리드 헤이스팅스",
+    "descriptionKo": "리스크를 감수하며 혁신을 추진하는 스타일입니다.",
+    "descriptionEn": "You take risks and push innovation forward.",
+    "scores": {
+      "H": 29,
+      "E": 54,
+      "X": 85,
+      "A": 36,
+      "C": 55,
+      "O": 71
+    }
+  },
+  {
+    "id": "entrepreneur-014",
+    "nameKo": "잭 도시",
+    "nameEn": "잭 도시",
+    "descriptionKo": "운영 효율과 조직 문화를 함께 고려합니다.",
+    "descriptionEn": "You consider operational efficiency and organizational culture.",
+    "scores": {
+      "H": 51,
+      "E": 36,
+      "X": 58,
+      "A": 50,
+      "C": 26,
+      "O": 70
+    }
+  },
+  {
+    "id": "entrepreneur-015",
+    "nameKo": "리처드 브랜슨",
+    "nameEn": "리처드 브랜슨",
+    "descriptionKo": "사용자 경험과 품질을 중시하며 제품을 다듬습니다.",
+    "descriptionEn": "You focus on user experience and product quality.",
+    "scores": {
+      "H": 36,
+      "E": 79,
+      "X": 48,
+      "A": 40,
+      "C": 68,
+      "O": 68
+    }
+  },
+  {
+    "id": "entrepreneur-016",
+    "nameKo": "베르나르 아르노",
+    "nameEn": "베르나르 아르노",
+    "descriptionKo": "시장 기회를 빠르게 포착하고 실행으로 옮기는 편입니다.",
+    "descriptionEn": "You spot market opportunities quickly and act on them.",
+    "scores": {
+      "H": 44,
+      "E": 72,
+      "X": 73,
+      "A": 29,
+      "C": 25,
+      "O": 47
+    }
+  },
+  {
+    "id": "entrepreneur-017",
+    "nameKo": "마윈",
+    "nameEn": "마윈",
+    "descriptionKo": "장기 비전과 확장 전략을 기반으로 성장을 이끕니다.",
+    "descriptionEn": "You drive growth with long term vision and expansion strategy.",
+    "scores": {
+      "H": 71,
+      "E": 69,
+      "X": 78,
+      "A": 64,
+      "C": 91,
+      "O": 58
+    }
+  },
+  {
+    "id": "entrepreneur-018",
+    "nameKo": "리카싱",
+    "nameEn": "리카싱",
+    "descriptionKo": "리스크를 감수하며 혁신을 추진하는 스타일입니다.",
+    "descriptionEn": "You take risks and push innovation forward.",
+    "scores": {
+      "H": 54,
+      "E": 48,
+      "X": 42,
+      "A": 76,
+      "C": 65,
+      "O": 39
+    }
+  },
+  {
+    "id": "entrepreneur-019",
+    "nameKo": "마이클 델",
+    "nameEn": "마이클 델",
+    "descriptionKo": "운영 효율과 조직 문화를 함께 고려합니다.",
+    "descriptionEn": "You consider operational efficiency and organizational culture.",
+    "scores": {
+      "H": 52,
+      "E": 83,
+      "X": 90,
+      "A": 31,
+      "C": 82,
+      "O": 37
+    }
+  },
+  {
+    "id": "entrepreneur-020",
+    "nameKo": "마이클 블룸버그",
+    "nameEn": "마이클 블룸버그",
+    "descriptionKo": "사용자 경험과 품질을 중시하며 제품을 다듬습니다.",
+    "descriptionEn": "You focus on user experience and product quality.",
+    "scores": {
+      "H": 47,
+      "E": 48,
+      "X": 42,
       "A": 25,
-      "C": 75,
+      "C": 70,
+      "O": 42
+    }
+  },
+  {
+    "id": "entrepreneur-021",
+    "nameKo": "하워드 슐츠",
+    "nameEn": "하워드 슐츠",
+    "descriptionKo": "시장 기회를 빠르게 포착하고 실행으로 옮기는 편입니다.",
+    "descriptionEn": "You spot market opportunities quickly and act on them.",
+    "scores": {
+      "H": 38,
+      "E": 76,
+      "X": 39,
+      "A": 84,
+      "C": 78,
+      "O": 71
+    }
+  },
+  {
+    "id": "entrepreneur-022",
+    "nameKo": "피터 틸",
+    "nameEn": "피터 틸",
+    "descriptionKo": "장기 비전과 확장 전략을 기반으로 성장을 이끕니다.",
+    "descriptionEn": "You drive growth with long term vision and expansion strategy.",
+    "scores": {
+      "H": 33,
+      "E": 34,
+      "X": 27,
+      "A": 38,
+      "C": 45,
       "O": 75
     }
   },
   {
-    "id": "T034",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "entrepreneur-023",
+    "nameKo": "레이 달리오",
+    "nameEn": "레이 달리오",
+    "descriptionKo": "리스크를 감수하며 혁신을 추진하는 스타일입니다.",
+    "descriptionEn": "You take risks and push innovation forward.",
     "scores": {
-      "H": 25,
-      "E": 75,
-      "X": 75,
-      "A": 50,
-      "C": 75,
-      "O": 25
+      "H": 47,
+      "E": 52,
+      "X": 70,
+      "A": 55,
+      "C": 47,
+      "O": 93
     }
   },
   {
-    "id": "T035",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Pragmatic Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Pragmatic and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
+    "id": "entrepreneur-024",
+    "nameKo": "샘 월턴",
+    "nameEn": "샘 월턴",
+    "descriptionKo": "운영 효율과 조직 문화를 함께 고려합니다.",
+    "descriptionEn": "You consider operational efficiency and organizational culture.",
     "scores": {
-      "H": 25,
-      "E": 75,
-      "X": 75,
-      "A": 75,
-      "C": 50,
-      "O": 50
+      "H": 48,
+      "E": 57,
+      "X": 91,
+      "A": 83,
+      "C": 61,
+      "O": 69
     }
   },
   {
-    "id": "T036",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Reserved Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Reserved style. The clearest signals appear in Emotionality and Extraversion.",
+    "id": "entrepreneur-025",
+    "nameKo": "헨리 포드",
+    "nameEn": "헨리 포드",
+    "descriptionKo": "사용자 경험과 품질을 중시하며 제품을 다듬습니다.",
+    "descriptionEn": "You focus on user experience and product quality.",
     "scores": {
-      "H": 50,
+      "H": 93,
       "E": 25,
-      "X": 25,
-      "A": 25,
-      "C": 25,
-      "O": 75
+      "X": 49,
+      "A": 71,
+      "C": 41,
+      "O": 67
     }
   },
   {
-    "id": "T037",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Reserved Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Reserved style. The clearest signals appear in Emotionality and Extraversion.",
+    "id": "entrepreneur-026",
+    "nameKo": "존 D. 록펠러",
+    "nameEn": "존 D. 록펠러",
+    "descriptionKo": "시장 기회를 빠르게 포착하고 실행으로 옮기는 편입니다.",
+    "descriptionEn": "You spot market opportunities quickly and act on them.",
     "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 25,
-      "A": 50,
-      "C": 25,
-      "O": 25
+      "H": 95,
+      "E": 46,
+      "X": 88,
+      "A": 41,
+      "C": 35,
+      "O": 62
     }
   },
   {
-    "id": "T038",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Reserved Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Reserved style. The clearest signals appear in Emotionality and Extraversion.",
+    "id": "entrepreneur-027",
+    "nameKo": "이병철",
+    "nameEn": "이병철",
+    "descriptionKo": "장기 비전과 확장 전략을 기반으로 성장을 이끕니다.",
+    "descriptionEn": "You drive growth with long term vision and expansion strategy.",
     "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 25,
-      "A": 50,
+      "H": 46,
+      "E": 71,
+      "X": 44,
+      "A": 83,
+      "C": 61,
+      "O": 84
+    }
+  },
+  {
+    "id": "entrepreneur-028",
+    "nameKo": "이건희",
+    "nameEn": "이건희",
+    "descriptionKo": "리스크를 감수하며 혁신을 추진하는 스타일입니다.",
+    "descriptionEn": "You take risks and push innovation forward.",
+    "scores": {
+      "H": 95,
+      "E": 61,
+      "X": 32,
+      "A": 64,
+      "C": 41,
+      "O": 33
+    }
+  },
+  {
+    "id": "entrepreneur-029",
+    "nameKo": "이재용",
+    "nameEn": "이재용",
+    "descriptionKo": "운영 효율과 조직 문화를 함께 고려합니다.",
+    "descriptionEn": "You consider operational efficiency and organizational culture.",
+    "scores": {
+      "H": 47,
+      "E": 82,
+      "X": 29,
+      "A": 34,
+      "C": 77,
+      "O": 62
+    }
+  },
+  {
+    "id": "entrepreneur-030",
+    "nameKo": "정의선",
+    "nameEn": "정의선",
+    "descriptionKo": "사용자 경험과 품질을 중시하며 제품을 다듬습니다.",
+    "descriptionEn": "You focus on user experience and product quality.",
+    "scores": {
+      "H": 59,
+      "E": 92,
+      "X": 33,
+      "A": 72,
+      "C": 59,
+      "O": 81
+    }
+  },
+  {
+    "id": "entrepreneur-031",
+    "nameKo": "정몽구",
+    "nameEn": "정몽구",
+    "descriptionKo": "시장 기회를 빠르게 포착하고 실행으로 옮기는 편입니다.",
+    "descriptionEn": "You spot market opportunities quickly and act on them.",
+    "scores": {
+      "H": 44,
+      "E": 46,
+      "X": 53,
+      "A": 45,
+      "C": 28,
+      "O": 51
+    }
+  },
+  {
+    "id": "entrepreneur-032",
+    "nameKo": "최태원",
+    "nameEn": "최태원",
+    "descriptionKo": "장기 비전과 확장 전략을 기반으로 성장을 이끕니다.",
+    "descriptionEn": "You drive growth with long term vision and expansion strategy.",
+    "scores": {
+      "H": 73,
+      "E": 47,
+      "X": 34,
+      "A": 93,
+      "C": 78,
+      "O": 38
+    }
+  },
+  {
+    "id": "entrepreneur-033",
+    "nameKo": "신격호",
+    "nameEn": "신격호",
+    "descriptionKo": "리스크를 감수하며 혁신을 추진하는 스타일입니다.",
+    "descriptionEn": "You take risks and push innovation forward.",
+    "scores": {
+      "H": 86,
+      "E": 28,
+      "X": 43,
+      "A": 39,
+      "C": 80,
+      "O": 73
+    }
+  },
+  {
+    "id": "entrepreneur-034",
+    "nameKo": "구자경",
+    "nameEn": "구자경",
+    "descriptionKo": "운영 효율과 조직 문화를 함께 고려합니다.",
+    "descriptionEn": "You consider operational efficiency and organizational culture.",
+    "scores": {
+      "H": 57,
+      "E": 37,
+      "X": 32,
+      "A": 44,
+      "C": 71,
+      "O": 71
+    }
+  },
+  {
+    "id": "entrepreneur-035",
+    "nameKo": "구본무",
+    "nameEn": "구본무",
+    "descriptionKo": "사용자 경험과 품질을 중시하며 제품을 다듬습니다.",
+    "descriptionEn": "You focus on user experience and product quality.",
+    "scores": {
+      "H": 41,
+      "E": 36,
+      "X": 78,
+      "A": 86,
+      "C": 68,
+      "O": 26
+    }
+  },
+  {
+    "id": "entrepreneur-036",
+    "nameKo": "허창수",
+    "nameEn": "허창수",
+    "descriptionKo": "시장 기회를 빠르게 포착하고 실행으로 옮기는 편입니다.",
+    "descriptionEn": "You spot market opportunities quickly and act on them.",
+    "scores": {
+      "H": 33,
+      "E": 66,
+      "X": 39,
+      "A": 30,
+      "C": 56,
+      "O": 30
+    }
+  },
+  {
+    "id": "entrepreneur-037",
+    "nameKo": "김승연",
+    "nameEn": "김승연",
+    "descriptionKo": "장기 비전과 확장 전략을 기반으로 성장을 이끕니다.",
+    "descriptionEn": "You drive growth with long term vision and expansion strategy.",
+    "scores": {
+      "H": 59,
+      "E": 37,
+      "X": 66,
+      "A": 46,
+      "C": 53,
+      "O": 37
+    }
+  },
+  {
+    "id": "entrepreneur-038",
+    "nameKo": "이해진",
+    "nameEn": "이해진",
+    "descriptionKo": "리스크를 감수하며 혁신을 추진하는 스타일입니다.",
+    "descriptionEn": "You take risks and push innovation forward.",
+    "scores": {
+      "H": 49,
+      "E": 77,
+      "X": 57,
+      "A": 92,
+      "C": 79,
+      "O": 40
+    }
+  },
+  {
+    "id": "entrepreneur-039",
+    "nameKo": "김범수",
+    "nameEn": "김범수",
+    "descriptionKo": "운영 효율과 조직 문화를 함께 고려합니다.",
+    "descriptionEn": "You consider operational efficiency and organizational culture.",
+    "scores": {
+      "H": 26,
+      "E": 56,
+      "X": 91,
+      "A": 55,
+      "C": 78,
+      "O": 53
+    }
+  },
+  {
+    "id": "entrepreneur-040",
+    "nameKo": "김정주",
+    "nameEn": "김정주",
+    "descriptionKo": "사용자 경험과 품질을 중시하며 제품을 다듬습니다.",
+    "descriptionEn": "You focus on user experience and product quality.",
+    "scores": {
+      "H": 34,
+      "E": 40,
+      "X": 53,
+      "A": 63,
+      "C": 87,
+      "O": 50
+    }
+  },
+  {
+    "id": "entrepreneur-041",
+    "nameKo": "김택진",
+    "nameEn": "김택진",
+    "descriptionKo": "시장 기회를 빠르게 포착하고 실행으로 옮기는 편입니다.",
+    "descriptionEn": "You spot market opportunities quickly and act on them.",
+    "scores": {
+      "H": 69,
+      "E": 52,
+      "X": 81,
+      "A": 88,
+      "C": 67,
+      "O": 46
+    }
+  },
+  {
+    "id": "entrepreneur-042",
+    "nameKo": "서정진",
+    "nameEn": "서정진",
+    "descriptionKo": "장기 비전과 확장 전략을 기반으로 성장을 이끕니다.",
+    "descriptionEn": "You drive growth with long term vision and expansion strategy.",
+    "scores": {
+      "H": 71,
+      "E": 57,
+      "X": 26,
+      "A": 52,
+      "C": 42,
+      "O": 54
+    }
+  },
+  {
+    "id": "entrepreneur-043",
+    "nameKo": "이재현",
+    "nameEn": "이재현",
+    "descriptionKo": "리스크를 감수하며 혁신을 추진하는 스타일입니다.",
+    "descriptionEn": "You take risks and push innovation forward.",
+    "scores": {
+      "H": 84,
+      "E": 87,
+      "X": 27,
+      "A": 55,
+      "C": 71,
+      "O": 27
+    }
+  },
+  {
+    "id": "entrepreneur-044",
+    "nameKo": "정용진",
+    "nameEn": "정용진",
+    "descriptionKo": "운영 효율과 조직 문화를 함께 고려합니다.",
+    "descriptionEn": "You consider operational efficiency and organizational culture.",
+    "scores": {
+      "H": 90,
+      "E": 41,
+      "X": 37,
+      "A": 35,
+      "C": 46,
+      "O": 40
+    }
+  },
+  {
+    "id": "entrepreneur-045",
+    "nameKo": "방시혁",
+    "nameEn": "방시혁",
+    "descriptionKo": "사용자 경험과 품질을 중시하며 제품을 다듬습니다.",
+    "descriptionEn": "You focus on user experience and product quality.",
+    "scores": {
+      "H": 28,
+      "E": 89,
+      "X": 70,
+      "A": 33,
+      "C": 50,
+      "O": 53
+    }
+  },
+  {
+    "id": "entrepreneur-046",
+    "nameKo": "장병규",
+    "nameEn": "장병규",
+    "descriptionKo": "시장 기회를 빠르게 포착하고 실행으로 옮기는 편입니다.",
+    "descriptionEn": "You spot market opportunities quickly and act on them.",
+    "scores": {
+      "H": 86,
+      "E": 84,
+      "X": 66,
+      "A": 33,
+      "C": 27,
+      "O": 42
+    }
+  },
+  {
+    "id": "entrepreneur-047",
+    "nameKo": "김범준",
+    "nameEn": "김범준",
+    "descriptionKo": "장기 비전과 확장 전략을 기반으로 성장을 이끕니다.",
+    "descriptionEn": "You drive growth with long term vision and expansion strategy.",
+    "scores": {
+      "H": 40,
+      "E": 51,
+      "X": 63,
+      "A": 49,
+      "C": 68,
+      "O": 65
+    }
+  },
+  {
+    "id": "entrepreneur-048",
+    "nameKo": "이재웅",
+    "nameEn": "이재웅",
+    "descriptionKo": "리스크를 감수하며 혁신을 추진하는 스타일입니다.",
+    "descriptionEn": "You take risks and push innovation forward.",
+    "scores": {
+      "H": 30,
+      "E": 47,
+      "X": 42,
+      "A": 57,
+      "C": 67,
+      "O": 39
+    }
+  },
+  {
+    "id": "entrepreneur-049",
+    "nameKo": "김봉진",
+    "nameEn": "김봉진",
+    "descriptionKo": "운영 효율과 조직 문화를 함께 고려합니다.",
+    "descriptionEn": "You consider operational efficiency and organizational culture.",
+    "scores": {
+      "H": 30,
+      "E": 58,
+      "X": 52,
+      "A": 27,
       "C": 75,
       "O": 50
     }
   },
   {
-    "id": "T039",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Reserved Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Reserved style. The clearest signals appear in Emotionality and Extraversion.",
+    "id": "entrepreneur-050",
+    "nameKo": "백종원",
+    "nameEn": "백종원",
+    "descriptionKo": "사용자 경험과 품질을 중시하며 제품을 다듬습니다.",
+    "descriptionEn": "You focus on user experience and product quality.",
     "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 25,
-      "A": 75,
-      "C": 50,
-      "O": 75
-    }
-  },
-  {
-    "id": "T040",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Direct Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Direct style. The clearest signals appear in Emotionality and Agreeableness.",
-    "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 50,
-      "A": 25,
-      "C": 50,
-      "O": 25
-    }
-  },
-  {
-    "id": "T041",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Spontaneous Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Spontaneous style. The clearest signals appear in Emotionality and Conscientiousness.",
-    "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 50,
-      "A": 50,
-      "C": 25,
-      "O": 50
-    }
-  },
-  {
-    "id": "T042",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Structured Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Structured style. The clearest signals appear in Emotionality and Conscientiousness.",
-    "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 50,
-      "A": 50,
-      "C": 75,
-      "O": 75
-    }
-  },
-  {
-    "id": "T043",
-    "nameKo": "??? ??? ??",
-    "nameEn": "Calm Gentle Type",
-    "descriptionKo": "?? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Gentle style. The clearest signals appear in Emotionality and Agreeableness.",
-    "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 50,
-      "A": 75,
-      "C": 75,
-      "O": 25
-    }
-  },
-  {
-    "id": "T044",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Outgoing Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Outgoing style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 75,
-      "A": 25,
-      "C": 50,
-      "O": 50
-    }
-  },
-  {
-    "id": "T045",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Outgoing Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Outgoing style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 75,
-      "A": 50,
-      "C": 25,
-      "O": 75
-    }
-  },
-  {
-    "id": "T046",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Outgoing Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Outgoing style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 75,
-      "A": 75,
-      "C": 25,
-      "O": 25
-    }
-  },
-  {
-    "id": "T047",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Calm Outgoing Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Calm and Outgoing style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 25,
-      "X": 75,
-      "A": 75,
-      "C": 75,
-      "O": 50
-    }
-  },
-  {
-    "id": "T048",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Reserved Direct Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Reserved and Direct style. The clearest signals appear in Extraversion and Agreeableness.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 25,
-      "A": 25,
-      "C": 50,
-      "O": 75
-    }
-  },
-  {
-    "id": "T049",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Reserved Practical Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Reserved and Practical style. The clearest signals appear in Extraversion and Openness.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 25,
-      "A": 50,
-      "C": 50,
-      "O": 25
-    }
-  },
-  {
-    "id": "T050",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Reserved Gentle Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Reserved and Gentle style. The clearest signals appear in Extraversion and Agreeableness.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 25,
-      "A": 75,
-      "C": 25,
-      "O": 50
-    }
-  },
-  {
-    "id": "T051",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Reserved Gentle Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Reserved and Gentle style. The clearest signals appear in Extraversion and Agreeableness.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 25,
-      "A": 75,
-      "C": 75,
-      "O": 75
-    }
-  },
-  {
-    "id": "T052",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Direct Structured Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Direct and Structured style. The clearest signals appear in Agreeableness and Conscientiousness.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 50,
-      "A": 25,
-      "C": 75,
-      "O": 25
-    }
-  },
-  {
-    "id": "T053",
-    "nameKo": "?? ?? ???? ??",
-    "nameEn": "Balanced Steady Type",
-    "descriptionKo": "?? ??? ?? ??????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Balanced and Steady style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 50,
-      "A": 50,
-      "C": 50,
-      "O": 50
-    }
-  },
-  {
-    "id": "T054",
-    "nameKo": "??? ???? ??",
-    "nameEn": "Gentle Spontaneous Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Gentle and Spontaneous style. The clearest signals appear in Agreeableness and Conscientiousness.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 50,
-      "A": 75,
-      "C": 25,
-      "O": 75
-    }
-  },
-  {
-    "id": "T055",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Outgoing Direct Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Outgoing and Direct style. The clearest signals appear in Extraversion and Agreeableness.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 75,
-      "A": 25,
-      "C": 25,
-      "O": 25
-    }
-  },
-  {
-    "id": "T056",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Outgoing Direct Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Outgoing and Direct style. The clearest signals appear in Extraversion and Agreeableness.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 75,
-      "A": 25,
-      "C": 75,
-      "O": 50
-    }
-  },
-  {
-    "id": "T057",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Outgoing Curious Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Outgoing and Curious style. The clearest signals appear in Extraversion and Openness.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 75,
-      "A": 50,
-      "C": 50,
-      "O": 75
-    }
-  },
-  {
-    "id": "T058",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Outgoing Gentle Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Outgoing and Gentle style. The clearest signals appear in Extraversion and Agreeableness.",
-    "scores": {
-      "H": 50,
-      "E": 50,
-      "X": 75,
-      "A": 75,
-      "C": 50,
-      "O": 25
-    }
-  },
-  {
-    "id": "T059",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Reserved Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Reserved style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 25,
-      "A": 25,
-      "C": 25,
-      "O": 50
-    }
-  },
-  {
-    "id": "T060",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Reserved Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Reserved style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 25,
-      "A": 25,
-      "C": 75,
-      "O": 75
-    }
-  },
-  {
-    "id": "T061",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Reserved Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Reserved style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 25,
-      "A": 50,
-      "C": 75,
-      "O": 25
-    }
-  },
-  {
-    "id": "T062",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Reserved Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Reserved style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 25,
-      "A": 75,
-      "C": 50,
-      "O": 50
-    }
-  },
-  {
-    "id": "T063",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Direct Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Direct style. The clearest signals appear in Emotionality and Agreeableness.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 50,
-      "A": 25,
-      "C": 25,
-      "O": 75
-    }
-  },
-  {
-    "id": "T064",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Spontaneous Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Spontaneous style. The clearest signals appear in Emotionality and Conscientiousness.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 50,
-      "A": 50,
-      "C": 25,
-      "O": 25
-    }
-  },
-  {
-    "id": "T065",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Structured Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Structured style. The clearest signals appear in Emotionality and Conscientiousness.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 50,
-      "A": 50,
-      "C": 75,
-      "O": 50
-    }
-  },
-  {
-    "id": "T066",
-    "nameKo": "??? ?? ??? ??",
-    "nameEn": "Sensitive Gentle Type",
-    "descriptionKo": "?? ??? ??? ?????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Gentle style. The clearest signals appear in Emotionality and Agreeableness.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 50,
-      "A": 75,
-      "C": 50,
-      "O": 75
-    }
-  },
-  {
-    "id": "T067",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Outgoing Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Outgoing style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 75,
-      "A": 25,
-      "C": 50,
-      "O": 25
-    }
-  },
-  {
-    "id": "T068",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Outgoing Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Outgoing style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 75,
-      "A": 50,
-      "C": 25,
-      "O": 50
-    }
-  },
-  {
-    "id": "T069",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Outgoing Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Outgoing style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 75,
-      "A": 50,
-      "C": 75,
-      "O": 75
-    }
-  },
-  {
-    "id": "T070",
-    "nameKo": "??? ?? ???? ??",
-    "nameEn": "Sensitive Outgoing Type",
-    "descriptionKo": "?? ??? ??? ??????? ?????. ?? ????(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Sensitive and Outgoing style. The clearest signals appear in Emotionality and Extraversion.",
-    "scores": {
-      "H": 50,
-      "E": 75,
-      "X": 75,
-      "A": 75,
-      "C": 75,
-      "O": 25
-    }
-  },
-  {
-    "id": "T071",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 25,
-      "A": 25,
-      "C": 50,
-      "O": 50
-    }
-  },
-  {
-    "id": "T072",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 25,
-      "A": 50,
-      "C": 25,
-      "O": 75
-    }
-  },
-  {
-    "id": "T073",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 25,
-      "A": 75,
-      "C": 25,
-      "O": 25
-    }
-  },
-  {
-    "id": "T074",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 25,
-      "A": 75,
-      "C": 75,
-      "O": 50
-    }
-  },
-  {
-    "id": "T075",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 50,
-      "A": 25,
-      "C": 50,
-      "O": 75
-    }
-  },
-  {
-    "id": "T076",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 50,
-      "A": 50,
-      "C": 50,
-      "O": 25
-    }
-  },
-  {
-    "id": "T077",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 50,
-      "A": 75,
-      "C": 25,
-      "O": 50
-    }
-  },
-  {
-    "id": "T078",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 50,
-      "A": 75,
-      "C": 75,
-      "O": 75
-    }
-  },
-  {
-    "id": "T079",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 75,
-      "A": 25,
-      "C": 75,
-      "O": 25
-    }
-  },
-  {
-    "id": "T080",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 75,
-      "A": 50,
-      "C": 50,
-      "O": 50
-    }
-  },
-  {
-    "id": "T081",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Calm Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Calm style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 25,
-      "X": 75,
-      "A": 75,
-      "C": 25,
-      "O": 75
-    }
-  },
-  {
-    "id": "T082",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Reserved Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Reserved style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 25,
-      "A": 25,
-      "C": 25,
-      "O": 25
-    }
-  },
-  {
-    "id": "T083",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Reserved Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Reserved style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 25,
-      "A": 25,
-      "C": 75,
-      "O": 50
-    }
-  },
-  {
-    "id": "T084",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Reserved Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Reserved style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 25,
-      "A": 50,
-      "C": 50,
-      "O": 75
-    }
-  },
-  {
-    "id": "T085",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Reserved Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Reserved style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 25,
-      "A": 75,
-      "C": 50,
-      "O": 25
-    }
-  },
-  {
-    "id": "T086",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Direct Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Direct style. The clearest signals appear in Honesty-Humility and Agreeableness.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 50,
-      "A": 25,
-      "C": 25,
-      "O": 50
-    }
-  },
-  {
-    "id": "T087",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Direct Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Direct style. The clearest signals appear in Honesty-Humility and Agreeableness.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 50,
-      "A": 25,
-      "C": 75,
-      "O": 75
-    }
-  },
-  {
-    "id": "T088",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Structured Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Structured style. The clearest signals appear in Honesty-Humility and Conscientiousness.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 50,
-      "A": 50,
-      "C": 75,
-      "O": 25
-    }
-  },
-  {
-    "id": "T089",
-    "nameKo": "???? ??? ??",
-    "nameEn": "Principled Gentle Type",
-    "descriptionKo": "?? ??? ???????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Gentle style. The clearest signals appear in Honesty-Humility and Agreeableness.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 50,
-      "A": 75,
-      "C": 50,
-      "O": 50
-    }
-  },
-  {
-    "id": "T090",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Outgoing Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Outgoing style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 75,
-      "A": 25,
-      "C": 25,
-      "O": 75
-    }
-  },
-  {
-    "id": "T091",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Outgoing Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Outgoing style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 75,
-      "A": 50,
-      "C": 25,
-      "O": 25
-    }
-  },
-  {
-    "id": "T092",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Outgoing Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Outgoing style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 75,
-      "A": 50,
-      "C": 75,
-      "O": 50
-    }
-  },
-  {
-    "id": "T093",
-    "nameKo": "???? ???? ??",
-    "nameEn": "Principled Outgoing Type",
-    "descriptionKo": "?? ??? ????????? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Outgoing style. The clearest signals appear in Honesty-Humility and Extraversion.",
-    "scores": {
-      "H": 75,
-      "E": 50,
-      "X": 75,
-      "A": 75,
-      "C": 50,
-      "O": 75
-    }
-  },
-  {
-    "id": "T094",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Principled Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 75,
-      "X": 25,
-      "A": 25,
-      "C": 50,
-      "O": 25
-    }
-  },
-  {
-    "id": "T095",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Principled Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 75,
-      "X": 25,
-      "A": 50,
-      "C": 25,
-      "O": 50
-    }
-  },
-  {
-    "id": "T096",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Principled Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 75,
-      "X": 25,
-      "A": 50,
-      "C": 75,
-      "O": 75
-    }
-  },
-  {
-    "id": "T097",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Principled Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 75,
-      "X": 25,
-      "A": 75,
-      "C": 75,
-      "O": 25
-    }
-  },
-  {
-    "id": "T098",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Principled Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 75,
-      "X": 50,
-      "A": 25,
-      "C": 50,
-      "O": 50
-    }
-  },
-  {
-    "id": "T099",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Principled Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 75,
-      "X": 50,
-      "A": 50,
-      "C": 25,
-      "O": 75
-    }
-  },
-  {
-    "id": "T100",
-    "nameKo": "???? ??? ?? ??",
-    "nameEn": "Principled Sensitive Type",
-    "descriptionKo": "?? ??? ???????? ?? ?????. ?? ??-???(?) ????? ??? ? ?????.",
-    "descriptionEn": "Your profile is characterized by a Principled and Sensitive style. The clearest signals appear in Honesty-Humility and Emotionality.",
-    "scores": {
-      "H": 75,
-      "E": 75,
-      "X": 50,
-      "A": 75,
-      "C": 25,
-      "O": 25
+      "H": 53,
+      "E": 32,
+      "X": 71,
+      "A": 30,
+      "C": 69,
+      "O": 63
     }
   }
 ]
