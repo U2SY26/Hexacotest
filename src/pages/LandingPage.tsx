@@ -476,6 +476,40 @@ export default function LandingPage() {
                   {i18n.language === 'ko' ? '더 알아보기' : 'Learn More'}
                 </a>
               </motion.div>
+
+              {/* App Download Banner */}
+              <motion.div
+                {...fadeInUp}
+                transition={{ delay: 0.4 }}
+                className="mt-6 p-4 bg-gradient-to-r from-purple-900/30 to-pink-900/30 border border-purple-500/20 rounded-2xl"
+              >
+                <div className="flex items-center gap-4 flex-wrap justify-center md:justify-start">
+                  <div className="flex items-center gap-2">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-white">
+                        {i18n.language === 'ko' ? '앱 출시!' : 'App Released!'}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {i18n.language === 'ko' ? '지금 다운로드하세요' : 'Download now'}
+                      </p>
+                    </div>
+                  </div>
+                  <a
+                    href="https://play.google.com/store/apps/details?id=com.hexaco.hexaco_mobile"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-black/50 hover:bg-black/70 border border-white/10 rounded-lg transition-colors"
+                  >
+                    <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
+                      <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                    </svg>
+                    <span className="text-sm font-medium text-white">Google Play</span>
+                  </a>
+                </div>
+              </motion.div>
             </div>
 
             {/* Right side - Hexagon animation */}
