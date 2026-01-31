@@ -61,15 +61,9 @@ export default function IntroVideo({ onComplete }: IntroVideoProps) {
         playsInline
         onEnded={handleVideoEnd}
         style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          minWidth: '100%',
-          minHeight: '100%',
-          width: 'auto',
-          height: 'auto',
-          objectFit: 'cover',
+          width: '100vw',
+          height: '100vh',
+          objectFit: 'contain',
         }}
       />
 
