@@ -54,14 +54,21 @@ export default function IntroVideo({ onComplete }: IntroVideoProps) {
     >
       <video
         ref={videoRef}
+        key={isPortrait ? 'portrait' : 'landscape'}
         src={isPortrait ? '/video/promo-portrait.mp4' : '/video/promo-landscape.mp4'}
         autoPlay
         muted
         playsInline
         onEnded={handleVideoEnd}
         style={{
-          width: '100%',
-          height: '100%',
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          minWidth: '100%',
+          minHeight: '100%',
+          width: 'auto',
+          height: 'auto',
           objectFit: 'cover',
         }}
       />
