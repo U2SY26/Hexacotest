@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -13,14 +15,36 @@ class IntroVideoScreen extends StatefulWidget {
   @override
   State<IntroVideoScreen> createState() => _IntroVideoScreenState();
 
-  static Future<bool> shouldShow() async {
-    final prefs = await SharedPreferences.getInstance();
-    return !(prefs.getBool('intro_video_shown') ?? false);
+  static const String promoVideo = 'assets/video/promo.mp4';
+
+  static const List<String> introVideos = [
+    'assets/video/intro1.mp4',
+    'assets/video/intro2.mp4',
+    'assets/video/intro3.mp4',
+    'assets/video/intro4.mp4',
+    'assets/video/intro5.mp4',
+    'assets/video/intro6.mp4',
+    'assets/video/intro7.mp4',
+  ];
+
+  static String getRandomVideo() {
+    final random = Random();
+    return introVideos[random.nextInt(introVideos.length)];
   }
 
-  static Future<void> markAsShown() async {
+  static Future<bool> isFirstInstall() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('intro_video_shown', true);
+    return !(prefs.getBool('promo_shown') ?? false);
+  }
+
+  static Future<void> markPromoShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('promo_shown', true);
+  }
+
+  // Always show intro video on app launch
+  static Future<bool> shouldShow() async {
+    return true;
   }
 }
 
@@ -28,6 +52,7 @@ class _IntroVideoScreenState extends State<IntroVideoScreen> {
   late VideoPlayerController _controller;
   bool _initialized = false;
   bool _showSkip = false;
+  bool _isPromo = false;
 
   @override
   void initState() {
@@ -42,7 +67,12 @@ class _IntroVideoScreenState extends State<IntroVideoScreen> {
   }
 
   Future<void> _initVideo() async {
-    _controller = VideoPlayerController.asset('assets/video/intro.mp4');
+    final isFirstInstall = await IntroVideoScreen.isFirstInstall();
+    final videoPath = isFirstInstall
+        ? IntroVideoScreen.promoVideo
+        : IntroVideoScreen.getRandomVideo();
+    _isPromo = isFirstInstall;
+    _controller = VideoPlayerController.asset(videoPath);
 
     try {
       await _controller.initialize();
@@ -65,7 +95,9 @@ class _IntroVideoScreenState extends State<IntroVideoScreen> {
   }
 
   void _onVideoComplete() async {
-    await IntroVideoScreen.markAsShown();
+    if (_isPromo) {
+      await IntroVideoScreen.markPromoShown();
+    }
     widget.onComplete();
   }
 

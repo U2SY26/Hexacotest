@@ -92,7 +92,7 @@
   {
     "id": "celebrity-007",
     "nameKo": "강호동",
-    "nameEn": "강호동",
+    "nameEn": "Kang Ho-dong",
     "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
     "descriptionEn": "You show high focus and maintain strong concentration in performance.",
     "scores": {
@@ -107,7 +107,7 @@
   {
     "id": "celebrity-008",
     "nameKo": "박보검",
-    "nameEn": "박보검",
+    "nameEn": "Park Bo-gum",
     "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
     "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
     "scores": {
@@ -122,7 +122,7 @@
   {
     "id": "celebrity-009",
     "nameKo": "송중기",
-    "nameEn": "송중기",
+    "nameEn": "Song Joong-ki",
     "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
     "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
     "scores": {
@@ -137,7 +137,7 @@
   {
     "id": "celebrity-010",
     "nameKo": "전지현",
-    "nameEn": "전지현",
+    "nameEn": "Jun Ji-hyun",
     "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
     "descriptionEn": "You express feelings and messages clearly with rich communication.",
     "scores": {
@@ -152,7 +152,7 @@
   {
     "id": "celebrity-011",
     "nameKo": "김태희",
-    "nameEn": "김태희",
+    "nameEn": "Kim Tae-hee",
     "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
     "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
@@ -167,7 +167,7 @@
   {
     "id": "celebrity-012",
     "nameKo": "정우성",
-    "nameEn": "정우성",
+    "nameEn": "Jung Woo-sung",
     "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
     "descriptionEn": "You show high focus and maintain strong concentration in performance.",
     "scores": {
@@ -182,7 +182,7 @@
   {
     "id": "celebrity-013",
     "nameKo": "공유",
-    "nameEn": "공유",
+    "nameEn": "Gong Yoo",
     "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
     "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
     "scores": {
@@ -197,7 +197,7 @@
   {
     "id": "celebrity-014",
     "nameKo": "현빈",
-    "nameEn": "현빈",
+    "nameEn": "Hyun Bin",
     "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
     "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
     "scores": {
@@ -212,7 +212,7 @@
   {
     "id": "celebrity-015",
     "nameKo": "손예진",
-    "nameEn": "손예진",
+    "nameEn": "Son Ye-jin",
     "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
     "descriptionEn": "You express feelings and messages clearly with rich communication.",
     "scores": {
@@ -227,7 +227,7 @@
   {
     "id": "celebrity-016",
     "nameKo": "박서준",
-    "nameEn": "박서준",
+    "nameEn": "Park Seo-jun",
     "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
     "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
@@ -242,7 +242,7 @@
   {
     "id": "celebrity-017",
     "nameKo": "이정재",
-    "nameEn": "이정재",
+    "nameEn": "Lee Jung-jae",
     "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
     "descriptionEn": "You show high focus and maintain strong concentration in performance.",
     "scores": {
@@ -257,7 +257,7 @@
   {
     "id": "celebrity-018",
     "nameKo": "하정우",
-    "nameEn": "하정우",
+    "nameEn": "Ha Jung-woo",
     "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
     "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
     "scores": {
@@ -272,7 +272,7 @@
   {
     "id": "celebrity-019",
     "nameKo": "이병헌",
-    "nameEn": "이병헌",
+    "nameEn": "Lee Byung-hun",
     "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
     "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
     "scores": {
@@ -287,7 +287,7 @@
   {
     "id": "celebrity-020",
     "nameKo": "김수현",
-    "nameEn": "김수현",
+    "nameEn": "Kim Soo-hyun",
     "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
     "descriptionEn": "You express feelings and messages clearly with rich communication.",
     "scores": {
@@ -302,7 +302,7 @@
   {
     "id": "celebrity-021",
     "nameKo": "배수지",
-    "nameEn": "배수지",
+    "nameEn": "Suzy (Bae)",
     "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
     "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
@@ -317,7 +317,7 @@
   {
     "id": "celebrity-022",
     "nameKo": "이효리",
-    "nameEn": "이효리",
+    "nameEn": "Lee Hyori",
     "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
     "descriptionEn": "You show high focus and maintain strong concentration in performance.",
     "scores": {
@@ -332,7 +332,7 @@
   {
     "id": "celebrity-023",
     "nameKo": "보아",
-    "nameEn": "보아",
+    "nameEn": "BoA",
     "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
     "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
     "scores": {
@@ -347,7 +347,7 @@
   {
     "id": "celebrity-024",
     "nameKo": "임윤아",
-    "nameEn": "임윤아",
+    "nameEn": "Yoona (Im)",
     "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
     "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
     "scores": {
@@ -362,7 +362,7 @@
   {
     "id": "celebrity-025",
     "nameKo": "서현진",
-    "nameEn": "서현진",
+    "nameEn": "Seo Hyun-jin",
     "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
     "descriptionEn": "You express feelings and messages clearly with rich communication.",
     "scores": {
@@ -377,7 +377,7 @@
   {
     "id": "celebrity-026",
     "nameKo": "김고은",
-    "nameEn": "김고은",
+    "nameEn": "Kim Go-eun",
     "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
     "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
@@ -392,7 +392,7 @@
   {
     "id": "celebrity-027",
     "nameKo": "박신혜",
-    "nameEn": "박신혜",
+    "nameEn": "Park Shin-hye",
     "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
     "descriptionEn": "You show high focus and maintain strong concentration in performance.",
     "scores": {
@@ -407,7 +407,7 @@
   {
     "id": "celebrity-028",
     "nameKo": "한지민",
-    "nameEn": "한지민",
+    "nameEn": "Han Ji-min",
     "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
     "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
     "scores": {
@@ -422,7 +422,7 @@
   {
     "id": "celebrity-029",
     "nameKo": "김혜수",
-    "nameEn": "김혜수",
+    "nameEn": "Kim Hye-soo",
     "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
     "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
     "scores": {
@@ -437,7 +437,7 @@
   {
     "id": "celebrity-030",
     "nameKo": "임영웅",
-    "nameEn": "임영웅",
+    "nameEn": "Lim Young-woong",
     "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
     "descriptionEn": "You express feelings and messages clearly with rich communication.",
     "scores": {
@@ -452,7 +452,7 @@
   {
     "id": "celebrity-031",
     "nameKo": "나훈아",
-    "nameEn": "나훈아",
+    "nameEn": "Na Hoon-a",
     "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
     "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
@@ -467,7 +467,7 @@
   {
     "id": "celebrity-032",
     "nameKo": "박세리",
-    "nameEn": "박세리",
+    "nameEn": "Pak Se-ri",
     "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
     "descriptionEn": "You show high focus and maintain strong concentration in performance.",
     "scores": {
@@ -482,7 +482,7 @@
   {
     "id": "celebrity-033",
     "nameKo": "류현진",
-    "nameEn": "류현진",
+    "nameEn": "Ryu Hyun-jin",
     "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
     "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
     "scores": {
@@ -497,7 +497,7 @@
   {
     "id": "celebrity-034",
     "nameKo": "박지성",
-    "nameEn": "박지성",
+    "nameEn": "Park Ji-sung",
     "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
     "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
     "scores": {
@@ -512,7 +512,7 @@
   {
     "id": "celebrity-035",
     "nameKo": "이강인",
-    "nameEn": "이강인",
+    "nameEn": "Lee Kang-in",
     "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
     "descriptionEn": "You express feelings and messages clearly with rich communication.",
     "scores": {
@@ -527,7 +527,7 @@
   {
     "id": "celebrity-036",
     "nameKo": "황희찬",
-    "nameEn": "황희찬",
+    "nameEn": "Hwang Hee-chan",
     "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
     "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
@@ -542,7 +542,7 @@
   {
     "id": "celebrity-037",
     "nameKo": "김민재",
-    "nameEn": "김민재",
+    "nameEn": "Kim Min-jae",
     "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
     "descriptionEn": "You show high focus and maintain strong concentration in performance.",
     "scores": {
@@ -557,7 +557,7 @@
   {
     "id": "celebrity-038",
     "nameKo": "안세영",
-    "nameEn": "안세영",
+    "nameEn": "An Se-young",
     "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
     "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
     "scores": {
@@ -572,7 +572,7 @@
   {
     "id": "celebrity-039",
     "nameKo": "박찬호",
-    "nameEn": "박찬호",
+    "nameEn": "Park Chan-ho",
     "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
     "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
     "scores": {
@@ -587,7 +587,7 @@
   {
     "id": "celebrity-040",
     "nameKo": "추신수",
-    "nameEn": "추신수",
+    "nameEn": "Choo Shin-soo",
     "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
     "descriptionEn": "You express feelings and messages clearly with rich communication.",
     "scores": {
@@ -602,7 +602,7 @@
   {
     "id": "celebrity-041",
     "nameKo": "이승기",
-    "nameEn": "이승기",
+    "nameEn": "Lee Seung-gi",
     "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
     "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
@@ -617,7 +617,7 @@
   {
     "id": "celebrity-042",
     "nameKo": "장근석",
-    "nameEn": "장근석",
+    "nameEn": "Jang Keun-suk",
     "descriptionKo": "몰입도가 높고 무대나 현장에서 집중력을 잘 유지합니다.",
     "descriptionEn": "You show high focus and maintain strong concentration in performance.",
     "scores": {
@@ -632,7 +632,7 @@
   {
     "id": "celebrity-043",
     "nameKo": "정해인",
-    "nameEn": "정해인",
+    "nameEn": "Jung Hae-in",
     "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
     "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
     "scores": {
@@ -647,7 +647,7 @@
   {
     "id": "celebrity-044",
     "nameKo": "이민호",
-    "nameEn": "이민호",
+    "nameEn": "Lee Min-ho",
     "descriptionKo": "도전적인 목표에도 꾸준히 성과를 내는 성실한 유형입니다.",
     "descriptionEn": "You stay diligent and deliver results even with challenging goals.",
     "scores": {
@@ -662,7 +662,7 @@
   {
     "id": "celebrity-045",
     "nameKo": "황정민",
-    "nameEn": "황정민",
+    "nameEn": "Hwang Jung-min",
     "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
     "descriptionEn": "You express feelings and messages clearly with rich communication.",
     "scores": {
@@ -677,7 +677,7 @@
   {
     "id": "celebrity-046",
     "nameKo": "임창정",
-    "nameEn": "임창정",
+    "nameEn": "Lim Chang-jung",
     "descriptionKo": "대중성과 전문성을 겸비해 꾸준한 신뢰를 쌓아가는 스타일입니다.",
     "descriptionEn": "You balance popularity with professionalism and build steady trust over time.",
     "scores": {
@@ -707,7 +707,7 @@
   {
     "id": "celebrity-048",
     "nameKo": "정지훈",
-    "nameEn": "정지훈",
+    "nameEn": "Rain (Jung Ji-hoon)",
     "descriptionKo": "친화력이 좋아 팀워크와 협업에 강점을 보입니다.",
     "descriptionEn": "You are sociable and strong in teamwork and collaboration.",
     "scores": {
@@ -737,7 +737,7 @@
   {
     "id": "celebrity-050",
     "nameKo": "장윤정",
-    "nameEn": "장윤정",
+    "nameEn": "Jang Yoon-jung",
     "descriptionKo": "표현력이 풍부해 감정과 메시지를 잘 전달합니다.",
     "descriptionEn": "You express feelings and messages clearly with rich communication.",
     "scores": {
@@ -827,7 +827,7 @@
   {
     "id": "artist-006",
     "nameKo": "클로드 모네",
-    "nameEn": "클로드 모네",
+    "nameEn": "Claude Monet",
     "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
     "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
     "scores": {
@@ -842,7 +842,7 @@
   {
     "id": "artist-007",
     "nameKo": "살바도르 달리",
-    "nameEn": "살바도르 달리",
+    "nameEn": "Salvador Dalí",
     "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
     "descriptionEn": "You expand your body of work through experimentation and deep focus.",
     "scores": {
@@ -857,7 +857,7 @@
   {
     "id": "artist-008",
     "nameKo": "요하네스 베르메르",
-    "nameEn": "요하네스 베르메르",
+    "nameEn": "Johannes Vermeer",
     "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
     "descriptionEn": "You emphasize detail through keen observation and subtlety.",
     "scores": {
@@ -872,7 +872,7 @@
   {
     "id": "artist-009",
     "nameKo": "렘브란트",
-    "nameEn": "렘브란트",
+    "nameEn": "Rembrandt",
     "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
     "descriptionEn": "You read the times and propose new aesthetics.",
     "scores": {
@@ -887,7 +887,7 @@
   {
     "id": "artist-010",
     "nameKo": "미켈란젤로",
-    "nameEn": "미켈란젤로",
+    "nameEn": "Michelangelo",
     "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
     "descriptionEn": "You translate deep emotion into artistic form.",
     "scores": {
@@ -902,7 +902,7 @@
   {
     "id": "artist-011",
     "nameKo": "라파엘로",
-    "nameEn": "라파엘로",
+    "nameEn": "Raphael",
     "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
     "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
     "scores": {
@@ -917,7 +917,7 @@
   {
     "id": "artist-012",
     "nameKo": "폴 세잔",
-    "nameEn": "폴 세잔",
+    "nameEn": "Paul Cézanne",
     "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
     "descriptionEn": "You expand your body of work through experimentation and deep focus.",
     "scores": {
@@ -932,7 +932,7 @@
   {
     "id": "artist-013",
     "nameKo": "조르주 쇠라",
-    "nameEn": "조르주 쇠라",
+    "nameEn": "Georges Seurat",
     "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
     "descriptionEn": "You emphasize detail through keen observation and subtlety.",
     "scores": {
@@ -947,7 +947,7 @@
   {
     "id": "artist-014",
     "nameKo": "구스타프 클림트",
-    "nameEn": "구스타프 클림트",
+    "nameEn": "Gustav Klimt",
     "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
     "descriptionEn": "You read the times and propose new aesthetics.",
     "scores": {
@@ -962,7 +962,7 @@
   {
     "id": "artist-015",
     "nameKo": "에드바르 뭉크",
-    "nameEn": "에드바르 뭉크",
+    "nameEn": "Edvard Munch",
     "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
     "descriptionEn": "You translate deep emotion into artistic form.",
     "scores": {
@@ -977,7 +977,7 @@
   {
     "id": "artist-016",
     "nameKo": "앤디 워홀",
-    "nameEn": "앤디 워홀",
+    "nameEn": "Andy Warhol",
     "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
     "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
     "scores": {
@@ -992,7 +992,7 @@
   {
     "id": "artist-017",
     "nameKo": "잭슨 폴록",
-    "nameEn": "잭슨 폴록",
+    "nameEn": "Jackson Pollock",
     "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
     "descriptionEn": "You expand your body of work through experimentation and deep focus.",
     "scores": {
@@ -1007,7 +1007,7 @@
   {
     "id": "artist-018",
     "nameKo": "바실리 칸딘스키",
-    "nameEn": "바실리 칸딘스키",
+    "nameEn": "Wassily Kandinsky",
     "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
     "descriptionEn": "You emphasize detail through keen observation and subtlety.",
     "scores": {
@@ -1022,7 +1022,7 @@
   {
     "id": "artist-019",
     "nameKo": "피에트 몬드리안",
-    "nameEn": "피에트 몬드리안",
+    "nameEn": "Piet Mondrian",
     "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
     "descriptionEn": "You read the times and propose new aesthetics.",
     "scores": {
@@ -1037,7 +1037,7 @@
   {
     "id": "artist-020",
     "nameKo": "마르셀 뒤샹",
-    "nameEn": "마르셀 뒤샹",
+    "nameEn": "Marcel Duchamp",
     "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
     "descriptionEn": "You translate deep emotion into artistic form.",
     "scores": {
@@ -1052,7 +1052,7 @@
   {
     "id": "artist-021",
     "nameKo": "장 미셸 바스키아",
-    "nameEn": "장 미셸 바스키아",
+    "nameEn": "Jean-Michel Basquiat",
     "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
     "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
     "scores": {
@@ -1067,7 +1067,7 @@
   {
     "id": "artist-022",
     "nameKo": "키스 해링",
-    "nameEn": "키스 해링",
+    "nameEn": "Keith Haring",
     "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
     "descriptionEn": "You expand your body of work through experimentation and deep focus.",
     "scores": {
@@ -1082,7 +1082,7 @@
   {
     "id": "artist-023",
     "nameKo": "르 코르뷔지에",
-    "nameEn": "르 코르뷔지에",
+    "nameEn": "Le Corbusier",
     "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
     "descriptionEn": "You emphasize detail through keen observation and subtlety.",
     "scores": {
@@ -1097,7 +1097,7 @@
   {
     "id": "artist-024",
     "nameKo": "프랭크 로이드 라이트",
-    "nameEn": "프랭크 로이드 라이트",
+    "nameEn": "Frank Lloyd Wright",
     "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
     "descriptionEn": "You read the times and propose new aesthetics.",
     "scores": {
@@ -1112,7 +1112,7 @@
   {
     "id": "artist-025",
     "nameKo": "자하 하디드",
-    "nameEn": "자하 하디드",
+    "nameEn": "Zaha Hadid",
     "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
     "descriptionEn": "You translate deep emotion into artistic form.",
     "scores": {
@@ -1127,7 +1127,7 @@
   {
     "id": "artist-026",
     "nameKo": "루이스 칸",
-    "nameEn": "루이스 칸",
+    "nameEn": "Louis Kahn",
     "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
     "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
     "scores": {
@@ -1142,7 +1142,7 @@
   {
     "id": "artist-027",
     "nameKo": "김환기",
-    "nameEn": "김환기",
+    "nameEn": "Kim Whanki",
     "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
     "descriptionEn": "You expand your body of work through experimentation and deep focus.",
     "scores": {
@@ -1157,7 +1157,7 @@
   {
     "id": "artist-028",
     "nameKo": "이중섭",
-    "nameEn": "이중섭",
+    "nameEn": "Lee Jung-seob",
     "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
     "descriptionEn": "You emphasize detail through keen observation and subtlety.",
     "scores": {
@@ -1172,7 +1172,7 @@
   {
     "id": "artist-029",
     "nameKo": "박수근",
-    "nameEn": "박수근",
+    "nameEn": "Park Soo-keun",
     "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
     "descriptionEn": "You read the times and propose new aesthetics.",
     "scores": {
@@ -1187,7 +1187,7 @@
   {
     "id": "artist-030",
     "nameKo": "나혜석",
-    "nameEn": "나혜석",
+    "nameEn": "Na Hye-seok",
     "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
     "descriptionEn": "You translate deep emotion into artistic form.",
     "scores": {
@@ -1202,7 +1202,7 @@
   {
     "id": "artist-031",
     "nameKo": "장욱진",
-    "nameEn": "장욱진",
+    "nameEn": "Jang Uc-chin",
     "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
     "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
     "scores": {
@@ -1217,7 +1217,7 @@
   {
     "id": "artist-032",
     "nameKo": "윤형근",
-    "nameEn": "윤형근",
+    "nameEn": "Yun Hyong-keun",
     "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
     "descriptionEn": "You expand your body of work through experimentation and deep focus.",
     "scores": {
@@ -1232,7 +1232,7 @@
   {
     "id": "artist-033",
     "nameKo": "이우환",
-    "nameEn": "이우환",
+    "nameEn": "Lee Ufan",
     "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
     "descriptionEn": "You emphasize detail through keen observation and subtlety.",
     "scores": {
@@ -1247,7 +1247,7 @@
   {
     "id": "artist-034",
     "nameKo": "안도 타다오",
-    "nameEn": "안도 타다오",
+    "nameEn": "Tadao Ando",
     "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
     "descriptionEn": "You read the times and propose new aesthetics.",
     "scores": {
@@ -1262,7 +1262,7 @@
   {
     "id": "artist-035",
     "nameKo": "클로드 드뷔시",
-    "nameEn": "클로드 드뷔시",
+    "nameEn": "Claude Debussy",
     "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
     "descriptionEn": "You translate deep emotion into artistic form.",
     "scores": {
@@ -1277,7 +1277,7 @@
   {
     "id": "artist-036",
     "nameKo": "루트비히 판 베토벤",
-    "nameEn": "루트비히 판 베토벤",
+    "nameEn": "Ludwig van Beethoven",
     "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
     "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
     "scores": {
@@ -1292,7 +1292,7 @@
   {
     "id": "artist-037",
     "nameKo": "볼프강 아마데우스 모차르트",
-    "nameEn": "볼프강 아마데우스 모차르트",
+    "nameEn": "Wolfgang Amadeus Mozart",
     "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
     "descriptionEn": "You expand your body of work through experimentation and deep focus.",
     "scores": {
@@ -1307,7 +1307,7 @@
   {
     "id": "artist-038",
     "nameKo": "요한 세바스티안 바흐",
-    "nameEn": "요한 세바스티안 바흐",
+    "nameEn": "Johann Sebastian Bach",
     "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
     "descriptionEn": "You emphasize detail through keen observation and subtlety.",
     "scores": {
@@ -1322,7 +1322,7 @@
   {
     "id": "artist-039",
     "nameKo": "프레데리크 쇼팽",
-    "nameEn": "프레데리크 쇼팽",
+    "nameEn": "Frédéric Chopin",
     "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
     "descriptionEn": "You read the times and propose new aesthetics.",
     "scores": {
@@ -1337,7 +1337,7 @@
   {
     "id": "artist-040",
     "nameKo": "안토니오 비발디",
-    "nameEn": "안토니오 비발디",
+    "nameEn": "Antonio Vivaldi",
     "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
     "descriptionEn": "You translate deep emotion into artistic form.",
     "scores": {
@@ -1352,7 +1352,7 @@
   {
     "id": "artist-041",
     "nameKo": "표트르 차이콥스키",
-    "nameEn": "표트르 차이콥스키",
+    "nameEn": "Pyotr Tchaikovsky",
     "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
     "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
     "scores": {
@@ -1367,7 +1367,7 @@
   {
     "id": "artist-042",
     "nameKo": "프란츠 슈베르트",
-    "nameEn": "프란츠 슈베르트",
+    "nameEn": "Franz Schubert",
     "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
     "descriptionEn": "You expand your body of work through experimentation and deep focus.",
     "scores": {
@@ -1382,7 +1382,7 @@
   {
     "id": "artist-043",
     "nameKo": "구스타프 말러",
-    "nameEn": "구스타프 말러",
+    "nameEn": "Gustav Mahler",
     "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
     "descriptionEn": "You emphasize detail through keen observation and subtlety.",
     "scores": {
@@ -1397,7 +1397,7 @@
   {
     "id": "artist-044",
     "nameKo": "세르게이 라흐마니노프",
-    "nameEn": "세르게이 라흐마니노프",
+    "nameEn": "Sergei Rachmaninoff",
     "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
     "descriptionEn": "You read the times and propose new aesthetics.",
     "scores": {
@@ -1412,7 +1412,7 @@
   {
     "id": "artist-045",
     "nameKo": "이고르 스트라빈스키",
-    "nameEn": "이고르 스트라빈스키",
+    "nameEn": "Igor Stravinsky",
     "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
     "descriptionEn": "You translate deep emotion into artistic form.",
     "scores": {
@@ -1427,7 +1427,7 @@
   {
     "id": "artist-046",
     "nameKo": "윌리엄 셰익스피어",
-    "nameEn": "윌리엄 셰익스피어",
+    "nameEn": "William Shakespeare",
     "descriptionKo": "창의성과 감수성이 풍부해 독창적인 표현을 추구합니다.",
     "descriptionEn": "You pursue original expression with strong creativity and sensitivity.",
     "scores": {
@@ -1442,7 +1442,7 @@
   {
     "id": "artist-047",
     "nameKo": "레프 톨스토이",
-    "nameEn": "레프 톨스토이",
+    "nameEn": "Leo Tolstoy",
     "descriptionKo": "실험적 접근과 깊은 몰입으로 작품 세계를 확장합니다.",
     "descriptionEn": "You expand your body of work through experimentation and deep focus.",
     "scores": {
@@ -1457,7 +1457,7 @@
   {
     "id": "artist-048",
     "nameKo": "표도르 도스토옙스키",
-    "nameEn": "표도르 도스토옙스키",
+    "nameEn": "Fyodor Dostoevsky",
     "descriptionKo": "관찰력과 섬세함으로 디테일을 살리는 스타일입니다.",
     "descriptionEn": "You emphasize detail through keen observation and subtlety.",
     "scores": {
@@ -1472,7 +1472,7 @@
   {
     "id": "artist-049",
     "nameKo": "헤르만 헤세",
-    "nameEn": "헤르만 헤세",
+    "nameEn": "Hermann Hesse",
     "descriptionKo": "시대의 흐름을 읽고 새로운 미학을 제안하는 편입니다.",
     "descriptionEn": "You read the times and propose new aesthetics.",
     "scores": {
@@ -1487,7 +1487,7 @@
   {
     "id": "artist-050",
     "nameKo": "어니스트 헤밍웨이",
-    "nameEn": "어니스트 헤밍웨이",
+    "nameEn": "Ernest Hemingway",
     "descriptionKo": "감정의 깊이를 예술로 풀어내는 경향이 있습니다.",
     "descriptionEn": "You translate deep emotion into artistic form.",
     "scores": {

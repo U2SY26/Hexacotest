@@ -6,6 +6,9 @@
   final int tier;
   final String ko;
   final String en;
+  final String? koExample;
+  final String? enExample;
+  final String? illustration;
 
   const Question({
     required this.id,
@@ -15,6 +18,9 @@
     required this.tier,
     required this.ko,
     required this.en,
+    this.koExample,
+    this.enExample,
+    this.illustration,
   });
 
   factory Question.fromJson(Map<String, dynamic> json) {
@@ -26,6 +32,9 @@
       tier: json['tier'] as int,
       ko: json['ko'] as String,
       en: json['en'] as String,
+      koExample: json['ko_example'] as String?,
+      enExample: json['en_example'] as String?,
+      illustration: json['illustration'] as String?,
     );
   }
 }

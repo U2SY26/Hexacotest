@@ -1,4 +1,6 @@
-﻿import 'package:flutter/foundation.dart';
+﻿import 'dart:math';
+
+import 'package:flutter/foundation.dart';
 
 import '../models/question.dart';
 import '../models/score.dart';
@@ -6,13 +8,17 @@ import '../data/data_repository.dart';
 
 class TestController extends ChangeNotifier {
   final AppData data;
+  final Random _random = Random();
 
   int testVersion = 60;
   String language = 'ko';
   int currentIndex = 0;
   final Map<int, int> answers = {};
+  List<Question> _selectedQuestions = [];
 
-  TestController(this.data);
+  TestController(this.data) {
+    _selectRandomQuestions();
+  }
 
   void setVersion(int version) {
     testVersion = version;
@@ -24,15 +30,41 @@ class TestController extends ChangeNotifier {
     notifyListeners();
   }
 
-  int get maxTier {
-    if (testVersion == 60) return 1;
-    if (testVersion == 120) return 2;
-    return 3;
+  // Number of questions per factor based on test version
+  int get _questionsPerFactor {
+    switch (testVersion) {
+      case 60:
+        return 10;
+      case 120:
+        return 20;
+      case 180:
+        return 30;
+      default:
+        return 10;
+    }
   }
 
-  List<Question> get questions {
-    return data.questions.where((q) => q.tier <= maxTier).toList(growable: false);
+  // Randomly select questions from each factor
+  void _selectRandomQuestions() {
+    final factors = ['H', 'E', 'X', 'A', 'C', 'O'];
+    final selected = <Question>[];
+
+    for (final factor in factors) {
+      final factorQuestions = data.questions
+          .where((q) => q.factor == factor)
+          .toList();
+
+      // Shuffle and take the required number
+      factorQuestions.shuffle(_random);
+      selected.addAll(factorQuestions.take(_questionsPerFactor));
+    }
+
+    // Shuffle the final list so questions from different factors are mixed
+    selected.shuffle(_random);
+    _selectedQuestions = selected;
   }
+
+  List<Question> get questions => _selectedQuestions;
 
   Question get currentQuestion => questions[currentIndex];
 
@@ -69,15 +101,16 @@ class TestController extends ChangeNotifier {
       for (final question in items) {
         final answer = answers[question.id];
         if (answer != null) {
-          final value = question.reverse ? (6 - answer) : answer;
+          // answer is now 0-100 percentage directly
+          // reverse: high score means low trait, so invert
+          final value = question.reverse ? (100 - answer) : answer;
           total += value;
           count += 1;
         }
       }
       if (count == 0) return 50;
       final avg = total / count;
-      final scaled = ((avg - 1) / 4) * 100;
-      return double.parse(scaled.toStringAsFixed(1));
+      return double.parse(avg.toStringAsFixed(1));
     }
 
     return Scores(
@@ -93,6 +126,7 @@ class TestController extends ChangeNotifier {
   void reset() {
     currentIndex = 0;
     answers.clear();
+    _selectRandomQuestions();
     notifyListeners();
   }
 }

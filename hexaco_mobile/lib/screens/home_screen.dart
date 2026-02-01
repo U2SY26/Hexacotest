@@ -1309,6 +1309,39 @@ class _FooterSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        // 커피 후원 버튼
+        InkWell(
+          onTap: () => _openUrl('https://paypal.me/u2dia'),
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.amber500.withValues(alpha: 0.2),
+                  AppColors.orange500.withValues(alpha: 0.2),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.amber500.withValues(alpha: 0.5)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('☕', style: TextStyle(fontSize: 20)),
+                const SizedBox(width: 8),
+                Text(
+                  isKo ? '개발자에게 커피 사주기' : 'Buy me a coffee',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.amber500,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
         Text(
           'HEXACO Personality Test',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray500),

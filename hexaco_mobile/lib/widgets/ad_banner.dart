@@ -7,12 +7,10 @@ import '../ui/app_tokens.dart';
 
 class BannerAdWidget extends StatefulWidget {
   final String adUnitId;
-  final AdSize size;
 
   const BannerAdWidget({
     super.key,
     required this.adUnitId,
-    this.size = AdSize.banner,
   });
 
   @override
@@ -22,19 +20,29 @@ class BannerAdWidget extends StatefulWidget {
 class _BannerAdWidgetState extends State<BannerAdWidget> {
   BannerAd? _bannerAd;
   bool _isLoaded = false;
+  AdSize? _adSize;
 
   bool get _isTest => const bool.fromEnvironment('FLUTTER_TEST');
 
   bool get _useTestAd => kDebugMode || kProfileMode || _isTest;
 
   @override
-  void initState() {
-    super.initState();
-    if (_isTest) return;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_bannerAd == null && !_isTest) {
+      _loadAd();
+    }
+  }
+
+  Future<void> _loadAd() async {
+    final screenWidth = MediaQuery.of(context).size.width.truncate();
+    final adSize = AdSize.getInlineAdaptiveBannerAdSize(screenWidth, 60);
+
+    _adSize = adSize;
 
     final adUnitId = bannerAdUnitIdForPlatform(test: _useTestAd);
     _bannerAd = BannerAd(
-      size: widget.size,
+      size: adSize,
       adUnitId: _useTestAd ? adUnitId : widget.adUnitId,
       request: const AdRequest(),
       listener: BannerAdListener(
@@ -48,6 +56,7 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
           });
         },
         onAdFailedToLoad: (ad, error) {
+          debugPrint('Ad failed to load: $error');
           ad.dispose();
         },
       ),
@@ -66,19 +75,13 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
       return const SizedBox.shrink();
     }
 
-    final height = widget.size.height.toDouble();
-    final width = widget.size.width.toDouble();
-
-    return AnimatedOpacity(
+    return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
-      opacity: _isLoaded ? 1 : 0,
-      child: SizedBox(
-        height: height,
-        width: width,
-        child: _bannerAd == null
-            ? const SizedBox.shrink()
-            : AdWidget(ad: _bannerAd!),
-      ),
+      height: _isLoaded ? (_adSize?.height.toDouble() ?? 60) : 0,
+      width: double.infinity,
+      child: _bannerAd == null || !_isLoaded
+          ? const SizedBox.shrink()
+          : AdWidget(ad: _bannerAd!),
     );
   }
 }

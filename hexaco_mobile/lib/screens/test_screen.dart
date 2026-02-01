@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../constants.dart';
@@ -9,11 +9,21 @@ import '../widgets/app_header.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/buttons.dart';
 import '../widgets/dark_card.dart';
+import '../widgets/ad_banner.dart';
+import '../config/admob_ids.dart';
 
 class TestScreen extends StatelessWidget {
   final TestController controller;
 
   const TestScreen({super.key, required this.controller});
+
+  void _showResultPopup(BuildContext context, bool isKo) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => _ResultPopupDialog(isKo: isKo),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +38,7 @@ class TestScreen extends StatelessWidget {
 
         void handleNext() {
           if (isLast && controller.isComplete) {
-            Navigator.pushNamed(context, '/result');
+            _showResultPopup(context, isKo);
           } else if (currentAnswer != null) {
             controller.next();
           }
@@ -37,28 +47,16 @@ class TestScreen extends StatelessWidget {
         return AppScaffold(
           appBar: AppHeader(controller: controller),
           scroll: false,
+          stickyBanner: BannerAdWidget(adUnitId: bannerAdUnitId),
           child: Shortcuts(
             shortcuts: {
-              LogicalKeySet(LogicalKeyboardKey.digit1): _AnswerIntent(1),
-              LogicalKeySet(LogicalKeyboardKey.digit2): _AnswerIntent(2),
-              LogicalKeySet(LogicalKeyboardKey.digit3): _AnswerIntent(3),
-              LogicalKeySet(LogicalKeyboardKey.digit4): _AnswerIntent(4),
-              LogicalKeySet(LogicalKeyboardKey.digit5): _AnswerIntent(5),
-              LogicalKeySet(LogicalKeyboardKey.numpad1): _AnswerIntent(1),
-              LogicalKeySet(LogicalKeyboardKey.numpad2): _AnswerIntent(2),
-              LogicalKeySet(LogicalKeyboardKey.numpad3): _AnswerIntent(3),
-              LogicalKeySet(LogicalKeyboardKey.numpad4): _AnswerIntent(4),
-              LogicalKeySet(LogicalKeyboardKey.numpad5): _AnswerIntent(5),
-              LogicalKeySet(LogicalKeyboardKey.arrowRight): _NavigateIntent(1),
-              LogicalKeySet(LogicalKeyboardKey.arrowLeft): _NavigateIntent(-1),
+              LogicalKeySet(LogicalKeyboardKey.arrowUp): _NavigateIntent(-1),
+              LogicalKeySet(LogicalKeyboardKey.arrowDown): _NavigateIntent(1),
               LogicalKeySet(LogicalKeyboardKey.enter): _NavigateIntent(1),
               LogicalKeySet(LogicalKeyboardKey.space): _NavigateIntent(1),
             },
             child: Actions(
               actions: {
-                _AnswerIntent: CallbackAction<_AnswerIntent>(
-                  onInvoke: (intent) => controller.setAnswer(question.id, intent.value),
-                ),
                 _NavigateIntent: CallbackAction<_NavigateIntent>(
                   onInvoke: (intent) {
                     if (intent.delta > 0) {
@@ -82,26 +80,30 @@ class TestScreen extends StatelessWidget {
                       factor: question.factor,
                       isKo: isKo,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 12),
                     Expanded(
-                      child: ListView(
+                      child: Column(
                         children: [
                           _QuestionCard(
                             question: question,
                             isKo: isKo,
                             index: controller.currentIndex + 1,
                           ),
-                          const SizedBox(height: 18),
-                          _AnswerScale(
-                            isKo: isKo,
-                            factor: question.factor,
-                            currentAnswer: currentAnswer,
-                            onSelect: (value) => controller.setAnswer(question.id, value),
+                          const SizedBox(height: 12),
+                          Expanded(
+                            child: Center(
+                              child: _PercentageSlider(
+                                isKo: isKo,
+                                factor: question.factor,
+                                currentAnswer: currentAnswer,
+                                onSelect: (value) => controller.setAnswer(question.id, value),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Row(
                       children: [
                         Expanded(
@@ -131,8 +133,8 @@ class TestScreen extends StatelessWidget {
                     Center(
                       child: Text(
                         isKo
-                            ? '키보드 1-5로 응답, ← → 로 이동할 수 있어요.'
-                            : 'Use 1-5 to answer, ←/→ to move.',
+                            ? '슬라이더를 드래그하여 동의 정도를 선택하세요.'
+                            : 'Drag the slider to select your agreement level.',
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall
@@ -158,11 +160,6 @@ class TestScreen extends StatelessWidget {
       },
     );
   }
-}
-
-class _AnswerIntent extends Intent {
-  final int value;
-  const _AnswerIntent(this.value);
 }
 
 class _NavigateIntent extends Intent {
@@ -332,10 +329,521 @@ class _QuestionCard extends StatelessWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 12),
+              _QuestionIllustration(
+                imagePath: question.illustration,
+                accent: color,
+              ),
               const SizedBox(height: 16),
               Text(
                 isKo ? question.ko : question.en,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(height: 1.4),
+              ),
+              if ((isKo ? question.koExample : question.enExample) != null) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkBg.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(AppRadii.md),
+                    border: Border.all(color: AppColors.darkBorder),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.lightbulb_outline,
+                        color: color.withValues(alpha: 0.7),
+                        size: 18,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          isKo ? question.koExample! : question.enExample!,
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: AppColors.gray400,
+                                height: 1.4,
+                              ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _QuestionIllustration extends StatelessWidget {
+  final String? imagePath;
+  final Color accent;
+
+  const _QuestionIllustration({
+    required this.imagePath,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final placeholder = Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            accent.withValues(alpha: 0.25),
+            AppColors.darkBg.withValues(alpha: 0.9),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(color: AppColors.darkBorder),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.image_outlined,
+          color: accent.withValues(alpha: 0.7),
+          size: 28,
+        ),
+      ),
+    );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadii.lg),
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: (imagePath == null || imagePath!.isEmpty)
+            ? placeholder
+            : Image.asset(
+                imagePath!,
+                fit: BoxFit.cover,
+                filterQuality: FilterQuality.medium,
+                errorBuilder: (context, error, stackTrace) => placeholder,
+              ),
+      ),
+    );
+  }
+}
+
+class _PercentageSlider extends StatefulWidget {
+  final bool isKo;
+  final String factor;
+  final int? currentAnswer;
+  final ValueChanged<int> onSelect;
+
+  const _PercentageSlider({
+    required this.isKo,
+    required this.factor,
+    required this.currentAnswer,
+    required this.onSelect,
+  });
+
+  @override
+  State<_PercentageSlider> createState() => _PercentageSliderState();
+}
+
+class _PercentageSliderState extends State<_PercentageSlider>
+    with SingleTickerProviderStateMixin {
+  // Internal position: -100 (left/agree) to +100 (right/disagree)
+  double _sliderPosition = 0;
+  bool _isDragging = false;
+  late AnimationController _glowController;
+  late Animation<double> _glowAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _glowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+    _glowAnimation = Tween<double>(begin: 0.3, end: 0.8).animate(
+      CurvedAnimation(parent: _glowController, curve: Curves.easeInOut),
+    );
+    // Set initial answer as neutral (50 = 0%) so next button is enabled
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.currentAnswer == null) {
+        widget.onSelect(_storageValue); // 50 (neutral)
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant _PercentageSlider oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reset slider when question changes (currentAnswer becomes null)
+    if (widget.currentAnswer == null && oldWidget.currentAnswer != null) {
+      setState(() {
+        _sliderPosition = 0;
+      });
+      // Auto-set neutral answer so next button is enabled
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        widget.onSelect(_storageValue); // 50 (neutral)
+      });
+    }
+    // Restore slider position if question has existing answer
+    if (widget.currentAnswer != null && oldWidget.currentAnswer != widget.currentAnswer) {
+      setState(() {
+        // Convert storage value back to slider position
+        // storage 0-100 → slider -100 to +100
+        _sliderPosition = (100 - widget.currentAnswer! * 2).toDouble();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _glowController.dispose();
+    super.dispose();
+  }
+
+  // Convert slider position to score: left(-100)=100, center(0)=50, right(+100)=0
+  int get _storageValue => ((100 - _sliderPosition) / 2).round().clamp(0, 100);
+  bool get _isLeftSide => _sliderPosition < 0;
+  bool get _isRightSide => _sliderPosition > 0;
+
+  Color _getPositionColor() {
+    final percentage = _sliderPosition.abs() / 100;
+    if (_sliderPosition == 0) {
+      return AppColors.gray500;
+    } else if (_isLeftSide) {
+      // Agree side - purple to pink (warm)
+      return Color.lerp(AppColors.purple500, AppColors.pink500, percentage) ?? AppColors.purple500;
+    } else {
+      // Disagree side - blue to cyan (cool)
+      return Color.lerp(AppColors.blue500, AppColors.cyan500, percentage) ?? AppColors.blue500;
+    }
+  }
+
+  void _handleTap(double localX, double trackWidth) {
+    final center = trackWidth / 2;
+    final offset = localX - center;
+    final normalized = (offset / (trackWidth / 2)).clamp(-1.0, 1.0);
+    setState(() {
+      _sliderPosition = (normalized * 100).roundToDouble();
+    });
+    widget.onSelect(_storageValue);
+    HapticFeedback.lightImpact();
+  }
+
+  void _handleDragUpdate(double localX, double trackWidth) {
+    final center = trackWidth / 2;
+    final offset = localX - center;
+    final normalized = (offset / (trackWidth / 2)).clamp(-1.0, 1.0);
+    final newPosition = (normalized * 100).roundToDouble();
+
+    // Haptic feedback at 25% increments
+    final oldQuarter = (_sliderPosition.abs() / 25).floor();
+    final newQuarter = (newPosition.abs() / 25).floor();
+    if (oldQuarter != newQuarter) {
+      HapticFeedback.selectionClick();
+    }
+
+    setState(() {
+      _sliderPosition = newPosition;
+    });
+  }
+
+  void _handleDragEnd() {
+    setState(() {
+      _isDragging = false;
+    });
+    widget.onSelect(_storageValue);
+    if (_sliderPosition.abs() >= 90) {
+      HapticFeedback.mediumImpact();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final agreeLabel = widget.isKo ? sliderLabelsKo['agree']! : sliderLabelsEn['agree']!;
+    final disagreeLabel = widget.isKo ? sliderLabelsKo['disagree']! : sliderLabelsEn['disagree']!;
+    final neutralLabel = widget.isKo ? sliderLabelsKo['neutral']! : sliderLabelsEn['neutral']!;
+    final positionColor = _getPositionColor();
+    final percentage = _sliderPosition.abs().round();
+
+    return Column(
+      children: [
+        // Percentage display
+        AnimatedBuilder(
+          animation: _glowController,
+          builder: (context, child) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.darkCard,
+                borderRadius: BorderRadius.circular(AppRadii.lg),
+                border: Border.all(
+                  color: positionColor.withValues(alpha: 0.5),
+                  width: 1.5,
+                ),
+                boxShadow: percentage > 50
+                    ? [
+                        BoxShadow(
+                          color: positionColor.withValues(alpha: _glowAnimation.value * 0.4),
+                          blurRadius: 20,
+                          spreadRadius: 2,
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    _sliderPosition == 0
+                        ? Icons.radio_button_unchecked
+                        : Icons.circle,
+                    color: positionColor,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '$percentage%',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 16),
+
+        // Labels
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  agreeLabel,
+                  style: TextStyle(
+                    color: _isLeftSide ? AppColors.purple400 : AppColors.gray500,
+                    fontWeight: _isLeftSide ? FontWeight.bold : FontWeight.normal,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+              Text(
+                neutralLabel,
+                style: TextStyle(
+                  color: _sliderPosition == 0 ? Colors.white : AppColors.gray500,
+                  fontWeight: _sliderPosition == 0 ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 12,
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  disagreeLabel,
+                  textAlign: TextAlign.right,
+                  style: TextStyle(
+                    color: _isRightSide ? AppColors.cyan500 : AppColors.gray500,
+                    fontWeight: _isRightSide ? FontWeight.bold : FontWeight.normal,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // Slider track
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: LayoutBuilder(
+          builder: (context, constraints) {
+            final trackWidth = constraints.maxWidth;
+            final thumbPosition = (trackWidth / 2) + (_sliderPosition / 100 * trackWidth / 2);
+
+            return GestureDetector(
+              onTapDown: (details) => _handleTap(details.localPosition.dx, trackWidth),
+              onPanStart: (_) => setState(() => _isDragging = true),
+              onPanUpdate: (details) => _handleDragUpdate(details.localPosition.dx, trackWidth),
+              onPanEnd: (_) => _handleDragEnd(),
+              child: Container(
+                height: 80,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(AppRadii.xl),
+                ),
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    // Track background with neutral gradient
+                    Container(
+                      height: 16,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        gradient: const LinearGradient(
+                          colors: [
+                            AppColors.purple500,
+                            AppColors.pink500,
+                            AppColors.gray600,
+                            AppColors.blue500,
+                            AppColors.cyan500,
+                          ],
+                          stops: [0.0, 0.25, 0.5, 0.75, 1.0],
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: AppColors.darkBg.withValues(alpha: 0.6),
+                        ),
+                      ),
+                    ),
+
+                    // Active fill from center
+                    Positioned(
+                      left: _isLeftSide ? thumbPosition : trackWidth / 2,
+                      right: _isRightSide ? trackWidth - thumbPosition : trackWidth / 2,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 50),
+                        height: 16,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: LinearGradient(
+                            colors: _isLeftSide
+                                ? [AppColors.purple500, AppColors.pink500]
+                                : [AppColors.blue500, AppColors.cyan500],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: positionColor.withValues(alpha: 0.5),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Center marker
+                    Positioned(
+                      left: trackWidth / 2 - 2,
+                      child: Container(
+                        width: 4,
+                        height: 24,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(2),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.3),
+                              blurRadius: 4,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Tick marks at 25%, 50%, 75%
+                    ...[-75, -50, -25, 25, 50, 75].map((tick) {
+                      final tickX = trackWidth / 2 + (tick / 100 * trackWidth / 2);
+                      return Positioned(
+                        left: tickX - 1,
+                        child: Container(
+                          width: 2,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: AppColors.gray500.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(1),
+                          ),
+                        ),
+                      );
+                    }),
+
+                    // Thumb
+                    AnimatedPositioned(
+                      duration: Duration(milliseconds: _isDragging ? 0 : 150),
+                      curve: Curves.easeOut,
+                      left: thumbPosition - 20,
+                      child: AnimatedBuilder(
+                        animation: _glowController,
+                        builder: (context, child) {
+                          return Container(
+                            width: 40,
+                            height: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  positionColor,
+                                  positionColor.withValues(alpha: 0.8),
+                                ],
+                              ),
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 3,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: positionColor.withValues(
+                                    alpha: percentage > 50 ? _glowAnimation.value * 0.6 : 0.3,
+                                  ),
+                                  blurRadius: percentage > 50 ? 20 : 10,
+                                  spreadRadius: percentage > 50 ? 4 : 2,
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                '$percentage',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        ),
+
+        const SizedBox(height: 8),
+
+        // 100% labels at ends
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '100%',
+                style: TextStyle(
+                  color: _isLeftSide && percentage > 80 ? AppColors.purple400 : AppColors.gray600,
+                  fontSize: 11,
+                ),
+              ),
+              Text(
+                '0%',
+                style: TextStyle(
+                  color: _sliderPosition == 0 ? Colors.white : AppColors.gray600,
+                  fontSize: 11,
+                ),
+              ),
+              Text(
+                '100%',
+                style: TextStyle(
+                  color: _isRightSide && percentage > 80 ? AppColors.cyan500 : AppColors.gray600,
+                  fontSize: 11,
+                ),
               ),
             ],
           ),
@@ -345,146 +853,165 @@ class _QuestionCard extends StatelessWidget {
   }
 }
 
-class _AnswerScale extends StatelessWidget {
+class _ResultPopupDialog extends StatefulWidget {
   final bool isKo;
-  final String factor;
-  final int? currentAnswer;
-  final ValueChanged<int> onSelect;
 
-  const _AnswerScale({
-    required this.isKo,
-    required this.factor,
-    required this.currentAnswer,
-    required this.onSelect,
-  });
+  const _ResultPopupDialog({required this.isKo});
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: List.generate(5, (index) {
-        final value = index + 1;
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _AnswerOption(
-            value: value,
-            label: isKo ? scaleLabelsKo[value]! : scaleLabelsEn[value]!,
-            isSelected: currentAnswer == value,
-            onTap: () => onSelect(value),
-          ),
-        );
-      }),
-    );
-  }
+  State<_ResultPopupDialog> createState() => _ResultPopupDialogState();
 }
 
-class _AnswerOption extends StatelessWidget {
-  final int value;
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
+class _ResultPopupDialogState extends State<_ResultPopupDialog>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _glowAnimation;
 
-  const _AnswerOption({
-    required this.value,
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..repeat(reverse: true);
+
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    _glowAnimation = Tween<double>(begin: 0.4, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final style = _scaleStyle(value);
-
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadii.lg),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? LinearGradient(colors: style.gradient)
-              : const LinearGradient(colors: [AppColors.darkCard, AppColors.darkCard]),
-          borderRadius: BorderRadius.circular(AppRadii.lg),
-          border: Border.all(
-            color: isSelected ? style.border : AppColors.darkBorder,
-            width: 1.2,
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1A1035), Color(0xFF2D1B4E)],
           ),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.purple500.withValues(alpha: 0.5)),
         ),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 28,
-              height: 28,
+              width: 80,
+              height: 80,
               decoration: BoxDecoration(
-                color: isSelected ? style.border : AppColors.darkBorder,
+                gradient: const LinearGradient(
+                  colors: [AppColors.purple500, AppColors.pink500],
+                ),
                 shape: BoxShape.circle,
-              ),
-              child: Center(
-                child: isSelected
-                    ? const Icon(Icons.check, size: 16, color: Colors.white)
-                    : Text(
-                        value.toString(),
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: isSelected ? Colors.white : AppColors.gray400,
-                    ),
-              ),
-            ),
-            Text(
-              value.toString(),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: isSelected ? Colors.white : AppColors.gray500,
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.purple500.withValues(alpha: 0.5),
+                    blurRadius: 30,
+                    spreadRadius: 5,
                   ),
+                ],
+              ),
+              child: const Icon(Icons.auto_awesome, color: Colors.white, size: 40),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              widget.isKo ? '테스트 완료!' : 'Test Complete!',
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              widget.isKo
+                  ? '당신의 성격 분석 결과가 준비되었습니다.'
+                  : 'Your personality analysis is ready.',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.gray400,
+                  ),
+            ),
+            const SizedBox(height: 32),
+            AnimatedBuilder(
+              animation: _controller,
+              builder: (context, child) {
+                return Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.purple500.withValues(alpha: _glowAnimation.value * 0.6),
+                          blurRadius: 20 + (_glowAnimation.value * 15),
+                          spreadRadius: _glowAnimation.value * 5,
+                        ),
+                        BoxShadow(
+                          color: AppColors.pink500.withValues(alpha: _glowAnimation.value * 0.4),
+                          blurRadius: 30 + (_glowAnimation.value * 20),
+                          spreadRadius: _glowAnimation.value * 3,
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                          Navigator.pushNamed(context, '/result');
+                        },
+                        borderRadius: BorderRadius.circular(16),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 18),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [AppColors.purple500, AppColors.pink500],
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: _glowAnimation.value * 0.5),
+                              width: 2,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.visibility, color: Colors.white, size: 24),
+                              const SizedBox(width: 12),
+                              Text(
+                                widget.isKo ? '결과 보기' : 'View Results',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ],
         ),
       ),
     );
   }
-
-  _ScaleStyle _scaleStyle(int value) {
-    switch (value) {
-      case 1:
-        return _ScaleStyle(
-          gradient: [AppColors.red500.withValues(alpha: 0.25), AppColors.red500.withValues(alpha: 0.15)],
-          border: AppColors.red500,
-        );
-      case 2:
-        return _ScaleStyle(
-          gradient: [AppColors.orange500.withValues(alpha: 0.25), AppColors.orange500.withValues(alpha: 0.15)],
-          border: AppColors.orange500,
-        );
-      case 3:
-        return _ScaleStyle(
-          gradient: [AppColors.gray700.withValues(alpha: 0.4), AppColors.gray700.withValues(alpha: 0.2)],
-          border: AppColors.gray500,
-        );
-      case 4:
-        return _ScaleStyle(
-          gradient: [AppColors.blue500.withValues(alpha: 0.25), AppColors.blue500.withValues(alpha: 0.15)],
-          border: AppColors.blue500,
-        );
-      default:
-        return _ScaleStyle(
-          gradient: [AppColors.emerald500.withValues(alpha: 0.25), AppColors.emerald500.withValues(alpha: 0.15)],
-          border: AppColors.emerald500,
-        );
-    }
-  }
-}
-
-class _ScaleStyle {
-  final List<Color> gradient;
-  final Color border;
-
-  const _ScaleStyle({required this.gradient, required this.border});
 }

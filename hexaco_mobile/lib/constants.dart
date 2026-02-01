@@ -45,6 +45,19 @@ const scaleLabelsEn = {
   5: 'Strongly agree',
 };
 
+// Slider labels for percentage-based UI
+const sliderLabelsKo = {
+  'agree': '매우 그렇다',
+  'disagree': '절대 아니다',
+  'neutral': '중립',
+};
+
+const sliderLabelsEn = {
+  'agree': 'Strongly Agree',
+  'disagree': 'Strongly Disagree',
+  'neutral': 'Neutral',
+};
+
 const testVersions = [60, 120, 180];
 
 String versionLabelKo(int version) {
