@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { Globe, Hexagon } from 'lucide-react'
 
 export default function Header() {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'ko' ? 'en' : 'ko'
@@ -18,15 +18,23 @@ export default function Header() {
       animate={{ y: 0, opacity: 1 }}
       className="fixed top-0 left-0 right-0 z-50 glass"
     >
-      <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
+      <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-3 group">
           <motion.div
             whileHover={{ rotate: 180 }}
             transition={{ duration: 0.5 }}
+            className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center"
           >
-            <Hexagon className="w-8 h-8 text-purple-500" />
+            <Hexagon className="w-6 h-6 text-purple-500" />
           </motion.div>
-          <span className="text-xl font-bold gradient-text">HEXACO</span>
+          <div className="flex flex-col">
+            <span className="text-sm font-bold gradient-text leading-tight">
+              {t('header.tagline')}
+            </span>
+            <span className="text-xs text-gray-400 leading-tight">
+              {t('header.subtitle')}
+            </span>
+          </div>
         </Link>
 
         <motion.button

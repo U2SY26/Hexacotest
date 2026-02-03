@@ -43,7 +43,8 @@ const calculateFactorScore = (answers: Answer[], factor: Factor, version: TestVe
   factorQuestions.forEach(question => {
     const answer = answers.find(a => a.questionId === question.id)
     if (answer) {
-      const value = question.reverse ? (6 - answer.value) : answer.value
+      // 0-100 스케일 직접 사용, reverse 적용
+      const value = question.reverse ? (100 - answer.value) : answer.value
       total += value
       count++
     }
@@ -51,10 +52,9 @@ const calculateFactorScore = (answers: Answer[], factor: Factor, version: TestVe
 
   if (count === 0) return 50
 
-  // 1-5 스케일을 0-100으로 변환
+  // 0-100 스케일 평균 계산
   const avgScore = total / count
-  const scaledScore = ((avgScore - 1) / 4) * 100
-  return Math.round(scaledScore * 10) / 10
+  return Math.round(avgScore * 10) / 10
 }
 
 export const useTestStore = create<TestState>()(

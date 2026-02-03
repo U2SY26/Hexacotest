@@ -1,12 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Lightbulb, Circle } from 'lucide-react'
 import { factorColors } from '../data/questions'
 import { useTestStore, encodeResults } from '../stores/testStore'
-
-const scaleOptions = [1, 2, 3, 4, 5] as const
 
 // Ambient background with calming animated elements
 function AmbientBackground() {
@@ -50,22 +48,6 @@ function AmbientBackground() {
         }}
       />
 
-      <motion.div
-        className="absolute top-1/2 right-1/3 w-[300px] h-[300px] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%)',
-        }}
-        animate={{
-          x: [0, 30, 0],
-          y: [0, -40, 0],
-        }}
-        transition={{
-          duration: 30,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
-      />
-
       {/* Subtle floating particles */}
       {[...Array(15)].map((_, i) => (
         <motion.div
@@ -86,37 +68,6 @@ function AmbientBackground() {
           }}
         />
       ))}
-
-      {/* Calm wave lines */}
-      <svg
-        className="absolute bottom-0 left-0 w-full h-32 opacity-10"
-        viewBox="0 0 1440 100"
-        preserveAspectRatio="none"
-      >
-        <motion.path
-          d="M0,50 C360,100 720,0 1080,50 C1260,75 1380,50 1440,50 L1440,100 L0,100 Z"
-          fill="url(#wave-gradient)"
-          animate={{
-            d: [
-              "M0,50 C360,100 720,0 1080,50 C1260,75 1380,50 1440,50 L1440,100 L0,100 Z",
-              "M0,50 C360,0 720,100 1080,50 C1260,25 1380,50 1440,50 L1440,100 L0,100 Z",
-              "M0,50 C360,100 720,0 1080,50 C1260,75 1380,50 1440,50 L1440,100 L0,100 Z",
-            ],
-          }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        />
-        <defs>
-          <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#8B5CF6" />
-            <stop offset="50%" stopColor="#EC4899" />
-            <stop offset="100%" stopColor="#8B5CF6" />
-          </linearGradient>
-        </defs>
-      </svg>
     </div>
   )
 }
@@ -136,13 +87,12 @@ function ProgressIndicator({
   const { t } = useTranslation()
 
   return (
-    <div className="mb-8">
+    <div className="mb-6">
       <div className="flex justify-between text-sm text-gray-400 mb-2">
         <span>{t('test.progress', { current: currentIndex + 1, total })}</span>
         <span>{Math.round(progress)}%</span>
       </div>
       <div className="h-2 bg-dark-card rounded-full overflow-hidden relative">
-        {/* Background subtle animation */}
         <motion.div
           className="absolute inset-0 opacity-20"
           style={{
@@ -169,7 +119,7 @@ function ProgressIndicator({
       </div>
 
       {/* Mini factor progress dots */}
-      <div className="flex justify-center gap-1 mt-3">
+      <div className="flex justify-center gap-1.5 mt-3">
         {['H', 'E', 'X', 'A', 'C', 'O'].map((factor) => (
           <motion.div
             key={factor}
@@ -188,6 +138,244 @@ function ProgressIndicator({
             {factor}
           </motion.div>
         ))}
+      </div>
+    </div>
+  )
+}
+
+// Percentage Slider Component (matching mobile app design)
+function PercentageSlider({
+  currentAnswer,
+  onSelect,
+  factorColor,
+}: {
+  currentAnswer: number | undefined
+  onSelect: (value: number) => void
+  factorColor: string
+}) {
+  const { t } = useTranslation()
+  const trackRef = useRef<HTMLDivElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
+
+  // Internal position: -100 (left/agree) to +100 (right/disagree)
+  const storageToPosition = (value: number | undefined): number => {
+    if (value === undefined) return 0
+    return 100 - value * 2 // storage 0-100 → position -100 to +100
+  }
+
+  const [sliderPosition, setSliderPosition] = useState(() => storageToPosition(currentAnswer))
+
+  // Convert slider position to score: left(-100)=100, center(0)=50, right(+100)=0
+  const positionToStorage = (pos: number): number => Math.round((100 - pos) / 2)
+
+  const isLeftSide = sliderPosition < 0
+  const isRightSide = sliderPosition > 0
+  const percentage = Math.abs(sliderPosition)
+
+  // Update position when question changes
+  useEffect(() => {
+    const newPos = storageToPosition(currentAnswer)
+    setSliderPosition(newPos)
+  }, [currentAnswer])
+
+  // Initialize with neutral value when first loading
+  useEffect(() => {
+    if (currentAnswer === undefined) {
+      onSelect(50) // neutral
+    }
+  }, [])
+
+  const getPositionColor = useCallback(() => {
+    if (sliderPosition === 0) return '#6B7280' // gray-500
+    if (isLeftSide) {
+      // Agree side - purple to pink
+      const t = percentage / 100
+      return `color-mix(in srgb, #8B5CF6 ${100 - t * 100}%, #EC4899)`
+    } else {
+      // Disagree side - blue to cyan
+      const t = percentage / 100
+      return `color-mix(in srgb, #3B82F6 ${100 - t * 100}%, #06B6D4)`
+    }
+  }, [sliderPosition, isLeftSide, percentage])
+
+  const handleInteraction = (clientX: number) => {
+    if (!trackRef.current) return
+    const rect = trackRef.current.getBoundingClientRect()
+    const center = rect.left + rect.width / 2
+    const offset = clientX - center
+    const normalized = Math.max(-1, Math.min(1, offset / (rect.width / 2)))
+    const newPosition = Math.round(normalized * 100)
+    setSliderPosition(newPosition)
+    onSelect(positionToStorage(newPosition))
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setIsDragging(true)
+    handleInteraction(e.clientX)
+  }
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true)
+    handleInteraction(e.touches[0].clientX)
+  }
+
+  useEffect(() => {
+    const handleMove = (e: MouseEvent | TouchEvent) => {
+      if (!isDragging) return
+      const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX
+      handleInteraction(clientX)
+    }
+
+    const handleEnd = () => {
+      setIsDragging(false)
+    }
+
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMove)
+      window.addEventListener('mouseup', handleEnd)
+      window.addEventListener('touchmove', handleMove)
+      window.addEventListener('touchend', handleEnd)
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMove)
+      window.removeEventListener('mouseup', handleEnd)
+      window.removeEventListener('touchmove', handleMove)
+      window.removeEventListener('touchend', handleEnd)
+    }
+  }, [isDragging])
+
+  const positionColor = getPositionColor()
+
+  return (
+    <div className="flex flex-col items-center w-full">
+      {/* Percentage display */}
+      <motion.div
+        className="px-6 py-3 rounded-xl border mb-4"
+        style={{
+          backgroundColor: '#1F2937',
+          borderColor: `${positionColor}80`,
+        }}
+        animate={percentage > 50 ? {
+          boxShadow: [
+            `0 0 20px ${positionColor}40`,
+            `0 0 30px ${positionColor}60`,
+            `0 0 20px ${positionColor}40`,
+          ],
+        } : {}}
+        transition={{ duration: 1.2, repeat: Infinity }}
+      >
+        <div className="flex items-center gap-2">
+          <Circle
+            className="w-5 h-5"
+            style={{ color: positionColor }}
+            fill={sliderPosition === 0 ? 'none' : positionColor}
+          />
+          <span className="text-2xl font-bold text-white">{percentage}%</span>
+        </div>
+      </motion.div>
+
+      {/* Labels */}
+      <div className="flex justify-between w-full px-2 mb-2">
+        <span
+          className={`text-sm transition-all ${isLeftSide ? 'text-purple-400 font-bold' : 'text-gray-500'}`}
+        >
+          {t('test.slider.agree')}
+        </span>
+        <span
+          className={`text-sm transition-all ${sliderPosition === 0 ? 'text-white font-bold' : 'text-gray-500'}`}
+        >
+          {t('test.slider.neutral')}
+        </span>
+        <span
+          className={`text-sm transition-all ${isRightSide ? 'text-cyan-400 font-bold' : 'text-gray-500'}`}
+        >
+          {t('test.slider.disagree')}
+        </span>
+      </div>
+
+      {/* Slider track */}
+      <div className="w-full px-6 py-4">
+        <div
+          ref={trackRef}
+          className="relative h-20 cursor-pointer select-none"
+          onMouseDown={handleMouseDown}
+          onTouchStart={handleTouchStart}
+        >
+          {/* Track background with gradient */}
+          <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-4 rounded-full overflow-hidden">
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(90deg, #8B5CF6, #EC4899, #4B5563, #3B82F6, #06B6D4)',
+              }}
+            />
+            <div className="absolute inset-0 bg-dark-bg/60" />
+          </div>
+
+          {/* Active fill from center */}
+          <div
+            className="absolute top-1/2 -translate-y-1/2 h-4 rounded-full transition-all duration-75"
+            style={{
+              left: isLeftSide ? `${50 + sliderPosition / 2}%` : '50%',
+              right: isRightSide ? `${50 - sliderPosition / 2}%` : '50%',
+              background: isLeftSide
+                ? 'linear-gradient(90deg, #8B5CF6, #EC4899)'
+                : 'linear-gradient(90deg, #3B82F6, #06B6D4)',
+              boxShadow: `0 0 10px ${positionColor}80`,
+            }}
+          />
+
+          {/* Center marker */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-full shadow-lg z-10"
+          />
+
+          {/* Tick marks at 25%, 50%, 75% */}
+          {[-75, -50, -25, 25, 50, 75].map((tick) => (
+            <div
+              key={tick}
+              className="absolute top-1/2 -translate-y-1/2 w-0.5 h-2 bg-gray-500/50 rounded"
+              style={{ left: `${50 + tick / 2}%` }}
+            />
+          ))}
+
+          {/* Thumb */}
+          <motion.div
+            className="absolute top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border-[3px] border-white flex items-center justify-center z-20"
+            style={{
+              left: `calc(${50 + sliderPosition / 2}% - 20px)`,
+              background: `linear-gradient(135deg, ${positionColor}, ${positionColor}CC)`,
+              boxShadow: percentage > 50
+                ? `0 0 20px ${positionColor}99, 0 0 40px ${positionColor}66`
+                : `0 0 10px ${positionColor}66`,
+            }}
+            animate={percentage > 50 ? {
+              boxShadow: [
+                `0 0 20px ${positionColor}99, 0 0 40px ${positionColor}66`,
+                `0 0 30px ${positionColor}BB, 0 0 50px ${positionColor}88`,
+                `0 0 20px ${positionColor}99, 0 0 40px ${positionColor}66`,
+              ],
+            } : {}}
+            transition={{ duration: 1.2, repeat: Infinity }}
+          >
+            <span className="text-white text-xs font-bold">{percentage}</span>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* 100% labels at ends */}
+      <div className="flex justify-between w-full px-2 text-xs">
+        <span className={isLeftSide && percentage > 80 ? 'text-purple-400' : 'text-gray-600'}>
+          100%
+        </span>
+        <span className={sliderPosition === 0 ? 'text-white' : 'text-gray-600'}>
+          0%
+        </span>
+        <span className={isRightSide && percentage > 80 ? 'text-cyan-400' : 'text-gray-600'}>
+          100%
+        </span>
       </div>
     </div>
   )
@@ -229,12 +417,12 @@ export default function TestPage() {
   }
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key >= '1' && e.key <= '5') {
-      handleAnswer(parseInt(e.key))
-    } else if (e.key === 'ArrowRight' && currentAnswer !== undefined) {
+    if (e.key === 'ArrowRight' && currentAnswer !== undefined) {
       handleNext()
     } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
       prevQuestion()
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      handleNext()
     }
   }
 
@@ -243,16 +431,10 @@ export default function TestPage() {
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [currentIndex, currentAnswer])
 
-  const scaleLabels = {
-    1: { color: 'from-red-500/20 to-red-600/20', borderColor: 'border-red-500', bgColor: 'bg-red-500' },
-    2: { color: 'from-orange-500/20 to-orange-600/20', borderColor: 'border-orange-500', bgColor: 'bg-orange-500' },
-    3: { color: 'from-gray-500/20 to-gray-600/20', borderColor: 'border-gray-500', bgColor: 'bg-gray-500' },
-    4: { color: 'from-blue-500/20 to-blue-600/20', borderColor: 'border-blue-500', bgColor: 'bg-blue-500' },
-    5: { color: 'from-green-500/20 to-green-600/20', borderColor: 'border-green-500', bgColor: 'bg-green-500' },
-  }
+  const factorColor = factorColors[currentQuestion.factor as keyof typeof factorColors]
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4 relative">
+    <div className="min-h-screen pt-20 pb-8 px-4 relative">
       <AmbientBackground />
 
       <div className="max-w-2xl mx-auto relative z-10">
@@ -272,25 +454,25 @@ export default function TestPage() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.3 }}
-            className="relative mb-8"
+            className="relative mb-6"
           >
             {/* Card glow effect */}
             <div
               className="absolute -inset-1 rounded-3xl opacity-20 blur-xl"
-              style={{ backgroundColor: factorColors[currentQuestion.factor] }}
+              style={{ backgroundColor: factorColor }}
             />
 
-            <div className="relative bg-dark-card/80 backdrop-blur-xl border border-dark-border rounded-2xl p-6 md:p-8">
+            <div className="relative bg-dark-card/80 backdrop-blur-xl border border-dark-border rounded-2xl p-5 md:p-6">
               {/* Factor Badge */}
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 500 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm mb-6"
+                className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm mb-4"
                 style={{
-                  backgroundColor: `${factorColors[currentQuestion.factor]}20`,
-                  color: factorColors[currentQuestion.factor],
-                  borderColor: factorColors[currentQuestion.factor],
+                  backgroundColor: `${factorColor}20`,
+                  color: factorColor,
+                  borderColor: factorColor,
                   borderWidth: 1,
                 }}
               >
@@ -304,61 +486,47 @@ export default function TestPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="text-xl md:text-2xl font-medium text-white mb-8 leading-relaxed"
+                className="text-lg md:text-xl font-medium text-white mb-4 leading-relaxed"
               >
                 {i18n.language === 'ko' ? currentQuestion.ko : currentQuestion.en}
               </motion.h2>
 
-              {/* Answer Scale */}
-              <div className="space-y-3">
-                {scaleOptions.map((value, idx) => {
-                  const isSelected = currentAnswer === value
-                  const style = scaleLabels[value]
-
-                  return (
-                    <motion.button
-                      key={value}
-                      onClick={() => handleAnswer(value)}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 + idx * 0.05 }}
-                      whileHover={{ scale: 1.02, x: 5 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`w-full p-4 rounded-xl border-2 transition-all flex items-center gap-4 backdrop-blur-sm
-                        ${isSelected
-                          ? `bg-gradient-to-r ${style.color} ${style.borderColor} text-white`
-                          : 'bg-dark-bg/50 border-dark-border text-gray-300 hover:border-gray-600'
-                        }`}
-                    >
-                      <div
-                        className={`w-8 h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-                          ${isSelected
-                            ? `${style.borderColor} ${style.bgColor}`
-                            : 'border-gray-600'
-                          }`}
-                      >
-                        {isSelected && (
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            className="w-3 h-3 bg-white rounded-full"
-                          />
-                        )}
-                      </div>
-                      <span className="flex-1 text-left">{t(`test.scale.${value}`)}</span>
-                      <span className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-500'}`}>
-                        {value}
-                      </span>
-                    </motion.button>
-                  )
-                })}
-              </div>
+              {/* Example (if available) */}
+              {(i18n.language === 'ko' ? currentQuestion.koExample : currentQuestion.enExample) && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="p-3 rounded-lg bg-dark-bg/50 border border-dark-border"
+                >
+                  <div className="flex items-start gap-2">
+                    <Lightbulb className="w-4 h-4 mt-0.5" style={{ color: `${factorColor}B0` }} />
+                    <span className="text-sm text-gray-400 leading-relaxed">
+                      {i18n.language === 'ko' ? currentQuestion.koExample : currentQuestion.enExample}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         </AnimatePresence>
 
+        {/* Percentage Slider */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="bg-dark-card/60 backdrop-blur-xl border border-dark-border rounded-2xl p-4 mb-6"
+        >
+          <PercentageSlider
+            currentAnswer={currentAnswer}
+            onSelect={handleAnswer}
+            factorColor={factorColor}
+          />
+        </motion.div>
+
         {/* Navigation */}
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-4">
           <motion.button
             onClick={prevQuestion}
             disabled={currentIndex === 0}
@@ -384,39 +552,25 @@ export default function TestPage() {
           </motion.button>
         </div>
 
-        {/* Keyboard hint */}
+        {/* Hint */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center text-gray-500 text-sm mt-8"
+          className="text-center text-gray-500 text-sm"
         >
-          {i18n.language === 'ko'
-            ? '키보드 1-5로 응답, ← → 로 이동할 수 있습니다'
-            : 'Press 1-5 to answer, ← → to navigate'}
+          {t('test.slider.hint')}
         </motion.p>
 
-        {/* Breathing guide */}
-        <motion.div
-          className="fixed bottom-8 right-8 hidden md:flex items-center gap-3 text-gray-500 text-sm"
+        {/* Take time message */}
+        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
+          transition={{ delay: 0.6 }}
+          className="text-center text-gray-500 text-sm mt-2"
         >
-          <motion.div
-            className="w-3 h-3 rounded-full bg-purple-500/50"
-            animate={{
-              scale: [1, 1.5, 1],
-              opacity: [0.5, 1, 0.5],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-          <span>{i18n.language === 'ko' ? '천천히, 편안하게' : 'Take your time'}</span>
-        </motion.div>
+          {t('test.slider.takeTime')}
+        </motion.p>
       </div>
     </div>
   )

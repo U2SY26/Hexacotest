@@ -1,18 +1,17 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis,
   PolarRadiusAxis, ResponsiveContainer
 } from 'recharts'
-import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle } from 'lucide-react'
+import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle, Info, Brain } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import { decodeResults, useTestStore } from '../stores/testStore'
 import { factorColors, factors, Factor } from '../data/questions'
 import { findTopMatches, MatchResult } from '../utils/matching'
 import { categoryColors } from '../data/personas'
-import LoadingSpinner from '../components/common/LoadingSpinner'
 import { CelebrityDisclaimer } from '../components/common/DisclaimerSection'
 
 interface AnalysisFactor {
@@ -28,6 +27,222 @@ interface AnalysisResponse {
   factors: AnalysisFactor[]
 }
 
+// Loading screen with animated messages
+function LoadingScreen({ language }: { language: string }) {
+  const [messageIndex, setMessageIndex] = useState(0)
+  const isKo = language === 'ko'
+
+  const messages = isKo
+    ? [
+        '당신의 성격을 분석하고 있어요...',
+        '6가지 요인을 계산 중...',
+        '100가지 유형과 비교하는 중...',
+        '가장 비슷한 유형을 찾고 있어요...',
+        '두근두근...',
+        '결과를 준비하고 있어요...',
+      ]
+    : [
+        'Analyzing your personality...',
+        'Calculating 6 factors...',
+        'Comparing with 100 types...',
+        'Finding your closest match...',
+        'Drumroll please...',
+        'Preparing your results...',
+      ]
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setMessageIndex((prev) => (prev + 1) % messages.length)
+    }, 800)
+    return () => clearInterval(timer)
+  }, [messages.length])
+
+  const progress = ((messageIndex + 1) / messages.length) * 100
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-dark-bg">
+      {/* Animated orb */}
+      <motion.div
+        className="relative w-32 h-32 mb-12"
+        animate={{
+          scale: [1, 1.1, 1],
+        }}
+        transition={{
+          duration: 1.5,
+          repeat: Infinity,
+          ease: 'easeInOut',
+        }}
+      >
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+          <Brain className="w-16 h-16 text-white" />
+        </div>
+        <motion.div
+          className="absolute inset-0 rounded-full"
+          animate={{
+            boxShadow: [
+              '0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(236, 72, 153, 0.2)',
+              '0 0 50px rgba(139, 92, 246, 0.5), 0 0 80px rgba(236, 72, 153, 0.4)',
+              '0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(236, 72, 153, 0.2)',
+            ],
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+      </motion.div>
+
+      {/* Message */}
+      <AnimatePresence mode="wait">
+        <motion.p
+          key={messageIndex}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="text-white text-lg font-medium mb-8 text-center"
+        >
+          {messages[messageIndex]}
+        </motion.p>
+      </AnimatePresence>
+
+      {/* Progress bar */}
+      <div className="w-48 h-1.5 bg-dark-card rounded-full overflow-hidden">
+        <motion.div
+          className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.3 }}
+        />
+      </div>
+
+      {/* Percentage */}
+      <p className="text-gray-400 text-sm mt-4">
+        {Math.round(progress)}%
+      </p>
+    </div>
+  )
+}
+
+// Factor card component
+function FactorCard({
+  factor,
+  score,
+  name,
+  description,
+  delay,
+}: {
+  factor: Factor
+  score: number
+  name: string
+  description: string
+  delay: number
+}) {
+  const color = factorColors[factor]
+  const isHigh = score >= 50
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay }}
+      className="relative overflow-hidden rounded-xl border border-dark-border p-4"
+      style={{
+        background: `linear-gradient(135deg, ${color}20 0%, transparent 60%)`,
+      }}
+    >
+      <div className="flex items-center gap-2 mb-3">
+        <span
+          className="text-2xl font-bold"
+          style={{ color }}
+        >
+          {factor}
+        </span>
+        <span className="text-gray-400 text-sm truncate flex-1">
+          {name}
+        </span>
+      </div>
+
+      <div className="text-2xl font-bold text-white mb-2">
+        {score.toFixed(1)}%
+      </div>
+
+      <div className="h-1.5 bg-dark-bg rounded-full overflow-hidden mb-3">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${score}%` }}
+          transition={{ delay: delay + 0.2, duration: 0.8 }}
+          className="h-full rounded-full"
+          style={{ backgroundColor: color }}
+        />
+      </div>
+
+      <p className="text-xs text-gray-400 leading-relaxed">
+        {description}
+      </p>
+    </motion.div>
+  )
+}
+
+// Match card component
+function MatchCard({
+  match,
+  rank,
+  language,
+}: {
+  match: MatchResult
+  rank: number
+  language: string
+}) {
+  const { t } = useTranslation()
+  const name = match.persona.name[language as 'ko' | 'en']
+  const description = match.persona.description[language as 'ko' | 'en']
+
+  return (
+    <div className="flex items-center gap-4 p-4 rounded-xl bg-dark-bg/50">
+      {/* Avatar */}
+      <div className="relative flex-shrink-0">
+        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+          <span className="text-xl font-bold text-white">
+            {name[0]}
+          </span>
+        </div>
+        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-dark-card border border-dark-border flex items-center justify-center">
+          <span className="text-xs font-bold text-gray-400">#{rank}</span>
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="font-bold text-white truncate">{name}</h3>
+          <span
+            className="text-xs px-2 py-0.5 rounded-full flex-shrink-0"
+            style={{
+              backgroundColor: categoryColors[match.persona.category],
+              color: 'white',
+            }}
+          >
+            {t(`result.category.${match.persona.category}`)}
+          </span>
+        </div>
+        <p className="text-sm text-gray-400 line-clamp-2">{description}</p>
+      </div>
+
+      {/* Similarity */}
+      <div className="flex-shrink-0 text-right">
+        <div className="text-lg font-bold text-purple-400">
+          {match.similarity}%
+        </div>
+        {match.similarity >= 80 && (
+          <span className="text-xs text-emerald-400">
+            {language === 'ko' ? '찰떡!' : 'Match!'}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
+
 export default function ResultPage() {
   const { t, i18n } = useTranslation()
   const [searchParams] = useSearchParams()
@@ -41,7 +256,6 @@ export default function ResultPage() {
   const storeScores = useTestStore(state => state.scores)
   const reset = useTestStore(state => state.reset)
 
-  // URL에서 결과 가져오기 또는 스토어에서 가져오기
   const encodedResult = searchParams.get('r')
   const scores = encodedResult ? decodeResults(encodedResult) : storeScores
   const match = topMatches[0]
@@ -50,6 +264,93 @@ export default function ResultPage() {
         .map(factor => analysis.factors.find(item => item.factor === factor))
         .filter((item): item is AnalysisFactor => Boolean(item))
     : []
+
+  const factorNamesKo: Record<Factor, string> = {
+    H: '정직-겸손',
+    E: '정서성',
+    X: '외향성',
+    A: '원만성',
+    C: '성실성',
+    O: '개방성',
+  }
+
+  const factorNamesEn: Record<Factor, string> = {
+    H: 'Honesty-Humility',
+    E: 'Emotionality',
+    X: 'Extraversion',
+    A: 'Agreeableness',
+    C: 'Conscientiousness',
+    O: 'Openness',
+  }
+
+  const getFactorDescription = (factor: Factor, score: number, isKo: boolean) => {
+    const isHigh = score >= 50
+    const descriptions: Record<Factor, { high: { ko: string; en: string }; low: { ko: string; en: string } }> = {
+      H: {
+        high: {
+          ko: '진실되고 공정하며, 물질적 이득보다 도덕적 가치를 중시합니다.',
+          en: 'Sincere and fair, valuing moral principles over material gain.',
+        },
+        low: {
+          ko: '자신의 이익을 위해 적극적으로 행동하며, 사회적 지위에 관심이 많습니다.',
+          en: 'Actively pursues interests and cares about social status.',
+        },
+      },
+      E: {
+        high: {
+          ko: '감정적으로 민감하고, 다른 사람들과 깊은 유대감을 형성합니다.',
+          en: 'Emotionally sensitive and forms deep bonds with others.',
+        },
+        low: {
+          ko: '정서적으로 안정되어 있으며, 스트레스 상황에서도 침착함을 유지합니다.',
+          en: 'Emotionally stable and remains calm under stress.',
+        },
+      },
+      X: {
+        high: {
+          ko: '사교적이고 활발하며, 사람들과 함께 있을 때 에너지를 얻습니다.',
+          en: 'Sociable and energetic, gaining energy from being with people.',
+        },
+        low: {
+          ko: '조용하고 내성적이며, 혼자만의 시간을 즐깁니다.',
+          en: 'Quiet and introverted, enjoying time alone.',
+        },
+      },
+      A: {
+        high: {
+          ko: '타인을 쉽게 용서하고, 갈등을 피하며 협력적입니다.',
+          en: 'Easily forgives others, avoids conflict, and is cooperative.',
+        },
+        low: {
+          ko: '자신의 의견을 강하게 표현하고, 필요시 비판도 서슴지 않습니다.',
+          en: 'Expresses opinions strongly and doesn\'t hesitate to criticize.',
+        },
+      },
+      C: {
+        high: {
+          ko: '체계적이고 목표 지향적이며, 계획에 따라 행동합니다.',
+          en: 'Organized, goal-oriented, and acts according to plans.',
+        },
+        low: {
+          ko: '유연하고 즉흥적이며, 규칙에 얽매이지 않습니다.',
+          en: 'Flexible and spontaneous, not bound by rules.',
+        },
+      },
+      O: {
+        high: {
+          ko: '창의적이고 호기심이 많으며, 새로운 경험을 추구합니다.',
+          en: 'Creative, curious, and seeks new experiences.',
+        },
+        low: {
+          ko: '실용적이고 전통적인 방식을 선호합니다.',
+          en: 'Practical and prefers traditional approaches.',
+        },
+      },
+    }
+    return isHigh
+      ? (isKo ? descriptions[factor].high.ko : descriptions[factor].high.en)
+      : (isKo ? descriptions[factor].low.ko : descriptions[factor].low.en)
+  }
 
   useEffect(() => {
     if (!scores) {
@@ -63,7 +364,7 @@ export default function ResultPage() {
     setAnalysisError(null)
 
     const delay = new Promise(resolve => {
-      setTimeout(resolve, 1500)
+      setTimeout(resolve, 4000) // 4 seconds loading
     })
 
     const matchesPromise = delay.then(() => findTopMatches(scores, 5))
@@ -97,8 +398,8 @@ export default function ResultPage() {
         setAnalysis(analysisResult.value)
       } else {
         setAnalysisError(i18n.language === 'ko'
-          ? 'LLM 분석을 불러오지 못했습니다. 잠시 후 다시 시도해주세요.'
-          : 'Failed to load LLM analysis. Please try again later.')
+          ? 'AI 분석을 불러오지 못했습니다.'
+          : 'Failed to load AI analysis.')
       }
 
       setIsLoading(false)
@@ -122,10 +423,6 @@ export default function ResultPage() {
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
-
-  const formatPercent = (value: number) => `${value.toFixed(1)}%`
-
-  const toSafeUrl = (url: string) => encodeURI(url)
 
   const shareTwitter = () => {
     const text = i18n.language === 'ko'
@@ -153,19 +450,7 @@ export default function ResultPage() {
   }
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center">
-        <LoadingSpinner />
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-gray-400 mt-4"
-        >
-          {t('result.analyzing')}
-        </motion.p>
-      </div>
-    )
+    return <LoadingScreen language={i18n.language} />
   }
 
   if (!scores) {
@@ -186,30 +471,81 @@ export default function ResultPage() {
     )
   }
 
+  const isKo = i18n.language === 'ko'
+
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4">
+    <div className="min-h-screen pt-20 pb-12 px-4">
       <div className="max-w-4xl mx-auto">
-        {/* Result Card for Screenshot */}
-        <div ref={resultRef} className="space-y-8 p-4">
+        <div ref={resultRef} className="space-y-6 p-4">
           {/* Title */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <h1 className="text-3xl md:text-4xl font-bold gradient-text mb-2">
-              {t('result.title')}
+            <h1 className="text-2xl md:text-3xl font-bold gradient-text mb-2">
+              {isKo ? '결과' : 'Results'}
             </h1>
+            <p className="text-gray-400 text-sm">
+              {isKo
+                ? '100가지 유형 중 가장 가까운 유형을 추천합니다.'
+                : 'We recommend the closest match among 100 types.'}
+            </p>
           </motion.div>
+
+          {/* Top Match Card */}
+          {match && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2 }}
+              className="relative overflow-hidden rounded-2xl border border-purple-500/30 p-6"
+              style={{
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%)',
+              }}
+            >
+              <div className="flex items-start gap-4">
+                {/* Avatar */}
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                  <span className="text-2xl font-bold text-white">
+                    {match.persona.name[isKo ? 'ko' : 'en'][0]}
+                  </span>
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-xl font-bold text-white mb-1">
+                    {match.persona.name[isKo ? 'ko' : 'en']}
+                  </h2>
+                  <p className="text-sm text-gray-400 mb-3 line-clamp-2">
+                    {match.persona.description[isKo ? 'ko' : 'en']}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <span className="text-purple-400 font-medium">
+                      {isKo ? `유사도 ${match.similarity}%` : `${match.similarity}% Similar`}
+                    </span>
+                    {match.similarity >= 80 && (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-medium">
+                        {isKo ? '찰떡궁합!' : 'Perfect Match!'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {/* Radar Chart */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.3 }}
             className="card"
           >
-            <div className="h-80 md:h-96">
+            <h3 className="text-lg font-bold text-white mb-4">
+              {isKo ? '프로필 지도' : 'Profile Map'}
+            </h3>
+            <div className="h-72 md:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
                   <PolarGrid stroke="#2d2d44" />
@@ -235,51 +571,26 @@ export default function ResultPage() {
             </div>
           </motion.div>
 
-          {/* Factor Scores */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="grid grid-cols-2 md:grid-cols-3 gap-4"
-          >
-            {factors.map((factor, index) => (
-              <motion.div
-                key={factor}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-                className="card p-4"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <span
-                    className="text-2xl font-bold"
-                    style={{ color: factorColors[factor] }}
-                  >
-                    {factor}
-                  </span>
-                  <span className="text-gray-400 text-sm">
-                    {t(`landing.hexaco.factors.${factor}.name`)}
-                  </span>
-                </div>
-                <div className="flex items-end gap-2">
-                  <span className="text-3xl font-bold text-white">
-                    {formatPercent(scores[factor])}
-                  </span>
-                </div>
-                <div className="mt-2 h-2 bg-dark-bg rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${scores[factor]}%` }}
-                    transition={{ delay: 0.6 + index * 0.1, duration: 0.8 }}
-                    className="h-full rounded-full"
-                    style={{ backgroundColor: factorColors[factor] }}
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
+          {/* Factor Scores Grid */}
+          <div>
+            <h3 className="text-lg font-bold text-white mb-4">
+              {isKo ? '요인 점수' : 'Factor Scores'}
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {factors.map((factor, index) => (
+                <FactorCard
+                  key={factor}
+                  factor={factor}
+                  score={scores[factor]}
+                  name={isKo ? factorNamesKo[factor] : factorNamesEn[factor]}
+                  description={getFactorDescription(factor, scores[factor], isKo)}
+                  delay={0.4 + index * 0.1}
+                />
+              ))}
+            </div>
+          </div>
 
-          {/* LLM Analysis */}
+          {/* AI Analysis */}
           {analysis && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -287,15 +598,34 @@ export default function ResultPage() {
               transition={{ delay: 0.6 }}
               className="card"
             >
-              <h2 className="text-xl font-bold text-white mb-2">
-                {i18n.language === 'ko' ? 'LLM 성격 분석' : 'LLM Personality Analysis'}
-              </h2>
-              <p className="text-gray-400 text-sm mb-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <Brain className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-white">
+                    {isKo ? '성격 분석 리포트' : 'Personality Analysis Report'}
+                  </h3>
+                  <p className="text-xs text-gray-400">
+                    {isKo ? 'AI 기반 분석' : 'AI-powered analysis'}
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-gray-300 text-sm mb-6 leading-relaxed">
                 {analysis.summary}
               </p>
+
               <div className="space-y-4">
                 {analysisFactors.map(item => (
-                  <div key={item.factor} className="rounded-lg bg-dark-bg/40 p-4">
+                  <div
+                    key={item.factor}
+                    className="rounded-xl p-4"
+                    style={{
+                      background: `linear-gradient(135deg, ${factorColors[item.factor]}15 0%, transparent 60%)`,
+                      borderLeft: `3px solid ${factorColors[item.factor]}`,
+                    }}
+                  >
                     <div className="flex items-center gap-2 mb-2">
                       <span
                         className="text-lg font-bold"
@@ -304,35 +634,39 @@ export default function ResultPage() {
                         {item.factor}
                       </span>
                       <span className="text-sm text-gray-400">
-                        {t(`landing.hexaco.factors.${item.factor}.name`)}
+                        {isKo ? factorNamesKo[item.factor] : factorNamesEn[item.factor]}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-400">{item.overview}</p>
-                    <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-500">
-                      <div>
-                        <p className="text-gray-400 font-medium mb-1">
-                          {i18n.language === 'ko' ? '강점' : 'Strengths'}
+                    <p className="text-sm text-gray-300 mb-3">{item.overview}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                      <div className="bg-dark-bg/50 rounded-lg p-3">
+                        <p className="text-gray-400 font-medium mb-2">
+                          {isKo ? '강점' : 'Strengths'}
                         </p>
-                        <ul className="list-disc list-inside space-y-1">
-                          {item.strengths?.map((strength, index) => (
-                            <li key={`strength-${item.factor}-${index}`}>{strength}</li>
+                        <ul className="text-gray-500 space-y-1">
+                          {item.strengths?.map((s, i) => (
+                            <li key={i} className="flex items-start gap-1">
+                              <span className="text-emerald-400">+</span> {s}
+                            </li>
                           ))}
                         </ul>
                       </div>
-                      <div>
-                        <p className="text-gray-400 font-medium mb-1">
-                          {i18n.language === 'ko' ? '주의점' : 'Risks'}
+                      <div className="bg-dark-bg/50 rounded-lg p-3">
+                        <p className="text-gray-400 font-medium mb-2">
+                          {isKo ? '주의점' : 'Risks'}
                         </p>
-                        <ul className="list-disc list-inside space-y-1">
-                          {item.risks?.map((risk, index) => (
-                            <li key={`risk-${item.factor}-${index}`}>{risk}</li>
+                        <ul className="text-gray-500 space-y-1">
+                          {item.risks?.map((r, i) => (
+                            <li key={i} className="flex items-start gap-1">
+                              <span className="text-amber-400">!</span> {r}
+                            </li>
                           ))}
                         </ul>
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 mt-3">
-                      <span className="text-gray-400 font-medium mr-2">
-                        {i18n.language === 'ko' ? '제안' : 'Growth'}
+                      <span className="text-purple-400 font-medium mr-2">
+                        {isKo ? '제안' : 'Growth'}
                       </span>
                       {item.growth}
                     </p>
@@ -341,112 +675,82 @@ export default function ResultPage() {
               </div>
             </motion.div>
           )}
+
           {analysisError && (
-            <div className="card border border-red-500/30 bg-red-500/5 text-red-200 text-sm">
+            <div className="card border border-amber-500/30 bg-amber-500/5 text-amber-200 text-sm">
               {analysisError}
             </div>
           )}
 
-          {/* Top Persona Matches */}
+          {/* Top 5 Matches */}
           {topMatches.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
-              className="card bg-gradient-to-br from-purple-900/30 to-pink-900/30 border-purple-500/30"
+              className="card"
             >
-              <h2 className="text-xl font-bold text-white mb-2">
-                {t('result.matchTitle')}
-              </h2>
-              <p className="text-gray-400 text-sm mb-6">
+              <h3 className="text-lg font-bold text-white mb-2">
+                {isKo ? '추천 유형 TOP 5' : 'Top 5 Matches'}
+              </h3>
+              <p className="text-gray-400 text-sm mb-4">
                 {t('result.matchDescription')}
               </p>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {topMatches.map((item, index) => (
-                  <div
+                  <MatchCard
                     key={item.persona.id}
-                    className="flex flex-col md:flex-row items-center gap-4 rounded-lg bg-dark-bg/40 p-4"
-                  >
-                    <div className="relative">
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 p-1">
-                        <div className="w-full h-full rounded-full bg-dark-card flex items-center justify-center">
-                          <span className="text-2xl font-bold gradient-text">
-                            {item.persona.name[i18n.language as 'ko' | 'en'][0]}
-                          </span>
-                        </div>
-                      </div>
-                      <div
-                        className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[10px] font-medium"
-                        style={{
-                          backgroundColor: categoryColors[item.persona.category],
-                          color: 'white'
-                        }}
-                      >
-                        {t(`result.category.${item.persona.category}`)}
-                      </div>
-                      <div className="absolute -top-2 -right-2 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/10 text-white">
-                        #{index + 1}
-                      </div>
-                    </div>
-
-                    <div className="flex-1 text-center md:text-left">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-1">
-                        <h3 className="text-lg font-bold text-white">
-                          {item.persona.name[i18n.language as 'ko' | 'en']}
-                        </h3>
-                        <p className="text-purple-400 text-sm font-medium">
-                          {t('result.similarity', { percent: item.similarity })}
-                        </p>
-                      </div>
-                      <p className="text-gray-400 text-sm mt-2">
-                        {item.persona.description[i18n.language as 'ko' | 'en']}
-                      </p>
-                      <div className="mt-2 text-xs text-gray-500">
-                        <span className="mr-2">
-                          {i18n.language === 'ko' ? '출처' : 'Source'}:
-                        </span>
-                        <a
-                          href={toSafeUrl(item.persona.sourceUrl)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="underline hover:text-gray-300"
-                        >
-                          {i18n.language === 'ko' ? '나무위키' : 'NamuWiki'}
-                        </a>
-                      </div>
-                    </div>
-                  </div>
+                    match={item}
+                    rank={index + 1}
+                    language={i18n.language}
+                  />
                 ))}
               </div>
 
-              {/* Celebrity Disclaimer */}
               <CelebrityDisclaimer />
             </motion.div>
           )}
 
-          {/* Bottom Disclaimer */}
+          {/* Legal Notice */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            className="mt-6 text-center text-xs text-gray-500 space-y-1"
+            className="rounded-xl bg-dark-card/50 border border-dark-border p-4"
           >
-            <div className="flex items-center justify-center gap-2">
-              <AlertTriangle className="w-3 h-3" />
-              <span>
-                {i18n.language === 'ko'
-                  ? '비공식 테스트 | 오락 목적 | 전문 심리 평가를 대체하지 않음'
-                  : 'Unofficial Test | Entertainment Purpose | Does not replace professional assessment'
-                }
+            <div className="flex items-center gap-2 mb-3">
+              <Info className="w-4 h-4 text-gray-400" />
+              <span className="text-sm font-medium text-gray-400">
+                {isKo ? '법적 고지' : 'Legal Notice'}
               </span>
             </div>
-            <p>
-              {i18n.language === 'ko'
-                ? 'HEXACO 이론 기반 (Ashton & Lee) - 공식 HEXACO-PI-R과 무관'
-                : 'Based on HEXACO theory (Ashton & Lee) - Not affiliated with official HEXACO-PI-R'
-              }
-            </p>
+            <ul className="text-xs text-gray-500 space-y-1.5">
+              <li className="flex items-start gap-2">
+                <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                <span>
+                  {isKo
+                    ? '본 테스트는 비공식이며 HEXACO-PI-R과 무관합니다.'
+                    : 'Unofficial test, not affiliated with HEXACO-PI-R.'}
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                <span>
+                  {isKo
+                    ? '결과는 오락 및 자기이해 목적이며 전문 심리 진단을 대체하지 않습니다.'
+                    : 'For entertainment/self-understanding only, not professional diagnosis.'}
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                <span>
+                  {isKo
+                    ? '테스트 결과는 기기에만 저장되며 수집하지 않습니다.'
+                    : 'Results are stored locally and not collected.'}
+                </span>
+              </li>
+            </ul>
           </motion.div>
         </div>
 
@@ -455,20 +759,20 @@ export default function ResultPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="mt-8 flex flex-wrap justify-center gap-4"
+          className="mt-6 flex flex-wrap justify-center gap-3"
         >
           <button onClick={copyLink} className="btn-secondary flex items-center gap-2">
-            {copied ? <Check className="w-5 h-5 text-green-500" /> : <Link2 className="w-5 h-5" />}
+            {copied ? <Check className="w-4 h-4 text-green-500" /> : <Link2 className="w-4 h-4" />}
             {copied ? t('common.copied') : t('common.copyLink')}
           </button>
 
           <button onClick={shareTwitter} className="btn-secondary flex items-center gap-2">
-            <Twitter className="w-5 h-5" />
+            <Twitter className="w-4 h-4" />
             Twitter
           </button>
 
           <button onClick={downloadImage} className="btn-secondary flex items-center gap-2">
-            <Download className="w-5 h-5" />
+            <Download className="w-4 h-4" />
             {t('common.save')}
           </button>
         </motion.div>
@@ -478,19 +782,19 @@ export default function ResultPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2 }}
-          className="mt-8 flex justify-center gap-4"
+          className="mt-6 flex justify-center gap-4"
         >
           <Link
             to="/test"
             onClick={() => reset()}
             className="btn-primary flex items-center gap-2"
           >
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-4 h-4" />
             {t('common.retry')}
           </Link>
 
           <Link to="/" className="btn-secondary flex items-center gap-2">
-            <Home className="w-5 h-5" />
+            <Home className="w-4 h-4" />
             {t('common.home')}
           </Link>
         </motion.div>

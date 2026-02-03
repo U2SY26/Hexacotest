@@ -1,4 +1,8 @@
 {
+  "header": {
+    "tagline": "5 Min to Know Yourself",
+    "subtitle": "HEXACO Personality Test"
+  },
   "common": {
     "start": "Start Test",
     "next": "Next",
@@ -91,6 +95,13 @@
       "3": "Neutral",
       "4": "Agree",
       "5": "Strongly Agree"
+    },
+    "slider": {
+      "agree": "Agree",
+      "neutral": "Neutral",
+      "disagree": "Disagree",
+      "hint": "Drag the slider to select your agreement level.",
+      "takeTime": "Take your time."
     }
   },
   "result": {

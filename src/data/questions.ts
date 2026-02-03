@@ -5,6 +5,8 @@ export interface Question {
   reverse: boolean
   ko: string
   en: string
+  koExample?: string
+  enExample?: string
   tier: 1 | 2 | 3 // 1=60문항, 2=120문항 추가분, 3=180문항 추가분
 }
 
