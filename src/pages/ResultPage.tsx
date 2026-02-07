@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -15,6 +15,19 @@ import { categoryColors } from '../data/personas'
 import { CelebrityDisclaimer } from '../components/common/DisclaimerSection'
 import { getPersonalityTitle, getMemeQuotes, getMainMemeQuote, getCharacterMatch, getMBTIMatch } from '../utils/memeContent'
 import { getFactorAnalyses, getOverallAnalysis, type FactorAnalysis as LocalFactorAnalysis } from '../utils/personalityAnalysis'
+
+interface AIAnalysisFactor {
+  factor: string
+  overview: string
+  strengths: string[]
+  risks: string[]
+  growth: string
+}
+
+interface AIAnalysisResponse {
+  summary: string
+  factors: AIAnalysisFactor[]
+}
 
 const factorNamesKo: Record<Factor, string> = {
   H: '정직-겸손', E: '정서성', X: '외향성', A: '원만성', C: '성실성', O: '개방성',
@@ -245,12 +258,17 @@ export default function ResultPage() {
   const [summaryCopied, setSummaryCopied] = useState(false)
   const [topMatches, setTopMatches] = useState<MatchResult[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [aiAnalysis, setAiAnalysis] = useState<AIAnalysisResponse | null>(null)
+  const [aiLoading, setAiLoading] = useState(false)
 
   const storeScores = useTestStore(state => state.scores)
   const reset = useTestStore(state => state.reset)
 
   const encodedResult = searchParams.get('r')
-  const scores = encodedResult ? decodeResults(encodedResult) : storeScores
+  const scores = useMemo(
+    () => encodedResult ? decodeResults(encodedResult) : storeScores,
+    [encodedResult, storeScores]
+  )
   const match = topMatches[0]
 
   // Meme content (computed from scores)
@@ -274,12 +292,35 @@ export default function ResultPage() {
     // 로딩 애니메이션 후 매칭 결과 표시
     const timer = setTimeout(() => {
       if (cancelled) return
-      setTopMatches(findTopMatches(scores, 5))
+      try {
+        setTopMatches(findTopMatches(scores, 5))
+      } catch (e) {
+        console.error('Failed to find matches:', e)
+      }
       setIsLoading(false)
     }, 4000)
 
     return () => { cancelled = true; clearTimeout(timer) }
   }, [scores])
+
+  // AI 분석 (백그라운드에서 로드)
+  useEffect(() => {
+    if (!scores || isLoading) return
+    let cancelled = false
+    setAiLoading(true)
+
+    fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scores, language: i18n.language }),
+    })
+      .then(res => res.ok ? res.json() : Promise.reject(new Error(`API ${res.status}`)))
+      .then(data => { if (!cancelled) setAiAnalysis(data) })
+      .catch(err => console.error('AI analysis failed:', err))
+      .finally(() => { if (!cancelled) setAiLoading(false) })
+
+    return () => { cancelled = true }
+  }, [scores, isLoading, i18n.language])
 
   const chartData = scores
     ? factors.map(factor => ({ factor, value: scores[factor], fullMark: 100 }))
@@ -545,6 +586,101 @@ export default function ResultPage() {
             <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
               {overallText}
             </p>
+          </motion.div>
+
+          {/* AI Analysis Report */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+            className="card"
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                <Brain className="w-4 h-4 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-white">
+                {isKo ? 'AI 심리 분석 리포트' : 'AI Psychology Report'}
+              </h3>
+            </div>
+
+            {aiLoading && (
+              <div className="flex items-center gap-3 py-8 justify-center">
+                <motion.div
+                  className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                />
+                <span className="text-gray-400 text-sm">
+                  {isKo ? 'AI가 당신의 성격을 깊이 분석하고 있어요...' : 'AI is deeply analyzing your personality...'}
+                </span>
+              </div>
+            )}
+
+            {!aiLoading && !aiAnalysis && (
+              <p className="text-gray-500 text-sm text-center py-4">
+                {isKo ? 'AI 분석을 불러올 수 없었습니다.' : 'Could not load AI analysis.'}
+              </p>
+            )}
+
+            {aiAnalysis && (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+                  {aiAnalysis.summary}
+                </p>
+
+                {aiAnalysis.factors.length > 0 && (
+                  <div className="space-y-3 mt-4">
+                    {aiAnalysis.factors.map((af) => {
+                      const color = factorColors[af.factor as keyof typeof factorColors] ?? '#8B5CF6'
+                      return (
+                        <details
+                          key={af.factor}
+                          className="rounded-xl border border-dark-border overflow-hidden group"
+                          style={{ background: `linear-gradient(135deg, ${color}08 0%, transparent 60%)` }}
+                        >
+                          <summary className="flex items-center gap-2 p-4 cursor-pointer list-none">
+                            <span className="text-sm font-bold" style={{ color }}>{af.factor}</span>
+                            <span className="text-xs text-gray-400">
+                              {isKo ? (factorNamesKo[af.factor as Factor] ?? af.factor) : (factorNamesEn[af.factor as Factor] ?? af.factor)}
+                            </span>
+                            <svg className="w-4 h-4 text-gray-500 ml-auto transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                          </summary>
+                          <div className="px-4 pb-4 space-y-3">
+                            <p className="text-sm text-gray-300 leading-relaxed">{af.overview}</p>
+                            <div>
+                              <p className="text-xs font-medium text-emerald-400 mb-1">{isKo ? '강점' : 'Strengths'}</p>
+                              <ul className="space-y-1">
+                                {af.strengths.map((s, i) => (
+                                  <li key={i} className="text-xs text-gray-400 flex items-start gap-1.5">
+                                    <span className="text-emerald-400 mt-0.5">+</span>{s}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-amber-400 mb-1">{isKo ? '성장 포인트' : 'Growth Areas'}</p>
+                              <ul className="space-y-1">
+                                {af.risks.map((r, i) => (
+                                  <li key={i} className="text-xs text-gray-400 flex items-start gap-1.5">
+                                    <span className="text-amber-400 mt-0.5">~</span>{r}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-3">
+                              <p className="text-xs text-blue-300 leading-relaxed">{af.growth}</p>
+                            </div>
+                          </div>
+                        </details>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </motion.div>
 
           {/* Meme Quotes Grid */}

@@ -27,6 +27,7 @@ import '../widgets/ad_banner.dart';
 import '../widgets/native_ad.dart';
 import '../config/admob_ids.dart';
 import '../services/rewarded_ad_service.dart';
+import '../services/ai_analysis_service.dart';
 
 class ResultScreen extends StatefulWidget {
   final TestController controller;
@@ -49,6 +50,8 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
   late AnimationController _celebrationController;
+  AIAnalysisResult? _aiAnalysis;
+  bool _aiLoading = false;
 
   final List<String> _loadingMessagesKo = [
     '당신의 성격을 분석하고 있어요...',
@@ -132,6 +135,19 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
       if (!mounted) return;
       _fadeController.forward();
     });
+    _fetchAIAnalysis();
+  }
+
+  Future<void> _fetchAIAnalysis() async {
+    setState(() => _aiLoading = true);
+    final isKo = widget.controller.language == 'ko';
+    final result = await AIAnalysisService.fetchAnalysis(scores, isKo: isKo);
+    if (mounted) {
+      setState(() {
+        _aiAnalysis = result;
+        _aiLoading = false;
+      });
+    }
   }
 
   @override
@@ -427,6 +443,12 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
           _MemeContentSection(scores: scores, isKo: isKo),
           const SizedBox(height: 16),
           _PersonalityAnalysisCard(scores: scores, isKo: isKo),
+          const SizedBox(height: 16),
+          _AIAnalysisCard(
+            analysis: _aiAnalysis,
+            isLoading: _aiLoading,
+            isKo: isKo,
+          ),
           const SizedBox(height: 16),
           Text(
             isKo ? '추천 유형 TOP 5' : 'Top 5 Matches',
@@ -838,6 +860,269 @@ class _PersonalityAnalysisCard extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// AI 심리 분석 리포트 카드
+class _AIAnalysisCard extends StatefulWidget {
+  final AIAnalysisResult? analysis;
+  final bool isLoading;
+  final bool isKo;
+
+  const _AIAnalysisCard({
+    required this.analysis,
+    required this.isLoading,
+    required this.isKo,
+  });
+
+  @override
+  State<_AIAnalysisCard> createState() => _AIAnalysisCardState();
+}
+
+class _AIAnalysisCardState extends State<_AIAnalysisCard> {
+  final Set<String> _expandedFactors = {};
+
+  @override
+  Widget build(BuildContext context) {
+    return DarkCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF3B82F6), Color(0xFF06B6D4)],
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(Icons.psychology, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                widget.isKo ? 'AI 심리 분석 리포트' : 'AI Psychology Report',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (widget.isLoading)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Color(0xFF3B82F6),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      widget.isKo
+                          ? 'AI가 당신의 성격을 깊이 분석하고 있어요...'
+                          : 'AI is deeply analyzing your personality...',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.gray400,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else if (widget.analysis == null)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Center(
+                child: Text(
+                  widget.isKo ? 'AI 분석을 불러올 수 없었습니다.' : 'Could not load AI analysis.',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.gray500,
+                      ),
+                ),
+              ),
+            )
+          else ...[
+            Text(
+              widget.analysis!.summary,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.gray300,
+                    height: 1.7,
+                  ),
+            ),
+            if (widget.analysis!.factors.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              ...widget.analysis!.factors.map((af) {
+                final color = factorColors[af.factor] ?? AppColors.purple500;
+                final expanded = _expandedFactors.contains(af.factor);
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.darkBorder),
+                      gradient: LinearGradient(
+                        colors: [color.withValues(alpha: 0.06), Colors.transparent],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              if (expanded) {
+                                _expandedFactors.remove(af.factor);
+                              } else {
+                                _expandedFactors.add(af.factor);
+                              }
+                            });
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.all(14),
+                            child: Row(
+                              children: [
+                                Text(
+                                  af.factor,
+                                  style: TextStyle(
+                                    color: color,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    widget.isKo
+                                        ? (factorNamesKo[af.factor] ?? af.factor)
+                                        : (factorNamesEn[af.factor] ?? af.factor),
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: AppColors.gray400,
+                                        ),
+                                  ),
+                                ),
+                                Icon(
+                                  expanded ? Icons.expand_less : Icons.expand_more,
+                                  color: AppColors.gray500,
+                                  size: 20,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (expanded)
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  af.overview,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        color: AppColors.gray300,
+                                        height: 1.6,
+                                      ),
+                                ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  widget.isKo ? '강점' : 'Strengths',
+                                  style: TextStyle(
+                                    color: AppColors.emerald500,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                ...af.strengths.map((s) => Padding(
+                                      padding: const EdgeInsets.only(bottom: 2),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text('+ ',
+                                              style: TextStyle(
+                                                  color: AppColors.emerald500, fontSize: 12)),
+                                          Expanded(
+                                            child: Text(s,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.copyWith(
+                                                        color: AppColors.gray400, height: 1.4)),
+                                          ),
+                                        ],
+                                      ),
+                                    )),
+                                const SizedBox(height: 8),
+                                Text(
+                                  widget.isKo ? '성장 포인트' : 'Growth Areas',
+                                  style: const TextStyle(
+                                    color: Color(0xFFFBBF24),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                ...af.risks.map((r) => Padding(
+                                      padding: const EdgeInsets.only(bottom: 2),
+                                      child: Row(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          const Text('~ ',
+                                              style: TextStyle(
+                                                  color: Color(0xFFFBBF24), fontSize: 12)),
+                                          Expanded(
+                                            child: Text(r,
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .bodySmall
+                                                    ?.copyWith(
+                                                        color: AppColors.gray400, height: 1.4)),
+                                          ),
+                                        ],
+                                      ),
+                                    )),
+                                const SizedBox(height: 10),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF3B82F6).withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: const Color(0xFF3B82F6).withValues(alpha: 0.2),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    af.growth,
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: const Color(0xFF93C5FD),
+                                          height: 1.5,
+                                        ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+            ],
+          ],
+        ],
+      ),
     );
   }
 }
