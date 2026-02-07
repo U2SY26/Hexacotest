@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -208,6 +209,34 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(isKo ? '결과가 복사되었습니다.' : 'Result copied.'),
+      ),
+    );
+  }
+
+  Future<void> _exportToIlcho(bool isKo) async {
+    final topMatch = matches.isNotEmpty ? matches.first : null;
+    final exportData = {
+      'type': 'hexaco_export',
+      'scores': {
+        'H': scores.h,
+        'E': scores.e,
+        'X': scores.x,
+        'A': scores.a,
+        'C': scores.c,
+        'O': scores.o,
+      },
+      'topMatch': topMatch?.profile.nameKo,
+      'similarity': topMatch?.similarity,
+      'timestamp': DateTime.now().millisecondsSinceEpoch,
+    };
+    await Clipboard.setData(ClipboardData(text: jsonEncode(exportData)));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(isKo
+            ? '일초 앱에서 설정 > 성격 프로필 > 가져오기에서 붙여넣기 하세요'
+            : 'Paste in Ilcho app: Settings > Personality > Import'),
+        duration: const Duration(seconds: 4),
       ),
     );
   }
@@ -546,6 +575,18 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
                     const Icon(Icons.image, size: 18),
                     const SizedBox(width: 8),
                     Text(isKo ? '이미지 공유' : 'Share Image'),
+                  ],
+                ),
+              ),
+              SecondaryButton(
+                onPressed: () => _exportToIlcho(isKo),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.output, size: 18),
+                    const SizedBox(width: 8),
+                    Text(isKo ? '일초로 내보내기' : 'Export to Ilcho'),
                   ],
                 ),
               ),
