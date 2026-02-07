@@ -8,7 +8,6 @@
   final String en;
   final String? koExample;
   final String? enExample;
-  final String? illustration;
 
   const Question({
     required this.id,
@@ -20,7 +19,6 @@
     required this.en,
     this.koExample,
     this.enExample,
-    this.illustration,
   });
 
   factory Question.fromJson(Map<String, dynamic> json) {
@@ -34,7 +32,6 @@
       en: json['en'] as String,
       koExample: json['ko_example'] as String?,
       enExample: json['en_example'] as String?,
-      illustration: json['illustration'] as String?,
     );
   }
 }

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 
 import '../controllers/test_controller.dart';
 import '../ui/app_tokens.dart';
@@ -20,39 +20,64 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: GlassContainer(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         radius: AppRadii.lg,
         child: Row(
           children: [
             Container(
-              width: 36,
-              height: 36,
+              width: 32,
+              height: 32,
               decoration: BoxDecoration(
                 color: AppColors.purple500.withValues(alpha: 0.18),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.hexagon, color: AppColors.purple500, size: 20),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GradientText(
+                    isKo ? '5분 나를 알아보는 시간' : '5 Min to Know Yourself',
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                    maxLines: 1,
+                  ),
+                  const SizedBox(height: 1),
+                  Text(
+                    isKo ? '헥사코 성격 테스트' : 'HEXACO Personality Test',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.gray400,
+                          fontSize: 11,
+                        ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Settings button
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => Navigator.pushNamed(context, '/settings'),
                 borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(Icons.hexagon, color: AppColors.purple500),
-            ),
-            const SizedBox(width: 12),
-            const GradientText(
-              'HEXACO',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-              maxLines: 1,
-            ),
-            const Spacer(),
-            OutlinedButton.icon(
-              onPressed: () => controller.setLanguage(isKo ? 'en' : 'ko'),
-              style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: AppColors.darkBorder),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkCard,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppColors.darkBorder),
+                  ),
+                  child: const Icon(
+                    Icons.settings,
+                    size: 20,
+                    color: AppColors.gray300,
+                  ),
                 ),
-                backgroundColor: AppColors.darkCard,
               ),
-              icon: const Icon(Icons.language, size: 16, color: AppColors.gray400),
-              label: Text(isKo ? 'EN' : '한국어'),
             ),
           ],
         ),

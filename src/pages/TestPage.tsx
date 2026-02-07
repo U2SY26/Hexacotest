@@ -2,9 +2,93 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Lightbulb, Circle } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Lightbulb, Circle, Sparkles, Eye } from 'lucide-react'
 import { factorColors } from '../data/questions'
 import { useTestStore, encodeResults } from '../stores/testStore'
+
+// Test completion popup (matching mobile app design)
+function CompletionPopup({
+  isKo,
+  onViewResults,
+}: {
+  isKo: boolean
+  onViewResults: () => void
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.8, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className="relative rounded-3xl p-8 max-w-sm w-full text-center border border-purple-500/30"
+        style={{
+          background: 'linear-gradient(135deg, #1A1035 0%, #2D1B4E 100%)',
+        }}
+      >
+        {/* Icon */}
+        <motion.div
+          className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
+          style={{
+            background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+          }}
+          animate={{
+            boxShadow: [
+              '0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(236, 72, 153, 0.2)',
+              '0 0 50px rgba(139, 92, 246, 0.5), 0 0 80px rgba(236, 72, 153, 0.4)',
+              '0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(236, 72, 153, 0.2)',
+            ],
+          }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <Sparkles className="w-10 h-10 text-white" />
+        </motion.div>
+
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-white mb-3">
+          {isKo ? '테스트 완료!' : 'Test Complete!'}
+        </h2>
+        <p className="text-gray-400 mb-8">
+          {isKo
+            ? '당신의 성격 분석 결과가 준비되었습니다.'
+            : 'Your personality analysis is ready.'}
+        </p>
+
+        {/* View Results Button with glow animation */}
+        <motion.button
+          onClick={onViewResults}
+          className="relative inline-flex items-center gap-3 px-10 py-4 rounded-2xl text-white font-bold text-lg border-2"
+          style={{
+            background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+          }}
+          animate={{
+            scale: [1, 1.05, 1],
+            borderColor: [
+              'rgba(255,255,255,0.3)',
+              'rgba(255,255,255,0.6)',
+              'rgba(255,255,255,0.3)',
+            ],
+            boxShadow: [
+              '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3)',
+              '0 0 35px rgba(139, 92, 246, 0.7), 0 0 60px rgba(236, 72, 153, 0.5)',
+              '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3)',
+            ],
+          }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Eye className="w-6 h-6" />
+          {isKo ? '결과 보기' : 'View Results'}
+        </motion.button>
+      </motion.div>
+    </motion.div>
+  )
+}
 
 // Ambient background with calming animated elements
 function AmbientBackground() {
@@ -147,7 +231,7 @@ function ProgressIndicator({
 function PercentageSlider({
   currentAnswer,
   onSelect,
-  factorColor,
+  factorColor: _factorColor,
 }: {
   currentAnswer: number | undefined
   onSelect: (value: number) => void
@@ -384,6 +468,7 @@ function PercentageSlider({
 export default function TestPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
+  const [showPopup, setShowPopup] = useState(false)
   const {
     currentIndex,
     answers,
@@ -401,6 +486,7 @@ export default function TestPage() {
   const progress = ((currentIndex + 1) / questions.length) * 100
   const isLastQuestion = currentIndex === questions.length - 1
   const allAnswered = answers.length === questions.length
+  const isKo = i18n.language === 'ko'
 
   const handleAnswer = (value: number) => {
     setAnswer(currentQuestion.id, value)
@@ -408,12 +494,16 @@ export default function TestPage() {
 
   const handleNext = () => {
     if (isLastQuestion && allAnswered) {
-      const scores = calculateScores()
-      const encoded = encodeResults(scores)
-      navigate(`/result?r=${encoded}`)
+      setShowPopup(true)
     } else if (currentAnswer !== undefined) {
       nextQuestion()
     }
+  }
+
+  const handleViewResults = () => {
+    const scores = calculateScores()
+    const encoded = encodeResults(scores)
+    navigate(`/result?r=${encoded}`)
   }
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -436,6 +526,16 @@ export default function TestPage() {
   return (
     <div className="min-h-screen pt-20 pb-8 px-4 relative">
       <AmbientBackground />
+
+      {/* Completion Popup */}
+      <AnimatePresence>
+        {showPopup && (
+          <CompletionPopup
+            isKo={isKo}
+            onViewResults={handleViewResults}
+          />
+        )}
+      </AnimatePresence>
 
       <div className="max-w-2xl mx-auto relative z-10">
         {/* Progress Indicator */}

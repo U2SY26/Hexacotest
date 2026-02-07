@@ -25,6 +25,13 @@ class IntroVideoScreen extends StatefulWidget {
     'assets/video/intro5.mp4',
     'assets/video/intro6.mp4',
     'assets/video/intro7.mp4',
+    'assets/video/intro8.mp4',
+    'assets/video/intro9.mp4',
+    'assets/video/intro10.mp4',
+    'assets/video/intro11.mp4',
+    'assets/video/intro12.mp4',
+    'assets/video/intro13.mp4',
+    'assets/video/intro14.mp4',
   ];
 
   static String getRandomVideo() {

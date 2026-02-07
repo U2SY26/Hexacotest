@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import 'controllers/test_controller.dart';
@@ -8,11 +9,18 @@ import 'screens/home_screen.dart';
 import 'screens/intro_video_screen.dart';
 import 'screens/test_screen.dart';
 import 'screens/result_screen.dart';
+import 'screens/settings_screen.dart';
+import 'services/analytics_service.dart';
 import 'ui/app_tokens.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   if (!const bool.fromEnvironment('FLUTTER_TEST')) {
+    // Firebase 초기화
+    await Firebase.initializeApp();
+    AnalyticsService.init();
+
     await MobileAds.instance.initialize();
     await MobileAds.instance.updateRequestConfiguration(
       RequestConfiguration(tagForChildDirectedTreatment: TagForChildDirectedTreatment.unspecified),
@@ -74,6 +82,10 @@ class HexacoApp extends StatelessWidget {
           case '/result':
             return MaterialPageRoute(
               builder: (_) => ResultScreen(controller: controller, data: data),
+            );
+          case '/settings':
+            return MaterialPageRoute(
+              builder: (_) => SettingsScreen(controller: controller),
             );
           default:
             return MaterialPageRoute(

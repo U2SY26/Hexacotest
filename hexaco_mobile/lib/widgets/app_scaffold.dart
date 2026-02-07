@@ -22,15 +22,7 @@ class AppScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final topOffset = appBar?.preferredSize.height ?? 0;
-
-    // 배너가 있을 때는 상단 패딩을 최소화
-    final resolvedPadding = stickyBanner != null
-        ? padding.copyWith(top: 4)
-        : padding.copyWith(
-            top: padding.top + (appBar == null ? 0 : topOffset + 8),
-          );
-    final content = Padding(padding: resolvedPadding, child: child);
+    final content = Padding(padding: padding, child: child);
     final framed = Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 860),
@@ -38,40 +30,32 @@ class AppScaffold extends StatelessWidget {
       ),
     );
 
-    if (stickyBanner != null) {
-      return Scaffold(
-        backgroundColor: Colors.transparent,
-        extendBodyBehindAppBar: appBar != null,
-        appBar: appBar,
-        body: AnimatedBackground(
-          child: SafeArea(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-                  child: stickyBanner!,
-                ),
-                Expanded(
-                  child: scroll
-                      ? SingleChildScrollView(controller: controller, child: framed)
-                      : framed,
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: appBar != null,
-      appBar: appBar,
       body: AnimatedBackground(
         child: SafeArea(
-          child: scroll
-              ? SingleChildScrollView(controller: controller, child: framed)
-              : framed,
+          child: Column(
+            children: [
+              // 헤더 영역 (SafeArea 내부 — 상태바 아래에 자동 배치)
+              if (appBar != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: appBar!,
+                ),
+              // 스크롤 가능한 메인 콘텐츠
+              Expanded(
+                child: scroll
+                    ? SingleChildScrollView(controller: controller, child: framed)
+                    : framed,
+              ),
+              // 하단 고정 배너 광고
+              if (stickyBanner != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  child: stickyBanner!,
+                ),
+            ],
+          ),
         ),
       ),
     );

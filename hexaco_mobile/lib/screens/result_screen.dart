@@ -16,15 +16,17 @@ import '../models/result_history.dart';
 import '../services/recommendation_service.dart';
 import '../services/history_service.dart';
 import '../services/personality_analysis_service.dart';
+import '../services/meme_content_service.dart';
 import '../ui/app_tokens.dart';
-import '../widgets/app_header.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/buttons.dart';
 import '../widgets/dark_card.dart';
 import '../widgets/gradient_text.dart';
 import '../widgets/radar_chart.dart';
 import '../widgets/ad_banner.dart';
+import '../widgets/native_ad.dart';
 import '../config/admob_ids.dart';
+import '../services/rewarded_ad_service.dart';
 
 class ResultScreen extends StatefulWidget {
   final TestController controller;
@@ -83,6 +85,7 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
       duration: const Duration(milliseconds: 2000),
     );
 
+    RewardedAdService.loadAd();
     _startLoadingAnimation();
     _saveAndLoadHistory();
   }
@@ -106,12 +109,29 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
   void _finishLoading() async {
     await Future.delayed(const Duration(milliseconds: 500));
     if (!mounted) return;
+
+    // Show rewarded interstitial ad
+    if (RewardedAdService.isAdReady) {
+      await RewardedAdService.showAd(
+        onAdDismissed: () {
+          if (!mounted) return;
+          _showResults();
+        },
+      );
+    } else {
+      _showResults();
+    }
+  }
+
+  void _showResults() {
+    if (!mounted) return;
     setState(() {
       _isLoading = false;
     });
-    await Future.delayed(const Duration(milliseconds: 100));
-    if (!mounted) return;
-    _fadeController.forward();
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (!mounted) return;
+      _fadeController.forward();
+    });
   }
 
   @override
@@ -120,52 +140,6 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     _fadeController.dispose();
     _celebrationController.dispose();
     super.dispose();
-  }
-
-  String _getFunQuote(bool isKo) {
-    final similarity = matches.first.similarity;
-    if (similarity >= 90) {
-      return isKo ? '🎉 와! 거의 쌍둥이 수준이에요!' : '🎉 Wow! Almost twins!';
-    } else if (similarity >= 80) {
-      return isKo ? '✨ 정말 닮았네요! 혹시 친척?' : '✨ So similar! Are you related?';
-    } else if (similarity >= 70) {
-      return isKo ? '🌟 꽤 비슷해요! 같은 바이브!' : '🌟 Pretty similar! Same vibe!';
-    } else if (similarity >= 60) {
-      return isKo ? '💫 닮은 구석이 있어요!' : '💫 Some resemblance!';
-    } else {
-      return isKo ? '🦄 당신은 유니크해요!' : '🦄 You are unique!';
-    }
-  }
-
-  String _getPersonalityBadge(bool isKo) {
-    // 가장 높은 요인 찾기
-    final scoreMap = scores.toMap();
-    String highestFactor = 'H';
-    double highestScore = 0;
-    scoreMap.forEach((key, value) {
-      if (value > highestScore) {
-        highestScore = value;
-        highestFactor = key;
-      }
-    });
-
-    final badges = isKo ? {
-      'H': '🏆 정직왕',
-      'E': '💝 감성러버',
-      'X': '🎤 파티피플',
-      'A': '🤝 화합마스터',
-      'C': '📋 계획장인',
-      'O': '🎨 창의천재',
-    } : {
-      'H': '🏆 Honesty King',
-      'E': '💝 Emotion Lover',
-      'X': '🎤 Party People',
-      'A': '🤝 Harmony Master',
-      'C': '📋 Plan Expert',
-      'O': '🎨 Creative Genius',
-    };
-
-    return badges[highestFactor] ?? (isKo ? '⭐ 균형잡힌 성격' : '⭐ Balanced Soul');
   }
 
   Future<void> _saveAndLoadHistory() async {
@@ -195,13 +169,21 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
 
   String _summaryText(bool isKo) {
     final topMatch = matches.first;
+    final title = MemeContentService.getPersonalityTitle(scores);
+    final mainMeme = MemeContentService.getMainMemeQuote(scores);
+    final mbti = MemeContentService.getMBTIMatch(scores);
+
     return isKo
-        ? '내 HEXACO 결과: ${topMatch.profile.nameKo} (${topMatch.similarity}%)\n'
-            'H ${scores.h.toStringAsFixed(1)} / E ${scores.e.toStringAsFixed(1)} / X ${scores.x.toStringAsFixed(1)} / '
-            'A ${scores.a.toStringAsFixed(1)} / C ${scores.c.toStringAsFixed(1)} / O ${scores.o.toStringAsFixed(1)}'
-        : 'My HEXACO result: ${topMatch.profile.nameEn} (${topMatch.similarity}%)\n'
-            'H ${scores.h.toStringAsFixed(1)} / E ${scores.e.toStringAsFixed(1)} / X ${scores.x.toStringAsFixed(1)} / '
-            'A ${scores.a.toStringAsFixed(1)} / C ${scores.c.toStringAsFixed(1)} / O ${scores.o.toStringAsFixed(1)}';
+        ? '${title.emoji} ${title.titleKo}\n'
+            '${mainMeme.emoji} ${mainMeme.quoteKo}\n\n'
+            '🔮 MBTI 추정: ${mbti.mbti}\n'
+            '👤 닮은 유명인: ${topMatch.profile.nameKo} (${topMatch.similarity}%)\n\n'
+            '나도 테스트하기 👉 hexacotest.vercel.app'
+        : '${title.emoji} ${title.titleEn}\n'
+            '${mainMeme.emoji} ${mainMeme.quoteEn}\n\n'
+            '🔮 MBTI guess: ${mbti.mbti}\n'
+            '👤 Similar to: ${topMatch.profile.nameEn} (${topMatch.similarity}%)\n\n'
+            'Try the test 👉 hexacotest.vercel.app';
   }
 
   Future<void> _copySummary(bool isKo) async {
@@ -215,8 +197,18 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
   }
 
   Future<void> _shareAsImage(bool isKo) async {
-    final shareKey = GlobalKey();
+    // 공유할 카드 상세 선택 다이얼로그
+    final selectedFactors = await showDialog<Set<String>>(
+      context: context,
+      builder: (dialogContext) => _ShareSelectionDialog(
+        scores: scores,
+        isKo: isKo,
+      ),
+    );
 
+    if (selectedFactors == null || !mounted) return;
+
+    final shareKey = GlobalKey();
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -226,6 +218,7 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
         scores: scores,
         isKo: isKo,
         summaryText: _summaryText(isKo),
+        selectedFactors: selectedFactors,
       ),
     );
   }
@@ -245,7 +238,6 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     }
 
     return AppScaffold(
-      appBar: AppHeader(controller: widget.controller),
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: Column(
@@ -263,45 +255,8 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
           ),
           const SizedBox(height: 20),
-          // 재미있는 배지
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.purple500, AppColors.pink500],
-                ),
-                borderRadius: BorderRadius.circular(999),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.purple500.withValues(alpha: 0.4),
-                    blurRadius: 12,
-                    spreadRadius: 2,
-                  ),
-                ],
-              ),
-              child: Text(
-                _getPersonalityBadge(isKo),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          // 재미있는 인용구
-          Center(
-            child: Text(
-              _getFunQuote(isKo),
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.purple400,
-                    fontWeight: FontWeight.w600,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+          // 밈 타이틀 카드
+          _MemeHeaderCard(scores: scores, isKo: isKo),
           const SizedBox(height: 20),
           DarkCard(
             radius: AppRadii.xl,
@@ -468,6 +423,9 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
             },
           ),
           const SizedBox(height: 16),
+          // 밈 문구 & 캐릭터 매칭 섹션
+          _MemeContentSection(scores: scores, isKo: isKo),
+          const SizedBox(height: 16),
           _PersonalityAnalysisCard(scores: scores, isKo: isKo),
           const SizedBox(height: 16),
           Text(
@@ -504,6 +462,8 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
                 ),
             textAlign: TextAlign.center,
           ),
+          const SizedBox(height: 16),
+          const NativeAdWidget(),
           if (historyPreview.isNotEmpty) ...[
             const SizedBox(height: 16),
             DarkCard(
@@ -769,95 +729,393 @@ class _LoadingScreenState extends State<_LoadingScreen>
   }
 }
 
-class _PersonalityAnalysisCard extends StatefulWidget {
+class _PersonalityAnalysisCard extends StatelessWidget {
   final Scores scores;
   final bool isKo;
 
   const _PersonalityAnalysisCard({required this.scores, required this.isKo});
 
   @override
-  State<_PersonalityAnalysisCard> createState() => _PersonalityAnalysisCardState();
-}
-
-class _PersonalityAnalysisCardState extends State<_PersonalityAnalysisCard> {
-  bool _isExpanded = false;
-
-  @override
   Widget build(BuildContext context) {
-    final analysis = PersonalityAnalysisService.getAnalysis(widget.scores, widget.isKo);
+    final analyses = PersonalityAnalysisService.getFactorAnalyses(scores, isKo);
+    final overallAnalysis = PersonalityAnalysisService.getOverallAnalysis(scores, isKo);
 
-    return DarkCard(
-      padding: EdgeInsets.zero,
-      child: Column(
-        children: [
-          InkWell(
-            onTap: () => setState(() => _isExpanded = !_isExpanded),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 헤더
+        Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.purple500, AppColors.pink500],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.psychology, color: Colors.white, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isKo ? '성격 분석 리포트' : 'Personality Analysis Report',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isKo ? '카드를 탭하여 상세 분석을 확인하세요' : 'Tap cards to see detailed analysis',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.gray400,
+                      ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // 6개 요인 플립 카드 그리드
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: isKo ? 0.85 : 0.75,
+          ),
+          itemCount: analyses.length,
+          itemBuilder: (context, index) {
+            return _FlipFactorCard(
+              analysis: analyses[index],
+              isKo: isKo,
+            );
+          },
+        ),
+
+        const SizedBox(height: 20),
+
+        // 종합 분석 카드
+        DarkCard(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
                   Container(
-                    width: 40,
-                    height: 40,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [AppColors.purple500, AppColors.pink500],
                       ),
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Icon(Icons.psychology, color: Colors.white, size: 22),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.isKo ? '성격 분석 리포트' : 'Personality Analysis Report',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          widget.isKo ? '탭하여 상세 분석 보기' : 'Tap to view detailed analysis',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.gray400,
-                              ),
-                        ),
-                      ],
+                    child: Text(
+                      isKo ? '종합 분석' : 'Overall Analysis',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
-                  ),
-                  AnimatedRotation(
-                    turns: _isExpanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 200),
-                    child: const Icon(Icons.expand_more, color: AppColors.gray400),
                   ),
                 ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                overallAnalysis,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.gray300,
+                      height: 1.7,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// 플립 카드 위젯
+class _FlipFactorCard extends StatefulWidget {
+  final FactorAnalysis analysis;
+  final bool isKo;
+
+  const _FlipFactorCard({
+    required this.analysis,
+    required this.isKo,
+  });
+
+  @override
+  State<_FlipFactorCard> createState() => _FlipFactorCardState();
+}
+
+class _FlipFactorCardState extends State<_FlipFactorCard>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+  bool _showFront = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _animation = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _flipCard() {
+    if (_showFront) {
+      _controller.forward();
+    } else {
+      _controller.reverse();
+    }
+    setState(() {
+      _showFront = !_showFront;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = factorColors[widget.analysis.factor] ?? AppColors.purple500;
+    final name = widget.isKo ? widget.analysis.nameKo : widget.analysis.nameEn;
+    final summary = widget.isKo ? widget.analysis.summaryKo : widget.analysis.summaryEn;
+    final detail = widget.isKo ? widget.analysis.detailKo : widget.analysis.detailEn;
+
+    return GestureDetector(
+      onTap: _flipCard,
+      child: AnimatedBuilder(
+        animation: _animation,
+        builder: (context, child) {
+          final angle = _animation.value * 3.14159;
+          final isFront = angle < 1.5708;
+
+          return Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..setEntry(3, 2, 0.001)
+              ..rotateY(angle),
+            child: isFront
+                ? _buildFrontCard(color, name, summary)
+                : Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()..rotateY(3.14159),
+                    child: _buildBackCard(color, name, detail),
+                  ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildFrontCard(Color color, String name, String summary) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withValues(alpha: 0.3),
+            AppColors.darkCard,
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.2),
+            blurRadius: 12,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: color,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    widget.analysis.factor,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  name,
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 13,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '${widget.analysis.score.toStringAsFixed(0)}%',
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: 4),
+          LinearProgressIndicator(
+            value: widget.analysis.score / 100,
+            backgroundColor: color.withValues(alpha: 0.2),
+            valueColor: AlwaysStoppedAnimation<Color>(color),
+            minHeight: 6,
+            borderRadius: BorderRadius.circular(3),
+          ),
+          const Spacer(),
+          Row(
+            children: [
+              Text(
+                widget.analysis.emoji,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  summary,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.gray300,
+                        height: 1.3,
+                      ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.touch_app,
+                size: 14,
+                color: color.withValues(alpha: 0.7),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                widget.isKo ? '탭하여 자세히 보기' : 'Tap for details',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: color.withValues(alpha: 0.7),
+                      fontSize: 11,
+                    ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackCard(Color color, String name, String detail) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            AppColors.darkCard,
+            color.withValues(alpha: 0.2),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
+      ),
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                widget.analysis.emoji,
+                style: const TextStyle(fontSize: 18),
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  '${widget.analysis.factor} - $name',
+                  style: TextStyle(
+                    color: color,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Text(
+                detail,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.gray300,
+                      height: 1.5,
+                    ),
               ),
             ),
           ),
-          AnimatedCrossFade(
-            firstChild: const SizedBox.shrink(),
-            secondChild: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Divider(color: AppColors.darkBorder),
-                  const SizedBox(height: 12),
-                  Text(
-                    analysis,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppColors.gray300,
-                          height: 1.6,
-                        ),
-                  ),
-                ],
-              ),
+          const SizedBox(height: 6),
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.refresh,
+                  size: 14,
+                  color: color.withValues(alpha: 0.7),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  widget.isKo ? '탭하여 돌아가기' : 'Tap to flip back',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: color.withValues(alpha: 0.7),
+                        fontSize: 11,
+                      ),
+                ),
+              ],
             ),
-            crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 300),
           ),
         ],
       ),
@@ -978,12 +1236,226 @@ class _HistoryRow extends StatelessWidget {
   }
 }
 
+class _ShareSelectionDialog extends StatefulWidget {
+  final Scores scores;
+  final bool isKo;
+
+  const _ShareSelectionDialog({
+    required this.scores,
+    required this.isKo,
+  });
+
+  @override
+  State<_ShareSelectionDialog> createState() => _ShareSelectionDialogState();
+}
+
+class _ShareSelectionDialogState extends State<_ShareSelectionDialog> {
+  final Set<String> _selected = {};
+
+  void _toggleAll() {
+    setState(() {
+      if (_selected.length == factorOrder.length) {
+        _selected.clear();
+      } else {
+        _selected.addAll(factorOrder);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final analyses = PersonalityAnalysisService.getFactorAnalyses(widget.scores, widget.isKo);
+
+    return Dialog(
+      backgroundColor: const Color(0xFF1A1035),
+      insetPadding: const EdgeInsets.all(24),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: AppColors.purple500.withValues(alpha: 0.5)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const Icon(Icons.share, color: AppColors.purple400, size: 22),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    widget.isKo ? '이미지 공유' : 'Share Image',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+                TextButton(
+                  onPressed: _toggleAll,
+                  child: Text(
+                    _selected.length == factorOrder.length
+                        ? (widget.isKo ? '전체 해제' : 'Deselect All')
+                        : (widget.isKo ? '전체 선택' : 'Select All'),
+                    style: const TextStyle(color: AppColors.purple400, fontSize: 13),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            Text(
+              widget.isKo
+                  ? '포함할 성격 분석 카드를 선택하세요'
+                  : 'Select personality cards to include',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.gray400,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            ...analyses.map((analysis) {
+              final color = factorColors[analysis.factor] ?? AppColors.purple500;
+              final isSelected = _selected.contains(analysis.factor);
+              final name = widget.isKo ? analysis.nameKo : analysis.nameEn;
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      if (isSelected) {
+                        _selected.remove(analysis.factor);
+                      } else {
+                        _selected.add(analysis.factor);
+                      }
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? color.withValues(alpha: 0.15)
+                          : AppColors.darkCard,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isSelected
+                            ? color.withValues(alpha: 0.6)
+                            : AppColors.darkBorder,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 28,
+                          height: 28,
+                          decoration: BoxDecoration(
+                            color: isSelected ? color : color.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Center(
+                            child: Text(
+                              analysis.factor,
+                              style: TextStyle(
+                                color: isSelected ? Colors.white : color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$name ${analysis.emoji}',
+                                style: TextStyle(
+                                  color: isSelected ? Colors.white : AppColors.gray300,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              Text(
+                                '${analysis.score.toStringAsFixed(0)}% — ${widget.isKo ? analysis.summaryKo : analysis.summaryEn}',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.gray500,
+                                      fontSize: 11,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          isSelected ? Icons.check_circle : Icons.circle_outlined,
+                          color: isSelected ? color : AppColors.gray600,
+                          size: 22,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(null),
+                    child: Text(
+                      widget.isKo ? '취소' : 'Cancel',
+                      style: const TextStyle(color: AppColors.gray400),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 2,
+                  child: ElevatedButton(
+                    onPressed: () => Navigator.of(context).pop(_selected),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.purple500,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.image, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          _selected.isEmpty
+                              ? (widget.isKo ? '기본 이미지 공유' : 'Share Basic Image')
+                              : (widget.isKo
+                                  ? '${_selected.length}개 카드 포함 공유'
+                                  : 'Share with ${_selected.length} cards'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ShareImageDialog extends StatefulWidget {
   final GlobalKey shareKey;
   final List<TypeMatch> matches;
   final Scores scores;
   final bool isKo;
   final String summaryText;
+  final Set<String> selectedFactors;
 
   const _ShareImageDialog({
     required this.shareKey,
@@ -991,6 +1463,7 @@ class _ShareImageDialog extends StatefulWidget {
     required this.scores,
     required this.isKo,
     required this.summaryText,
+    required this.selectedFactors,
   });
 
   @override
@@ -1046,6 +1519,10 @@ class _ShareImageDialogState extends State<_ShareImageDialog> {
   @override
   Widget build(BuildContext context) {
     final topMatch = widget.matches.first;
+    final title = MemeContentService.getPersonalityTitle(widget.scores);
+    final mainMeme = MemeContentService.getMainMemeQuote(widget.scores);
+    final mbti = MemeContentService.getMBTIMatch(widget.scores);
+    final character = MemeContentService.getCharacterMatch(widget.scores);
 
     return Dialog(
       backgroundColor: Colors.transparent,
@@ -1062,7 +1539,7 @@ class _ShareImageDialogState extends State<_ShareImageDialog> {
             key: widget.shareKey,
             child: Container(
               width: 350,
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
@@ -1075,108 +1552,236 @@ class _ShareImageDialogState extends State<_ShareImageDialog> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  // HEXACO 로고
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.hexagon, color: AppColors.purple500, size: 28),
-                      const SizedBox(width: 8),
+                      const Icon(Icons.hexagon, color: AppColors.purple500, size: 24),
+                      const SizedBox(width: 6),
                       Text(
                         'HEXACO',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: Colors.white,
                             ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
-                  Container(
-                    width: 80,
-                    height: 80,
-                    decoration: const BoxDecoration(
-                      gradient: AppGradients.primaryButton,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Center(
-                      child: Text(
-                        (widget.isKo ? topMatch.profile.nameKo : topMatch.profile.nameEn)
-                            .characters
-                            .first,
-                        style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 16),
-                  Text(
-                    widget.isKo ? topMatch.profile.nameKo : topMatch.profile.nameEn,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+
+                  // 메인 타이틀 (밈)
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [AppColors.purple500, AppColors.pink500],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          title.emoji,
+                          style: const TextStyle(fontSize: 24),
                         ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    widget.isKo ? '유사도 ${topMatch.similarity}%' : 'Similarity ${topMatch.similarity}%',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: AppColors.purple400,
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            widget.isKo ? title.titleKo : title.titleEn,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
                         ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    widget.isKo ? 'TOP 5 매칭' : 'TOP 5 Matches',
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: AppColors.gray400,
-                        ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 12),
-                  ...widget.matches.take(5).map((match) {
-                    final name = widget.isKo ? match.profile.nameKo : match.profile.nameEn;
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [AppColors.purple500, AppColors.pink500],
-                              ),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Center(
-                              child: Text(
-                                name.characters.first,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              name,
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.white,
-                                  ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            '${match.similarity}%',
+
+                  // 대표 밈 문구
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: AppColors.darkCard.withValues(alpha: 0.7),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.purple500.withValues(alpha: 0.3)),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          mainMeme.emoji,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                        const SizedBox(width: 8),
+                        Flexible(
+                          child: Text(
+                            widget.isKo ? mainMeme.quoteKo : mainMeme.quoteEn,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.purple400,
+                                  color: AppColors.gray300,
+                                  fontStyle: FontStyle.italic,
                                 ),
+                            textAlign: TextAlign.center,
                           ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // MBTI + 캐릭터 매칭 (가로 배치)
+                  Row(
+                    children: [
+                      // MBTI
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.darkCard.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              const Text('🔮', style: TextStyle(fontSize: 20)),
+                              const SizedBox(height: 4),
+                              Text(
+                                mbti.mbti,
+                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                      color: AppColors.pink500,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                              Text(
+                                widget.isKo ? mbti.descriptionKo : mbti.descriptionEn,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.gray400,
+                                      fontSize: 10,
+                                    ),
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      // 캐릭터 매칭
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.darkCard.withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Column(
+                            children: [
+                              Text(character.emoji, style: const TextStyle(fontSize: 20)),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.isKo ? character.nameKo : character.nameEn,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.purple400,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                character.source,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.gray500,
+                                      fontSize: 10,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+
+                  // 닮은 유명인
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.purple500.withValues(alpha: 0.2),
+                          AppColors.pink500.withValues(alpha: 0.2),
                         ],
                       ),
-                    );
-                  }),
-                  const SizedBox(height: 16),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: const BoxDecoration(
+                            gradient: AppGradients.primaryButton,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              (widget.isKo ? topMatch.profile.nameKo : topMatch.profile.nameEn)
+                                  .characters
+                                  .first,
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.isKo ? '닮은 유명인' : 'Similar Celebrity',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.gray400,
+                                      fontSize: 10,
+                                    ),
+                              ),
+                              Text(
+                                widget.isKo ? topMatch.profile.nameKo : topMatch.profile.nameEn,
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.purple500,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${topMatch.similarity}%',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 14),
+
+                  // 웹사이트 링크
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
@@ -1199,3 +1804,350 @@ class _ShareImageDialogState extends State<_ShareImageDialog> {
     );
   }
 }
+
+// 밈 헤더 카드 (타이틀 + 대표 밈 문구)
+class _MemeHeaderCard extends StatelessWidget {
+  final Scores scores;
+  final bool isKo;
+
+  const _MemeHeaderCard({required this.scores, required this.isKo});
+
+  @override
+  Widget build(BuildContext context) {
+    final title = MemeContentService.getPersonalityTitle(scores);
+    final mainMeme = MemeContentService.getMainMemeQuote(scores);
+
+    return DarkCard(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          // 메인 타이틀
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.purple500, AppColors.pink500],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.purple500.withValues(alpha: 0.4),
+                  blurRadius: 16,
+                  spreadRadius: 2,
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title.emoji,
+                  style: const TextStyle(fontSize: 28),
+                ),
+                const SizedBox(width: 12),
+                Flexible(
+                  child: Text(
+                    isKo ? title.titleKo : title.titleEn,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // 타이틀 설명
+          Text(
+            isKo ? title.descriptionKo : title.descriptionEn,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.gray300,
+                ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          // 대표 밈 문구
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: AppColors.darkCard,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.purple500.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  mainMeme.emoji,
+                  style: const TextStyle(fontSize: 24),
+                ),
+                const SizedBox(width: 10),
+                Flexible(
+                  child: Text(
+                    isKo ? mainMeme.quoteKo : mainMeme.quoteEn,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppColors.gray300,
+                          fontStyle: FontStyle.italic,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 밈 콘텐츠 섹션 (밈 문구들 + 캐릭터 매칭 + MBTI)
+class _MemeContentSection extends StatelessWidget {
+  final Scores scores;
+  final bool isKo;
+
+  const _MemeContentSection({required this.scores, required this.isKo});
+
+  @override
+  Widget build(BuildContext context) {
+    final memeQuotes = MemeContentService.getMemeQuotes(scores);
+    final character = MemeContentService.getCharacterMatch(scores);
+    final mbti = MemeContentService.getMBTIMatch(scores);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 헤더
+        Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.pink500, AppColors.purple500],
+                ),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.local_fire_department, color: Colors.white, size: 22),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isKo ? '나를 표현하는 한 줄' : 'One-liner About Me',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  isKo ? '공유하면 친구들이 공감할 거예요!' : 'Share and friends will relate!',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.gray400,
+                      ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+
+        // 밈 문구 그리드
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 10,
+            crossAxisSpacing: 10,
+            childAspectRatio: 1.6,
+          ),
+          itemCount: memeQuotes.length,
+          itemBuilder: (context, index) {
+            final quote = memeQuotes[index];
+            final color = factorColors[quote.factor] ?? AppColors.purple500;
+            return Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    color.withValues(alpha: 0.2),
+                    AppColors.darkCard,
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: color.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: color,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          quote.factor,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        quote.emoji,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  Expanded(
+                    child: Text(
+                      isKo ? quote.quoteKo : quote.quoteEn,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.gray300,
+                            height: 1.3,
+                          ),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+
+        const SizedBox(height: 20),
+
+        // 캐릭터 매칭 + MBTI 섹션
+        Row(
+          children: [
+            // 드라마/영화 캐릭터 매칭
+            Expanded(
+              child: DarkCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          character.emoji,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            isKo ? '닮은 캐릭터' : 'Similar Character',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.gray400,
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      isKo ? character.nameKo : character.nameEn,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            color: AppColors.purple400,
+                            fontWeight: FontWeight.bold,
+                          ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      character.source,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.gray500,
+                            fontSize: 11,
+                          ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      isKo ? character.reasonKo : character.reasonEn,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.gray400,
+                            fontSize: 11,
+                          ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            // MBTI 추정
+            Expanded(
+              child: DarkCard(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Text(
+                          '🔮',
+                          style: TextStyle(fontSize: 24),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            isKo ? 'MBTI 추정' : 'MBTI Guess',
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.gray400,
+                                ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      mbti.mbti,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            color: AppColors.pink500,
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      isKo ? mbti.descriptionKo : mbti.descriptionEn,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.gray400,
+                          ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      isKo ? '※ HEXACO 기반 추정치' : '※ Estimated from HEXACO',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.gray600,
+                            fontSize: 9,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+

@@ -5,7 +5,6 @@ import '../constants.dart';
 import '../controllers/test_controller.dart';
 import '../models/question.dart';
 import '../ui/app_tokens.dart';
-import '../widgets/app_header.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/buttons.dart';
 import '../widgets/dark_card.dart';
@@ -45,9 +44,8 @@ class TestScreen extends StatelessWidget {
         }
 
         return AppScaffold(
-          appBar: AppHeader(controller: controller),
           scroll: false,
-          stickyBanner: BannerAdWidget(adUnitId: bannerAdUnitId),
+          stickyBanner: BannerAdSection(adUnitId: bannerAdUnitId),
           child: Shortcuts(
             shortcuts: {
               LogicalKeySet(LogicalKeyboardKey.arrowUp): _NavigateIntent(-1),
@@ -80,35 +78,69 @@ class TestScreen extends StatelessWidget {
                       factor: question.factor,
                       isKo: isKo,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     Expanded(
-                      child: Column(
-                        children: [
-                          _QuestionCard(
-                            question: question,
-                            isKo: isKo,
-                            index: controller.currentIndex + 1,
-                          ),
-                          const SizedBox(height: 12),
-                          Expanded(
-                            child: Center(
-                              child: _PercentageSlider(
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          // 작은 화면에서는 스크롤 가능하게
+                          final isSmallScreen = constraints.maxHeight < 400;
+
+                          final content = Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _QuestionCard(
+                                question: question,
+                                isKo: isKo,
+                                index: controller.currentIndex + 1,
+                              ),
+                              SizedBox(height: isSmallScreen ? 8 : 12),
+                              _PercentageSlider(
                                 isKo: isKo,
                                 factor: question.factor,
                                 currentAnswer: currentAnswer,
                                 onSelect: (value) => controller.setAnswer(question.id, value),
+                                compact: isSmallScreen,
                               ),
-                            ),
-                          ),
-                        ],
+                            ],
+                          );
+
+                          if (isSmallScreen) {
+                            return SingleChildScrollView(
+                              child: content,
+                            );
+                          }
+
+                          return Column(
+                            children: [
+                              _QuestionCard(
+                                question: question,
+                                isKo: isKo,
+                                index: controller.currentIndex + 1,
+                              ),
+                              const SizedBox(height: 12),
+                              Expanded(
+                                child: Center(
+                                  child: _PercentageSlider(
+                                    isKo: isKo,
+                                    factor: question.factor,
+                                    currentAnswer: currentAnswer,
+                                    onSelect: (value) => controller.setAnswer(question.id, value),
+                                    compact: false,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Row(
                       children: [
                         Expanded(
                           child: SecondaryButton(
                             onPressed: controller.currentIndex == 0 ? null : controller.prev,
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                             child: Text(
                               isKo ? '이전' : 'Prev',
                               maxLines: 1,
@@ -120,6 +152,7 @@ class TestScreen extends StatelessWidget {
                         Expanded(
                           child: PrimaryButton(
                             onPressed: currentAnswer == null ? null : handleNext,
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                             child: Text(
                               isLast ? (isKo ? '완료' : 'Finish') : (isKo ? '다음' : 'Next'),
                               maxLines: 1,
@@ -129,7 +162,7 @@ class TestScreen extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 6),
                     Center(
                       child: Text(
                         isKo
@@ -138,17 +171,7 @@ class TestScreen extends StatelessWidget {
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall
-                            ?.copyWith(color: AppColors.gray500),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Center(
-                      child: Text(
-                        isKo ? '천천히 답해도 괜찮아요.' : 'Take your time.',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodySmall
-                            ?.copyWith(color: AppColors.gray500),
+                            ?.copyWith(color: AppColors.gray500, fontSize: 11),
                       ),
                     ),
                   ],
@@ -329,11 +352,6 @@ class _QuestionCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
-              _QuestionIllustration(
-                imagePath: question.illustration,
-                accent: color,
-              ),
               const SizedBox(height: 16),
               Text(
                 isKo ? question.ko : question.en,
@@ -378,66 +396,19 @@ class _QuestionCard extends StatelessWidget {
   }
 }
 
-class _QuestionIllustration extends StatelessWidget {
-  final String? imagePath;
-  final Color accent;
-
-  const _QuestionIllustration({
-    required this.imagePath,
-    required this.accent,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final placeholder = Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            accent.withValues(alpha: 0.25),
-            AppColors.darkBg.withValues(alpha: 0.9),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        border: Border.all(color: AppColors.darkBorder),
-      ),
-      child: Center(
-        child: Icon(
-          Icons.image_outlined,
-          color: accent.withValues(alpha: 0.7),
-          size: 28,
-        ),
-      ),
-    );
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(AppRadii.lg),
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: (imagePath == null || imagePath!.isEmpty)
-            ? placeholder
-            : Image.asset(
-                imagePath!,
-                fit: BoxFit.cover,
-                filterQuality: FilterQuality.medium,
-                errorBuilder: (context, error, stackTrace) => placeholder,
-              ),
-      ),
-    );
-  }
-}
-
 class _PercentageSlider extends StatefulWidget {
   final bool isKo;
   final String factor;
   final int? currentAnswer;
   final ValueChanged<int> onSelect;
+  final bool compact;
 
   const _PercentageSlider({
     required this.isKo,
     required this.factor,
     required this.currentAnswer,
     required this.onSelect,
+    this.compact = false,
   });
 
   @override
@@ -563,15 +534,20 @@ class _PercentageSliderState extends State<_PercentageSlider>
     final neutralLabel = widget.isKo ? sliderLabelsKo['neutral']! : sliderLabelsEn['neutral']!;
     final positionColor = _getPositionColor();
     final percentage = _sliderPosition.abs().round();
+    final compact = widget.compact;
 
     return Column(
+      mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
       children: [
         // Percentage display
         AnimatedBuilder(
           animation: _glowController,
           builder: (context, child) {
             return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              padding: EdgeInsets.symmetric(
+                horizontal: compact ? 16 : 24,
+                vertical: compact ? 8 : 12,
+              ),
               decoration: BoxDecoration(
                 color: AppColors.darkCard,
                 borderRadius: BorderRadius.circular(AppRadii.lg),
@@ -597,22 +573,25 @@ class _PercentageSliderState extends State<_PercentageSlider>
                         ? Icons.radio_button_unchecked
                         : Icons.circle,
                     color: positionColor,
-                    size: 20,
+                    size: compact ? 16 : 20,
                   ),
                   const SizedBox(width: 8),
                   Text(
                     '$percentage%',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: (compact
+                            ? Theme.of(context).textTheme.titleLarge
+                            : Theme.of(context).textTheme.headlineSmall)
+                        ?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
             );
           },
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: compact ? 10 : 16),
 
         // Labels
         Padding(
@@ -656,7 +635,7 @@ class _PercentageSliderState extends State<_PercentageSlider>
 
         // Slider track
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 28), // 원이 잘리지 않도록 패딩 증가
           child: LayoutBuilder(
           builder: (context, constraints) {
             final trackWidth = constraints.maxWidth;
@@ -668,12 +647,13 @@ class _PercentageSliderState extends State<_PercentageSlider>
               onPanUpdate: (details) => _handleDragUpdate(details.localPosition.dx, trackWidth),
               onPanEnd: (_) => _handleDragEnd(),
               child: Container(
-                height: 80,
+                height: compact ? 56 : 68,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(AppRadii.xl),
                 ),
                 child: Stack(
                   alignment: Alignment.center,
+                  clipBehavior: Clip.none,
                   children: [
                     // Track background with neutral gradient
                     Container(
@@ -816,38 +796,40 @@ class _PercentageSliderState extends State<_PercentageSlider>
         ),
         ),
 
-        const SizedBox(height: 8),
+        if (!compact) ...[
+          const SizedBox(height: 8),
 
-        // 100% labels at ends
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '100%',
-                style: TextStyle(
-                  color: _isLeftSide && percentage > 80 ? AppColors.purple400 : AppColors.gray600,
-                  fontSize: 11,
+          // 100% labels at ends
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '100%',
+                  style: TextStyle(
+                    color: _isLeftSide && percentage > 80 ? AppColors.purple400 : AppColors.gray600,
+                    fontSize: 11,
+                  ),
                 ),
-              ),
-              Text(
-                '0%',
-                style: TextStyle(
-                  color: _sliderPosition == 0 ? Colors.white : AppColors.gray600,
-                  fontSize: 11,
+                Text(
+                  '0%',
+                  style: TextStyle(
+                    color: _sliderPosition == 0 ? Colors.white : AppColors.gray600,
+                    fontSize: 11,
+                  ),
                 ),
-              ),
-              Text(
-                '100%',
-                style: TextStyle(
-                  color: _isRightSide && percentage > 80 ? AppColors.cyan500 : AppColors.gray600,
-                  fontSize: 11,
+                Text(
+                  '100%',
+                  style: TextStyle(
+                    color: _isRightSide && percentage > 80 ? AppColors.cyan500 : AppColors.gray600,
+                    fontSize: 11,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
       ],
     );
   }

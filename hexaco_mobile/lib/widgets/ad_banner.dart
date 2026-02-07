@@ -1,4 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -20,30 +20,45 @@ class BannerAdWidget extends StatefulWidget {
 class _BannerAdWidgetState extends State<BannerAdWidget> {
   BannerAd? _bannerAd;
   bool _isLoaded = false;
-  AdSize? _adSize;
+  AdSize _adSize = AdSize.banner;
+  int _retryCount = 0;
+  bool _loadRequested = false;
+  static const int _maxRetries = 3;
 
   bool get _isTest => const bool.fromEnvironment('FLUTTER_TEST');
-
   bool get _useTestAd => kDebugMode || kProfileMode || _isTest;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_bannerAd == null && !_isTest) {
+    if (!_isTest && !_loadRequested) {
+      _loadRequested = true;
       _loadAd();
     }
   }
 
   Future<void> _loadAd() async {
-    final screenWidth = MediaQuery.of(context).size.width.truncate();
-    final adSize = AdSize.getInlineAdaptiveBannerAdSize(screenWidth, 60);
+    final width = MediaQuery.of(context).size.width.truncate();
 
-    _adSize = adSize;
+    // 앵커드 적응형 배너 사이즈 (Google 권장)
+    final AnchoredAdaptiveBannerAdSize? adaptiveSize =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
 
-    final adUnitId = bannerAdUnitIdForPlatform(test: _useTestAd);
+    if (!mounted) return;
+
+    final adSize = adaptiveSize ?? AdSize.banner;
+    setState(() {
+      _adSize = adSize;
+    });
+
+    final adUnitId = _useTestAd
+        ? bannerAdUnitIdForPlatform(test: true)
+        : widget.adUnitId;
+
+    _bannerAd?.dispose();
     _bannerAd = BannerAd(
       size: adSize,
-      adUnitId: _useTestAd ? adUnitId : widget.adUnitId,
+      adUnitId: adUnitId,
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
@@ -51,13 +66,22 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
             ad.dispose();
             return;
           }
+          debugPrint('Banner ad loaded successfully');
           setState(() {
             _isLoaded = true;
           });
         },
         onAdFailedToLoad: (ad, error) {
-          debugPrint('Ad failed to load: $error');
+          debugPrint('Banner ad failed to load (attempt ${_retryCount + 1}): $error');
           ad.dispose();
+          _bannerAd = null;
+          // 재시도 (백오프 적용)
+          if (mounted && _retryCount < _maxRetries) {
+            _retryCount++;
+            Future.delayed(Duration(seconds: _retryCount * 5), () {
+              if (mounted) _loadAd();
+            });
+          }
         },
       ),
     )..load();
@@ -72,16 +96,17 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
   @override
   Widget build(BuildContext context) {
     if (_isTest) {
-      return const SizedBox.shrink();
+      return const SizedBox(height: 60);
     }
 
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      height: _isLoaded ? (_adSize?.height.toDouble() ?? 60) : 0,
+    final height = _adSize.height.toDouble();
+
+    return SizedBox(
+      height: height,
       width: double.infinity,
-      child: _bannerAd == null || !_isLoaded
-          ? const SizedBox.shrink()
-          : AdWidget(ad: _bannerAd!),
+      child: _bannerAd != null && _isLoaded
+          ? AdWidget(ad: _bannerAd!)
+          : const SizedBox.shrink(),
     );
   }
 }
@@ -94,7 +119,8 @@ class BannerAdSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      constraints: const BoxConstraints(minHeight: 60),
+      padding: const EdgeInsets.symmetric(vertical: 4),
       decoration: BoxDecoration(
         color: AppColors.darkCard.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(12),

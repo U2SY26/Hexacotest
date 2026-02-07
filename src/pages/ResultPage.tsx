@@ -6,13 +6,15 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis,
   PolarRadiusAxis, ResponsiveContainer
 } from 'recharts'
-import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle, Info, Brain } from 'lucide-react'
+import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle, Info, Brain, Sparkles } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import { decodeResults, useTestStore } from '../stores/testStore'
 import { factorColors, factors, Factor } from '../data/questions'
 import { findTopMatches, MatchResult } from '../utils/matching'
 import { categoryColors } from '../data/personas'
 import { CelebrityDisclaimer } from '../components/common/DisclaimerSection'
+import { getPersonalityTitle, getMemeQuotes, getMainMemeQuote, getCharacterMatch, getMBTIMatch } from '../utils/memeContent'
+import { getFactorAnalyses, getOverallAnalysis, type FactorAnalysis as LocalFactorAnalysis } from '../utils/personalityAnalysis'
 
 interface AnalysisFactor {
   factor: Factor
@@ -61,17 +63,10 @@ function LoadingScreen({ language }: { language: string }) {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-dark-bg">
-      {/* Animated orb */}
       <motion.div
         className="relative w-32 h-32 mb-12"
-        animate={{
-          scale: [1, 1.1, 1],
-        }}
-        transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          ease: 'easeInOut',
-        }}
+        animate={{ scale: [1, 1.1, 1] }}
+        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
       >
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
           <Brain className="w-16 h-16 text-white" />
@@ -85,15 +80,10 @@ function LoadingScreen({ language }: { language: string }) {
               '0 0 30px rgba(139, 92, 246, 0.3), 0 0 60px rgba(236, 72, 153, 0.2)',
             ],
           }}
-          transition={{
-            duration: 1.5,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
         />
       </motion.div>
 
-      {/* Message */}
       <AnimatePresence mode="wait">
         <motion.p
           key={messageIndex}
@@ -106,7 +96,6 @@ function LoadingScreen({ language }: { language: string }) {
         </motion.p>
       </AnimatePresence>
 
-      {/* Progress bar */}
       <div className="w-48 h-1.5 bg-dark-card rounded-full overflow-hidden">
         <motion.div
           className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
@@ -115,7 +104,6 @@ function LoadingScreen({ language }: { language: string }) {
         />
       </div>
 
-      {/* Percentage */}
       <p className="text-gray-400 text-sm mt-4">
         {Math.round(progress)}%
       </p>
@@ -123,62 +111,86 @@ function LoadingScreen({ language }: { language: string }) {
   )
 }
 
-// Factor card component
-function FactorCard({
-  factor,
-  score,
-  name,
-  description,
+// Flip card for factor analysis
+function FlipCard({
+  analysis,
+  isKo,
   delay,
 }: {
-  factor: Factor
-  score: number
-  name: string
-  description: string
+  analysis: LocalFactorAnalysis
+  isKo: boolean
   delay: number
 }) {
-  const color = factorColors[factor]
-  const isHigh = score >= 50
+  const [flipped, setFlipped] = useState(false)
+  const color = factorColors[analysis.factor as keyof typeof factorColors]
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay }}
-      className="relative overflow-hidden rounded-xl border border-dark-border p-4"
-      style={{
-        background: `linear-gradient(135deg, ${color}20 0%, transparent 60%)`,
-      }}
+      className="cursor-pointer perspective-1000"
+      style={{ minHeight: '200px' }}
+      onClick={() => setFlipped(!flipped)}
     >
-      <div className="flex items-center gap-2 mb-3">
-        <span
-          className="text-2xl font-bold"
-          style={{ color }}
+      <motion.div
+        className="relative w-full h-full"
+        style={{ transformStyle: 'preserve-3d', minHeight: '200px' }}
+        animate={{ rotateY: flipped ? 180 : 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        {/* Front */}
+        <div
+          className="absolute inset-0 rounded-xl border border-dark-border p-4 backface-hidden"
+          style={{
+            background: `linear-gradient(135deg, ${color}15 0%, transparent 60%)`,
+            backfaceVisibility: 'hidden',
+          }}
         >
-          {factor}
-        </span>
-        <span className="text-gray-400 text-sm truncate flex-1">
-          {name}
-        </span>
-      </div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-2xl">{analysis.emoji}</span>
+            <span className="text-lg font-bold" style={{ color }}>{analysis.factor}</span>
+            <span className="text-xs text-gray-500">{isKo ? analysis.nameKo : analysis.nameEn}</span>
+          </div>
+          <div className="text-xl font-bold text-white mb-2">{analysis.score.toFixed(1)}%</div>
+          <div className="h-1.5 bg-dark-bg rounded-full overflow-hidden mb-3">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${analysis.score}%` }}
+              transition={{ delay: delay + 0.2, duration: 0.8 }}
+              className="h-full rounded-full"
+              style={{ backgroundColor: color }}
+            />
+          </div>
+          <p className="text-sm text-gray-300 leading-relaxed">
+            {isKo ? analysis.summaryKo : analysis.summaryEn}
+          </p>
+          <p className="text-xs text-gray-500 mt-3 text-center">
+            {isKo ? '탭하여 자세히 보기' : 'Tap for details'}
+          </p>
+        </div>
 
-      <div className="text-2xl font-bold text-white mb-2">
-        {score.toFixed(1)}%
-      </div>
-
-      <div className="h-1.5 bg-dark-bg rounded-full overflow-hidden mb-3">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${score}%` }}
-          transition={{ delay: delay + 0.2, duration: 0.8 }}
-          className="h-full rounded-full"
-          style={{ backgroundColor: color }}
-        />
-      </div>
-
-      <p className="text-xs text-gray-400 leading-relaxed">
-        {description}
-      </p>
+        {/* Back */}
+        <div
+          className="absolute inset-0 rounded-xl border border-dark-border p-4 backface-hidden overflow-y-auto"
+          style={{
+            background: `linear-gradient(135deg, ${color}10 0%, #1a1a2e 60%)`,
+            backfaceVisibility: 'hidden',
+            transform: 'rotateY(180deg)',
+          }}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-lg font-bold" style={{ color }}>{analysis.factor}</span>
+            <span className="text-xs text-gray-400">{isKo ? analysis.nameKo : analysis.nameEn}</span>
+          </div>
+          <p className="text-sm text-gray-300 leading-relaxed">
+            {isKo ? analysis.detailKo : analysis.detailEn}
+          </p>
+          <p className="text-xs text-gray-500 mt-3 text-center">
+            {isKo ? '탭하여 돌아가기' : 'Tap to go back'}
+          </p>
+        </div>
+      </motion.div>
     </motion.div>
   )
 }
@@ -199,40 +211,28 @@ function MatchCard({
 
   return (
     <div className="flex items-center gap-4 p-4 rounded-xl bg-dark-bg/50">
-      {/* Avatar */}
       <div className="relative flex-shrink-0">
         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-          <span className="text-xl font-bold text-white">
-            {name[0]}
-          </span>
+          <span className="text-xl font-bold text-white">{name[0]}</span>
         </div>
         <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-dark-card border border-dark-border flex items-center justify-center">
           <span className="text-xs font-bold text-gray-400">#{rank}</span>
         </div>
       </div>
-
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <h3 className="font-bold text-white truncate">{name}</h3>
           <span
             className="text-xs px-2 py-0.5 rounded-full flex-shrink-0"
-            style={{
-              backgroundColor: categoryColors[match.persona.category],
-              color: 'white',
-            }}
+            style={{ backgroundColor: categoryColors[match.persona.category], color: 'white' }}
           >
             {t(`result.category.${match.persona.category}`)}
           </span>
         </div>
         <p className="text-sm text-gray-400 line-clamp-2">{description}</p>
       </div>
-
-      {/* Similarity */}
       <div className="flex-shrink-0 text-right">
-        <div className="text-lg font-bold text-purple-400">
-          {match.similarity}%
-        </div>
+        <div className="text-lg font-bold text-purple-400">{match.similarity}%</div>
         {match.similarity >= 80 && (
           <span className="text-xs text-emerald-400">
             {language === 'ko' ? '찰떡!' : 'Match!'}
@@ -266,91 +266,20 @@ export default function ResultPage() {
     : []
 
   const factorNamesKo: Record<Factor, string> = {
-    H: '정직-겸손',
-    E: '정서성',
-    X: '외향성',
-    A: '원만성',
-    C: '성실성',
-    O: '개방성',
+    H: '정직-겸손', E: '정서성', X: '외향성', A: '원만성', C: '성실성', O: '개방성',
   }
-
   const factorNamesEn: Record<Factor, string> = {
-    H: 'Honesty-Humility',
-    E: 'Emotionality',
-    X: 'Extraversion',
-    A: 'Agreeableness',
-    C: 'Conscientiousness',
-    O: 'Openness',
+    H: 'Honesty-Humility', E: 'Emotionality', X: 'Extraversion', A: 'Agreeableness', C: 'Conscientiousness', O: 'Openness',
   }
 
-  const getFactorDescription = (factor: Factor, score: number, isKo: boolean) => {
-    const isHigh = score >= 50
-    const descriptions: Record<Factor, { high: { ko: string; en: string }; low: { ko: string; en: string } }> = {
-      H: {
-        high: {
-          ko: '진실되고 공정하며, 물질적 이득보다 도덕적 가치를 중시합니다.',
-          en: 'Sincere and fair, valuing moral principles over material gain.',
-        },
-        low: {
-          ko: '자신의 이익을 위해 적극적으로 행동하며, 사회적 지위에 관심이 많습니다.',
-          en: 'Actively pursues interests and cares about social status.',
-        },
-      },
-      E: {
-        high: {
-          ko: '감정적으로 민감하고, 다른 사람들과 깊은 유대감을 형성합니다.',
-          en: 'Emotionally sensitive and forms deep bonds with others.',
-        },
-        low: {
-          ko: '정서적으로 안정되어 있으며, 스트레스 상황에서도 침착함을 유지합니다.',
-          en: 'Emotionally stable and remains calm under stress.',
-        },
-      },
-      X: {
-        high: {
-          ko: '사교적이고 활발하며, 사람들과 함께 있을 때 에너지를 얻습니다.',
-          en: 'Sociable and energetic, gaining energy from being with people.',
-        },
-        low: {
-          ko: '조용하고 내성적이며, 혼자만의 시간을 즐깁니다.',
-          en: 'Quiet and introverted, enjoying time alone.',
-        },
-      },
-      A: {
-        high: {
-          ko: '타인을 쉽게 용서하고, 갈등을 피하며 협력적입니다.',
-          en: 'Easily forgives others, avoids conflict, and is cooperative.',
-        },
-        low: {
-          ko: '자신의 의견을 강하게 표현하고, 필요시 비판도 서슴지 않습니다.',
-          en: 'Expresses opinions strongly and doesn\'t hesitate to criticize.',
-        },
-      },
-      C: {
-        high: {
-          ko: '체계적이고 목표 지향적이며, 계획에 따라 행동합니다.',
-          en: 'Organized, goal-oriented, and acts according to plans.',
-        },
-        low: {
-          ko: '유연하고 즉흥적이며, 규칙에 얽매이지 않습니다.',
-          en: 'Flexible and spontaneous, not bound by rules.',
-        },
-      },
-      O: {
-        high: {
-          ko: '창의적이고 호기심이 많으며, 새로운 경험을 추구합니다.',
-          en: 'Creative, curious, and seeks new experiences.',
-        },
-        low: {
-          ko: '실용적이고 전통적인 방식을 선호합니다.',
-          en: 'Practical and prefers traditional approaches.',
-        },
-      },
-    }
-    return isHigh
-      ? (isKo ? descriptions[factor].high.ko : descriptions[factor].high.en)
-      : (isKo ? descriptions[factor].low.ko : descriptions[factor].low.en)
-  }
+  // Meme content (computed from scores)
+  const personalityTitle = scores ? getPersonalityTitle(scores) : null
+  const memeQuotes = scores ? getMemeQuotes(scores) : []
+  const mainMeme = scores ? getMainMemeQuote(scores) : null
+  const characterMatch = scores ? getCharacterMatch(scores) : null
+  const mbtiMatch = scores ? getMBTIMatch(scores) : null
+  const localAnalyses = scores ? getFactorAnalyses(scores) : []
+  const overallText = scores ? getOverallAnalysis(scores, i18n.language === 'ko') : ''
 
   useEffect(() => {
     if (!scores) {
@@ -363,59 +292,36 @@ export default function ResultPage() {
     setAnalysis(null)
     setAnalysisError(null)
 
-    const delay = new Promise(resolve => {
-      setTimeout(resolve, 4000) // 4 seconds loading
-    })
-
+    const delay = new Promise(resolve => { setTimeout(resolve, 4000) })
     const matchesPromise = delay.then(() => findTopMatches(scores, 5))
 
     const analysisPromise = fetch('/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        scores,
-        language: i18n.language === 'ko' ? 'ko' : 'en'
-      })
+      body: JSON.stringify({ scores, language: i18n.language === 'ko' ? 'ko' : 'en' })
     }).then(async response => {
-      if (!response.ok) {
-        throw new Error('Failed to load analysis')
-      }
+      if (!response.ok) throw new Error('Failed to load analysis')
       return response.json() as Promise<AnalysisResponse>
     })
 
     Promise.allSettled([matchesPromise, analysisPromise]).then(results => {
       if (cancelled) return
-
       const matchResult = results[0]
-      if (matchResult.status === 'fulfilled') {
-        setTopMatches(matchResult.value)
-      } else {
-        setTopMatches(findTopMatches(scores, 5))
-      }
+      if (matchResult.status === 'fulfilled') setTopMatches(matchResult.value)
+      else setTopMatches(findTopMatches(scores, 5))
 
       const analysisResult = results[1]
-      if (analysisResult.status === 'fulfilled') {
-        setAnalysis(analysisResult.value)
-      } else {
-        setAnalysisError(i18n.language === 'ko'
-          ? 'AI 분석을 불러오지 못했습니다.'
-          : 'Failed to load AI analysis.')
-      }
+      if (analysisResult.status === 'fulfilled') setAnalysis(analysisResult.value)
+      else setAnalysisError(i18n.language === 'ko' ? 'AI 분석을 불러오지 못했습니다.' : 'Failed to load AI analysis.')
 
       setIsLoading(false)
     })
 
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [scores, i18n.language])
 
   const chartData = scores
-    ? factors.map(factor => ({
-        factor,
-        value: scores[factor],
-        fullMark: 100
-      }))
+    ? factors.map(factor => ({ factor, value: scores[factor], fullMark: 100 }))
     : []
 
   const copyLink = async () => {
@@ -426,20 +332,16 @@ export default function ResultPage() {
 
   const shareTwitter = () => {
     const text = i18n.language === 'ko'
-      ? `나의 HEXACO 성격 테스트 결과! ${match?.persona.name.ko}와(과) ${match?.similarity}% 유사합니다.`
-      : `My HEXACO Personality Test Results! ${match?.similarity}% similar to ${match?.persona.name.en}.`
+      ? `나의 HEXACO 성격 테스트 결과! ${personalityTitle?.emoji} ${personalityTitle?.titleKo} - ${match?.persona.name.ko}와(과) ${match?.similarity}% 유사합니다.`
+      : `My HEXACO Personality Test Results! ${personalityTitle?.emoji} ${personalityTitle?.titleEn} - ${match?.similarity}% similar to ${match?.persona.name.en}.`
     const url = encodeURIComponent(window.location.href)
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${url}`, '_blank')
   }
 
   const downloadImage = async () => {
     if (!resultRef.current) return
-
     try {
-      const canvas = await html2canvas(resultRef.current, {
-        backgroundColor: '#0f0f23',
-        scale: 2
-      })
+      const canvas = await html2canvas(resultRef.current, { backgroundColor: '#0f0f23', scale: 2 })
       const link = document.createElement('a')
       link.download = 'hexaco-result.png'
       link.href = canvas.toDataURL()
@@ -449,9 +351,7 @@ export default function ResultPage() {
     }
   }
 
-  if (isLoading) {
-    return <LoadingScreen language={i18n.language} />
-  }
+  if (isLoading) return <LoadingScreen language={i18n.language} />
 
   if (!scores) {
     return (
@@ -460,13 +360,9 @@ export default function ResultPage() {
           {i18n.language === 'ko' ? '결과를 찾을 수 없습니다' : 'Results not found'}
         </h2>
         <p className="text-gray-400 mb-8">
-          {i18n.language === 'ko'
-            ? '테스트를 먼저 완료해주세요'
-            : 'Please complete the test first'}
+          {i18n.language === 'ko' ? '테스트를 먼저 완료해주세요' : 'Please complete the test first'}
         </p>
-        <Link to="/test" className="btn-primary">
-          {t('common.start')}
-        </Link>
+        <Link to="/test" className="btn-primary">{t('common.start')}</Link>
       </div>
     )
   }
@@ -487,11 +383,39 @@ export default function ResultPage() {
               {isKo ? '결과' : 'Results'}
             </h1>
             <p className="text-gray-400 text-sm">
-              {isKo
-                ? '100가지 유형 중 가장 가까운 유형을 추천합니다.'
-                : 'We recommend the closest match among 100 types.'}
+              {isKo ? '100가지 유형 중 가장 가까운 유형을 추천합니다.' : 'We recommend the closest match among 100 types.'}
             </p>
           </motion.div>
+
+          {/* Personality Title Card (NEW) */}
+          {personalityTitle && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="relative overflow-hidden rounded-2xl border border-purple-500/40 p-6 text-center"
+              style={{
+                background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(236, 72, 153, 0.2) 100%)',
+              }}
+            >
+              <div className="text-5xl mb-3">{personalityTitle.emoji}</div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                {isKo ? personalityTitle.titleKo : personalityTitle.titleEn}
+              </h2>
+              <p className="text-gray-400">
+                {isKo ? personalityTitle.descriptionKo : personalityTitle.descriptionEn}
+              </p>
+              {/* Main meme quote */}
+              {mainMeme && (
+                <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-dark-bg/50 border border-dark-border">
+                  <span className="text-lg">{mainMeme.emoji}</span>
+                  <span className="text-sm text-gray-300 italic">
+                    "{isKo ? mainMeme.quoteKo : mainMeme.quoteEn}"
+                  </span>
+                </div>
+              )}
+            </motion.div>
+          )}
 
           {/* Top Match Card */}
           {match && (
@@ -505,14 +429,11 @@ export default function ResultPage() {
               }}
             >
               <div className="flex items-start gap-4">
-                {/* Avatar */}
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
                   <span className="text-2xl font-bold text-white">
                     {match.persona.name[isKo ? 'ko' : 'en'][0]}
                   </span>
                 </div>
-
-                {/* Info */}
                 <div className="flex-1 min-w-0">
                   <h2 className="text-xl font-bold text-white mb-1">
                     {match.persona.name[isKo ? 'ko' : 'en']}
@@ -549,45 +470,146 @@ export default function ResultPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart cx="50%" cy="50%" outerRadius="70%" data={chartData}>
                   <PolarGrid stroke="#2d2d44" />
-                  <PolarAngleAxis
-                    dataKey="factor"
-                    tick={{ fill: '#9ca3af', fontSize: 14 }}
-                  />
-                  <PolarRadiusAxis
-                    angle={30}
-                    domain={[0, 100]}
-                    tick={{ fill: '#6b7280', fontSize: 10 }}
-                  />
-                  <Radar
-                    name="Score"
-                    dataKey="value"
-                    stroke="#8B5CF6"
-                    fill="#8B5CF6"
-                    fillOpacity={0.4}
-                    strokeWidth={2}
-                  />
+                  <PolarAngleAxis dataKey="factor" tick={{ fill: '#9ca3af', fontSize: 14 }} />
+                  <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fill: '#6b7280', fontSize: 10 }} />
+                  <Radar name="Score" dataKey="value" stroke="#8B5CF6" fill="#8B5CF6" fillOpacity={0.4} strokeWidth={2} />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
           </motion.div>
 
-          {/* Factor Scores Grid */}
+          {/* Factor Analysis Flip Cards (NEW - replaces simple FactorCard) */}
           <div>
-            <h3 className="text-lg font-bold text-white mb-4">
-              {isKo ? '요인 점수' : 'Factor Scores'}
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {factors.map((factor, index) => (
-                <FactorCard
-                  key={factor}
-                  factor={factor}
-                  score={scores[factor]}
-                  name={isKo ? factorNamesKo[factor] : factorNamesEn[factor]}
-                  description={getFactorDescription(factor, scores[factor], isKo)}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <Sparkles className="w-4 h-4 text-white" />
+              </div>
+              <h3 className="text-lg font-bold text-white">
+                {isKo ? '성격 분석' : 'Personality Analysis'}
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {localAnalyses.map((item, index) => (
+                <FlipCard
+                  key={item.factor}
+                  analysis={item}
+                  isKo={isKo}
                   delay={0.4 + index * 0.1}
                 />
               ))}
             </div>
+          </div>
+
+          {/* Overall Analysis (NEW) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            className="card"
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-xl">🌟</span>
+              <h3 className="font-bold text-white">
+                {isKo ? '종합 분석' : 'Overall Analysis'}
+              </h3>
+            </div>
+            <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+              {overallText}
+            </p>
+          </motion.div>
+
+          {/* Meme Quotes Grid (NEW) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="card"
+          >
+            <h3 className="text-lg font-bold text-white mb-4">
+              {isKo ? '나를 한마디로' : 'In a Nutshell'}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {memeQuotes.map((quote) => {
+                const color = factorColors[quote.factor as keyof typeof factorColors]
+                return (
+                  <div
+                    key={quote.factor}
+                    className="rounded-xl p-4 border border-dark-border"
+                    style={{ background: `linear-gradient(135deg, ${color}10 0%, transparent 60%)` }}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span
+                        className="text-xs font-bold px-2 py-0.5 rounded-full"
+                        style={{ backgroundColor: `${color}30`, color }}
+                      >
+                        {quote.factor}
+                      </span>
+                      <span className="text-lg">{quote.emoji}</span>
+                    </div>
+                    <p className="text-sm text-gray-300">
+                      {isKo ? quote.quoteKo : quote.quoteEn}
+                    </p>
+                  </div>
+                )
+              })}
+            </div>
+          </motion.div>
+
+          {/* Character Match + MBTI (NEW) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Character Match */}
+            {characterMatch && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.6 }}
+                className="card"
+              >
+                <h3 className="text-sm font-bold text-gray-400 mb-3">
+                  {isKo ? '닮은 캐릭터' : 'Similar Character'}
+                </h3>
+                <div className="text-center">
+                  <div className="text-4xl mb-2">{characterMatch.emoji}</div>
+                  <h4 className="text-lg font-bold text-white mb-1">
+                    {isKo ? characterMatch.nameKo : characterMatch.nameEn}
+                  </h4>
+                  <span className="text-xs text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded-full">
+                    {characterMatch.source}
+                  </span>
+                  <p className="text-sm text-gray-400 mt-3">
+                    {isKo ? characterMatch.reasonKo : characterMatch.reasonEn}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* MBTI Estimation */}
+            {mbtiMatch && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 }}
+                className="card"
+              >
+                <h3 className="text-sm font-bold text-gray-400 mb-3">
+                  {isKo ? 'MBTI 추정' : 'MBTI Estimate'}
+                </h3>
+                <div className="text-center">
+                  <div className="text-4xl mb-2">🔮</div>
+                  <h4 className="text-3xl font-bold text-white mb-1 tracking-wider">
+                    {mbtiMatch.mbti}
+                  </h4>
+                  <p className="text-sm text-gray-400 mt-2">
+                    {isKo ? mbtiMatch.descriptionKo : mbtiMatch.descriptionEn}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-3">
+                    {isKo
+                      ? '※ HEXACO 기반 추정이며 실제 MBTI와 다를 수 있습니다'
+                      : '※ Estimated from HEXACO, may differ from actual MBTI'}
+                  </p>
+                </div>
+              </motion.div>
+            )}
           </div>
 
           {/* AI Analysis */}
@@ -604,7 +626,7 @@ export default function ResultPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-white">
-                    {isKo ? '성격 분석 리포트' : 'Personality Analysis Report'}
+                    {isKo ? 'AI 성격 분석 리포트' : 'AI Personality Analysis Report'}
                   </h3>
                   <p className="text-xs text-gray-400">
                     {isKo ? 'AI 기반 분석' : 'AI-powered analysis'}
@@ -612,9 +634,7 @@ export default function ResultPage() {
                 </div>
               </div>
 
-              <p className="text-gray-300 text-sm mb-6 leading-relaxed">
-                {analysis.summary}
-              </p>
+              <p className="text-gray-300 text-sm mb-6 leading-relaxed">{analysis.summary}</p>
 
               <div className="space-y-4">
                 {analysisFactors.map(item => (
@@ -627,47 +647,30 @@ export default function ResultPage() {
                     }}
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <span
-                        className="text-lg font-bold"
-                        style={{ color: factorColors[item.factor] }}
-                      >
-                        {item.factor}
-                      </span>
-                      <span className="text-sm text-gray-400">
-                        {isKo ? factorNamesKo[item.factor] : factorNamesEn[item.factor]}
-                      </span>
+                      <span className="text-lg font-bold" style={{ color: factorColors[item.factor] }}>{item.factor}</span>
+                      <span className="text-sm text-gray-400">{isKo ? factorNamesKo[item.factor] : factorNamesEn[item.factor]}</span>
                     </div>
                     <p className="text-sm text-gray-300 mb-3">{item.overview}</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                       <div className="bg-dark-bg/50 rounded-lg p-3">
-                        <p className="text-gray-400 font-medium mb-2">
-                          {isKo ? '강점' : 'Strengths'}
-                        </p>
+                        <p className="text-gray-400 font-medium mb-2">{isKo ? '강점' : 'Strengths'}</p>
                         <ul className="text-gray-500 space-y-1">
                           {item.strengths?.map((s, i) => (
-                            <li key={i} className="flex items-start gap-1">
-                              <span className="text-emerald-400">+</span> {s}
-                            </li>
+                            <li key={i} className="flex items-start gap-1"><span className="text-emerald-400">+</span> {s}</li>
                           ))}
                         </ul>
                       </div>
                       <div className="bg-dark-bg/50 rounded-lg p-3">
-                        <p className="text-gray-400 font-medium mb-2">
-                          {isKo ? '주의점' : 'Risks'}
-                        </p>
+                        <p className="text-gray-400 font-medium mb-2">{isKo ? '주의점' : 'Risks'}</p>
                         <ul className="text-gray-500 space-y-1">
                           {item.risks?.map((r, i) => (
-                            <li key={i} className="flex items-start gap-1">
-                              <span className="text-amber-400">!</span> {r}
-                            </li>
+                            <li key={i} className="flex items-start gap-1"><span className="text-amber-400">!</span> {r}</li>
                           ))}
                         </ul>
                       </div>
                     </div>
                     <p className="text-xs text-gray-500 mt-3">
-                      <span className="text-purple-400 font-medium mr-2">
-                        {isKo ? '제안' : 'Growth'}
-                      </span>
+                      <span className="text-purple-400 font-medium mr-2">{isKo ? '제안' : 'Growth'}</span>
                       {item.growth}
                     </p>
                   </div>
@@ -693,21 +696,12 @@ export default function ResultPage() {
               <h3 className="text-lg font-bold text-white mb-2">
                 {isKo ? '추천 유형 TOP 5' : 'Top 5 Matches'}
               </h3>
-              <p className="text-gray-400 text-sm mb-4">
-                {t('result.matchDescription')}
-              </p>
-
+              <p className="text-gray-400 text-sm mb-4">{t('result.matchDescription')}</p>
               <div className="space-y-3">
                 {topMatches.map((item, index) => (
-                  <MatchCard
-                    key={item.persona.id}
-                    match={item}
-                    rank={index + 1}
-                    language={i18n.language}
-                  />
+                  <MatchCard key={item.persona.id} match={item} rank={index + 1} language={i18n.language} />
                 ))}
               </div>
-
               <CelebrityDisclaimer />
             </motion.div>
           )}
@@ -721,34 +715,20 @@ export default function ResultPage() {
           >
             <div className="flex items-center gap-2 mb-3">
               <Info className="w-4 h-4 text-gray-400" />
-              <span className="text-sm font-medium text-gray-400">
-                {isKo ? '법적 고지' : 'Legal Notice'}
-              </span>
+              <span className="text-sm font-medium text-gray-400">{isKo ? '법적 고지' : 'Legal Notice'}</span>
             </div>
             <ul className="text-xs text-gray-500 space-y-1.5">
               <li className="flex items-start gap-2">
                 <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                <span>
-                  {isKo
-                    ? '본 테스트는 비공식이며 HEXACO-PI-R과 무관합니다.'
-                    : 'Unofficial test, not affiliated with HEXACO-PI-R.'}
-                </span>
+                <span>{isKo ? '본 테스트는 비공식이며 HEXACO-PI-R과 무관합니다.' : 'Unofficial test, not affiliated with HEXACO-PI-R.'}</span>
               </li>
               <li className="flex items-start gap-2">
                 <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                <span>
-                  {isKo
-                    ? '결과는 오락 및 자기이해 목적이며 전문 심리 진단을 대체하지 않습니다.'
-                    : 'For entertainment/self-understanding only, not professional diagnosis.'}
-                </span>
+                <span>{isKo ? '결과는 오락 및 자기이해 목적이며 전문 심리 진단을 대체하지 않습니다.' : 'For entertainment/self-understanding only, not professional diagnosis.'}</span>
               </li>
               <li className="flex items-start gap-2">
                 <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                <span>
-                  {isKo
-                    ? '테스트 결과는 기기에만 저장되며 수집하지 않습니다.'
-                    : 'Results are stored locally and not collected.'}
-                </span>
+                <span>{isKo ? '테스트 결과는 기기에만 저장되며 수집하지 않습니다.' : 'Results are stored locally and not collected.'}</span>
               </li>
             </ul>
           </motion.div>
@@ -765,12 +745,10 @@ export default function ResultPage() {
             {copied ? <Check className="w-4 h-4 text-green-500" /> : <Link2 className="w-4 h-4" />}
             {copied ? t('common.copied') : t('common.copyLink')}
           </button>
-
           <button onClick={shareTwitter} className="btn-secondary flex items-center gap-2">
             <Twitter className="w-4 h-4" />
             Twitter
           </button>
-
           <button onClick={downloadImage} className="btn-secondary flex items-center gap-2">
             <Download className="w-4 h-4" />
             {t('common.save')}
@@ -784,15 +762,10 @@ export default function ResultPage() {
           transition={{ delay: 1.2 }}
           className="mt-6 flex justify-center gap-4"
         >
-          <Link
-            to="/test"
-            onClick={() => reset()}
-            className="btn-primary flex items-center gap-2"
-          >
+          <Link to="/test" onClick={() => reset()} className="btn-primary flex items-center gap-2">
             <RotateCcw className="w-4 h-4" />
             {t('common.retry')}
           </Link>
-
           <Link to="/" className="btn-secondary flex items-center gap-2">
             <Home className="w-4 h-4" />
             {t('common.home')}

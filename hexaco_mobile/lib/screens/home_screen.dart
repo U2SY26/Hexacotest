@@ -2,7 +2,6 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
 import '../controllers/test_controller.dart';
@@ -13,7 +12,9 @@ import '../widgets/buttons.dart';
 import '../widgets/dark_card.dart';
 import '../widgets/gradient_text.dart';
 import '../widgets/ad_banner.dart';
+import '../widgets/native_ad.dart';
 import '../config/admob_ids.dart';
+import '../services/version_check_service.dart';
 
 class HomeScreen extends StatefulWidget {
   final TestController controller;
@@ -27,6 +28,21 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _learnMoreKey = GlobalKey();
+
+  @override
+  void initState() {
+    super.initState();
+    // 앱 시작 시 버전 체크
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkVersion();
+    });
+  }
+
+  Future<void> _checkVersion() async {
+    if (!mounted) return;
+    final isKo = widget.controller.language == 'ko';
+    await VersionCheckService.checkForUpdate(context, isKo: isKo);
+  }
 
   @override
   void dispose() {
@@ -69,6 +85,12 @@ class _HomeScreenState extends State<HomeScreen> {
               _SampleQuestionSection(key: _learnMoreKey, isKo: isKo),
               const SizedBox(height: 28),
               _FeaturesSection(isKo: isKo),
+              const SizedBox(height: 28),
+              NativeAdSection(
+                isKo: isKo,
+                titleKo: '추천 콘텐츠',
+                titleEn: 'Recommended',
+              ),
               const SizedBox(height: 28),
               _HexacoSection(isKo: isKo),
               const SizedBox(height: 28),
@@ -1298,50 +1320,10 @@ class _FooterSection extends StatelessWidget {
 
   const _FooterSection({required this.isKo});
 
-  Future<void> _openUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // 커피 후원 버튼
-        InkWell(
-          onTap: () => _openUrl('https://paypal.me/u2dia'),
-          borderRadius: BorderRadius.circular(16),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.amber500.withValues(alpha: 0.2),
-                  AppColors.orange500.withValues(alpha: 0.2),
-                ],
-              ),
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.amber500.withValues(alpha: 0.5)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('☕', style: TextStyle(fontSize: 20)),
-                const SizedBox(width: 8),
-                Text(
-                  isKo ? '개발자에게 커피 사주기' : 'Buy me a coffee',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.amber500,
-                        fontWeight: FontWeight.w600,
-                      ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
         Text(
           'HEXACO Personality Test',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray500),
@@ -1353,20 +1335,6 @@ class _FooterSection extends StatelessWidget {
               : 'Based on HEXACO theory (Ashton & Lee) | Unofficial Test',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray600),
           textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 12),
-        Wrap(
-          spacing: 12,
-          children: [
-            TextButton(
-              onPressed: () => _openUrl('https://hexacotest.vercel.app/privacy'),
-              child: Text(isKo ? '개인정보처리방침' : 'Privacy Policy'),
-            ),
-            TextButton(
-              onPressed: () => _openUrl('https://www.google.com/settings/ads'),
-              child: Text(isKo ? '광고 설정' : 'Ad Settings'),
-            ),
-          ],
         ),
       ],
     );
