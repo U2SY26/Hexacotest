@@ -1,7 +1,7 @@
 {
   "minVersion": "1.0.0",
-  "latestVersion": "1.0.17",
-  "forceUpdate": true,
-  "updateMessage": "✨ 업데이트 내용\n\n• 질문 화면에서 헤더 제거 (더 넓은 화면)\n• 배너 광고 표시 개선\n• UI 안정성 향상",
-  "updateMessageEn": "✨ Updates\n\n• Removed header from question screen (wider view)\n• Improved banner ad display\n• UI stability improvements"
+  "latestVersion": "1.0.18",
+  "forceUpdate": false,
+  "updateMessage": "✨ v1.0.18 업데이트\n\n• 배너 광고 표시 안정화\n• 인트로 영상 7개 추가\n• 상태바에 가려지던 헤더 위치 수정\n• 공유 시 성격 분석 카드 선택 기능 추가",
+  "updateMessageEn": "✨ v1.0.18 Updates\n\n• Stabilized banner ad display\n• Added 7 new intro videos\n• Fixed header overlap with status bar\n• Share with personality detail cards"
 }

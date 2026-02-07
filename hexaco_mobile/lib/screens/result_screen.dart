@@ -1781,6 +1781,104 @@ class _ShareImageDialogState extends State<_ShareImageDialog> {
                   ),
                   const SizedBox(height: 14),
 
+                  // 선택한 요인 상세 카드
+                  if (widget.selectedFactors.isNotEmpty) ...[
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Text(
+                        widget.isKo ? '성격 분석 상세' : 'Personality Details',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.gray400,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 11,
+                            ),
+                      ),
+                    ),
+                    ...PersonalityAnalysisService.getFactorAnalyses(widget.scores, widget.isKo)
+                        .where((a) => widget.selectedFactors.contains(a.factor))
+                        .map((analysis) {
+                      final color = factorColors[analysis.factor] ?? AppColors.purple500;
+                      final name = widget.isKo ? analysis.nameKo : analysis.nameEn;
+                      final detail = widget.isKo ? analysis.detailKo : analysis.detailEn;
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [
+                                AppColors.darkCard,
+                                color.withValues(alpha: 0.15),
+                              ],
+                            ),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: color.withValues(alpha: 0.4)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 24,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      color: color,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                        analysis.factor,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '$name ${analysis.emoji}',
+                                    style: TextStyle(
+                                      color: color,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  Text(
+                                    '${analysis.score.toStringAsFixed(0)}%',
+                                    style: TextStyle(
+                                      color: color,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                detail,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.gray300,
+                                      fontSize: 10,
+                                      height: 1.4,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                    const SizedBox(height: 6),
+                  ],
+
                   // 웹사이트 링크
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

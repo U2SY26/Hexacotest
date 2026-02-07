@@ -120,11 +120,13 @@ export const useTestStore = create<TestState>()(
       },
 
       reset: () => {
+        const { testVersion } = get()
         set({
           currentIndex: 0,
           answers: [],
           scores: null,
           isCompleted: false,
+          selectedQuestions: selectRandomQuestions(testVersion),
         })
       },
 
