@@ -262,12 +262,12 @@ function PercentageSlider({
     setSliderPosition(newPos)
   }, [currentAnswer])
 
-  // Initialize with neutral value when first loading
+  // Auto-select neutral when question changes (matching mobile behavior)
   useEffect(() => {
     if (currentAnswer === undefined) {
       onSelect(50) // neutral
     }
-  }, [])
+  }, [currentAnswer])
 
   const getPositionColor = useCallback(() => {
     if (sliderPosition === 0) return '#6B7280' // gray-500

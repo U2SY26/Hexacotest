@@ -6,7 +6,7 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis,
   PolarRadiusAxis, ResponsiveContainer
 } from 'recharts'
-import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle, Info, Brain, Sparkles } from 'lucide-react'
+import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle, Info, Brain, Sparkles, Copy, Coffee, ExternalLink } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import { decodeResults, useTestStore } from '../stores/testStore'
 import { factorColors, factors, Factor } from '../data/questions'
@@ -27,6 +27,13 @@ interface AnalysisFactor {
 interface AnalysisResponse {
   summary: string
   factors: AnalysisFactor[]
+}
+
+const factorNamesKo: Record<Factor, string> = {
+  H: '정직-겸손', E: '정서성', X: '외향성', A: '원만성', C: '성실성', O: '개방성',
+}
+const factorNamesEn: Record<Factor, string> = {
+  H: 'Honesty-Humility', E: 'Emotionality', X: 'Extraversion', A: 'Agreeableness', C: 'Conscientiousness', O: 'Openness',
 }
 
 // Loading screen with animated messages
@@ -248,6 +255,7 @@ export default function ResultPage() {
   const [searchParams] = useSearchParams()
   const resultRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
+  const [summaryCopied, setSummaryCopied] = useState(false)
   const [topMatches, setTopMatches] = useState<MatchResult[]>([])
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null)
   const [analysisError, setAnalysisError] = useState<string | null>(null)
@@ -264,13 +272,6 @@ export default function ResultPage() {
         .map(factor => analysis.factors.find(item => item.factor === factor))
         .filter((item): item is AnalysisFactor => Boolean(item))
     : []
-
-  const factorNamesKo: Record<Factor, string> = {
-    H: '정직-겸손', E: '정서성', X: '외향성', A: '원만성', C: '성실성', O: '개방성',
-  }
-  const factorNamesEn: Record<Factor, string> = {
-    H: 'Honesty-Humility', E: 'Emotionality', X: 'Extraversion', A: 'Agreeableness', C: 'Conscientiousness', O: 'Openness',
-  }
 
   // Meme content (computed from scores)
   const personalityTitle = scores ? getPersonalityTitle(scores) : null
@@ -324,6 +325,35 @@ export default function ResultPage() {
     ? factors.map(factor => ({ factor, value: scores[factor], fullMark: 100 }))
     : []
 
+  const isKo = i18n.language === 'ko'
+
+  // Build summary text (matching mobile's _summaryText)
+  const getSummaryText = (): string => {
+    if (!scores || !personalityTitle || !mainMeme || !mbtiMatch) return ''
+    const topName = match?.persona.name[isKo ? 'ko' : 'en'] ?? ''
+    const topSim = match?.similarity ?? 0
+
+    return isKo
+      ? `${personalityTitle.emoji} ${personalityTitle.titleKo}\n` +
+        `${mainMeme.emoji} ${mainMeme.quoteKo}\n\n` +
+        `🔮 MBTI 추정: ${mbtiMatch.mbti}\n` +
+        `👤 닮은 유명인: ${topName} (${topSim}%)\n\n` +
+        `나도 테스트하기 👉 hexacotest.vercel.app`
+      : `${personalityTitle.emoji} ${personalityTitle.titleEn}\n` +
+        `${mainMeme.emoji} ${mainMeme.quoteEn}\n\n` +
+        `🔮 MBTI guess: ${mbtiMatch.mbti}\n` +
+        `👤 Similar to: ${topName} (${topSim}%)\n\n` +
+        `Try the test 👉 hexacotest.vercel.app`
+  }
+
+  const copySummary = async () => {
+    const text = getSummaryText()
+    if (!text) return
+    await navigator.clipboard.writeText(text)
+    setSummaryCopied(true)
+    setTimeout(() => setSummaryCopied(false), 2000)
+  }
+
   const copyLink = async () => {
     await navigator.clipboard.writeText(window.location.href)
     setCopied(true)
@@ -331,7 +361,7 @@ export default function ResultPage() {
   }
 
   const shareTwitter = () => {
-    const text = i18n.language === 'ko'
+    const text = isKo
       ? `나의 HEXACO 성격 테스트 결과! ${personalityTitle?.emoji} ${personalityTitle?.titleKo} - ${match?.persona.name.ko}와(과) ${match?.similarity}% 유사합니다.`
       : `My HEXACO Personality Test Results! ${personalityTitle?.emoji} ${personalityTitle?.titleEn} - ${match?.similarity}% similar to ${match?.persona.name.en}.`
     const url = encodeURIComponent(window.location.href)
@@ -357,17 +387,15 @@ export default function ResultPage() {
     return (
       <div className="min-h-screen pt-24 flex flex-col items-center justify-center text-center px-4">
         <h2 className="text-2xl font-bold text-white mb-4">
-          {i18n.language === 'ko' ? '결과를 찾을 수 없습니다' : 'Results not found'}
+          {isKo ? '결과를 찾을 수 없습니다' : 'Results not found'}
         </h2>
         <p className="text-gray-400 mb-8">
-          {i18n.language === 'ko' ? '테스트를 먼저 완료해주세요' : 'Please complete the test first'}
+          {isKo ? '테스트를 먼저 완료해주세요' : 'Please complete the test first'}
         </p>
         <Link to="/test" className="btn-primary">{t('common.start')}</Link>
       </div>
     )
   }
-
-  const isKo = i18n.language === 'ko'
 
   return (
     <div className="min-h-screen pt-20 pb-12 px-4">
@@ -387,7 +415,7 @@ export default function ResultPage() {
             </p>
           </motion.div>
 
-          {/* Personality Title Card (NEW) */}
+          {/* Personality Title Card */}
           {personalityTitle && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
@@ -478,7 +506,48 @@ export default function ResultPage() {
             </div>
           </motion.div>
 
-          {/* Factor Analysis Flip Cards (NEW - replaces simple FactorCard) */}
+          {/* Factor Scores Grid (matching mobile) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+          >
+            <h3 className="text-lg font-bold text-white mb-3">
+              {isKo ? '요인 점수' : 'Factor Scores'}
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {factors.map((factor) => {
+                const value = scores[factor]
+                const color = factorColors[factor]
+                return (
+                  <div
+                    key={factor}
+                    className="rounded-xl border border-dark-border p-4"
+                    style={{ background: `linear-gradient(135deg, ${color}08 0%, transparent 60%)` }}
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-lg font-bold" style={{ color }}>{factor}</span>
+                      <span className="text-xs text-gray-400 truncate">
+                        {isKo ? factorNamesKo[factor] : factorNamesEn[factor]}
+                      </span>
+                    </div>
+                    <div className="text-xl font-bold text-white mb-2">{value.toFixed(1)}%</div>
+                    <div className="h-1.5 bg-dark-bg rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${value}%` }}
+                        transition={{ delay: 0.5, duration: 0.8 }}
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: color }}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </motion.div>
+
+          {/* Factor Analysis Flip Cards */}
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
@@ -500,7 +569,7 @@ export default function ResultPage() {
             </div>
           </div>
 
-          {/* Overall Analysis (NEW) */}
+          {/* Overall Analysis */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -518,7 +587,7 @@ export default function ResultPage() {
             </p>
           </motion.div>
 
-          {/* Meme Quotes Grid (NEW) */}
+          {/* Meme Quotes Grid */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -555,7 +624,7 @@ export default function ResultPage() {
             </div>
           </motion.div>
 
-          {/* Character Match + MBTI (NEW) */}
+          {/* Character Match + MBTI */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Character Match */}
             {characterMatch && (
@@ -734,42 +803,65 @@ export default function ResultPage() {
           </motion.div>
         </div>
 
-        {/* Share Buttons */}
+        {/* Share & Action Buttons */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="mt-6 flex flex-wrap justify-center gap-3"
+          className="mt-6 space-y-4"
         >
-          <button onClick={copyLink} className="btn-secondary flex items-center gap-2">
-            {copied ? <Check className="w-4 h-4 text-green-500" /> : <Link2 className="w-4 h-4" />}
-            {copied ? t('common.copied') : t('common.copyLink')}
-          </button>
-          <button onClick={shareTwitter} className="btn-secondary flex items-center gap-2">
-            <Twitter className="w-4 h-4" />
-            Twitter
-          </button>
-          <button onClick={downloadImage} className="btn-secondary flex items-center gap-2">
-            <Download className="w-4 h-4" />
-            {t('common.save')}
-          </button>
-        </motion.div>
+          {/* Copy Summary (matching mobile's _copySummary) */}
+          <div className="flex flex-wrap justify-center gap-3">
+            <button onClick={copySummary} className="btn-secondary flex items-center gap-2">
+              {summaryCopied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+              {summaryCopied
+                ? (isKo ? '복사됨!' : 'Copied!')
+                : (isKo ? '결과 복사' : 'Copy Result')}
+            </button>
+            <button onClick={copyLink} className="btn-secondary flex items-center gap-2">
+              {copied ? <Check className="w-4 h-4 text-green-500" /> : <Link2 className="w-4 h-4" />}
+              {copied ? t('common.copied') : t('common.copyLink')}
+            </button>
+            <button onClick={shareTwitter} className="btn-secondary flex items-center gap-2">
+              <Twitter className="w-4 h-4" />
+              Twitter
+            </button>
+            <button onClick={downloadImage} className="btn-secondary flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              {isKo ? '이미지 저장' : 'Save Image'}
+            </button>
+          </div>
 
-        {/* Action Buttons */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
-          className="mt-6 flex justify-center gap-4"
-        >
-          <Link to="/test" onClick={() => reset()} className="btn-primary flex items-center gap-2">
-            <RotateCcw className="w-4 h-4" />
-            {t('common.retry')}
-          </Link>
-          <Link to="/" className="btn-secondary flex items-center gap-2">
-            <Home className="w-4 h-4" />
-            {t('common.home')}
-          </Link>
+          {/* Coffee / Donate Button */}
+          <div className="flex justify-center">
+            <a
+              href="https://paypal.me/u2dia"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-medium transition-all hover:scale-105"
+              style={{
+                background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(251, 191, 36, 0.15) 100%)',
+                border: '1px solid rgba(245, 158, 11, 0.3)',
+                color: '#FBBF24',
+              }}
+            >
+              <Coffee className="w-4 h-4" />
+              {isKo ? '개발자에게 커피 사주기' : 'Buy me a coffee'}
+              <ExternalLink className="w-3 h-3 opacity-60" />
+            </a>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-center gap-4">
+            <Link to="/test" onClick={() => reset()} className="btn-primary flex items-center gap-2">
+              <RotateCcw className="w-4 h-4" />
+              {t('common.retry')}
+            </Link>
+            <Link to="/" className="btn-secondary flex items-center gap-2">
+              <Home className="w-4 h-4" />
+              {t('common.home')}
+            </Link>
+          </div>
         </motion.div>
       </div>
     </div>
