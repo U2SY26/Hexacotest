@@ -83,9 +83,9 @@ export default async function handler(req: any, res: any) {
     return
   }
 
-  const apiKey = process.env.OPENAI_API_KEY
+  const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) {
-    res.status(500).json({ error: 'Missing OPENAI_API_KEY' })
+    res.status(500).json({ error: 'Missing GEMINI_API_KEY' })
     return
   }
 
@@ -100,34 +100,34 @@ export default async function handler(req: any, res: any) {
     const lang = language === 'en' ? 'en' : 'ko'
     const prompt = buildPrompt(sanitizedScores, lang)
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          { role: 'system', content: 'You are a warm, empathetic personality psychologist who makes people feel understood and valued. Always respond with valid JSON only. Never use clinical or judgmental language.' },
-          { role: 'user', content: prompt },
-        ],
-        temperature: 0.7,
-        max_tokens: 2500,
-      }),
-    })
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: 0.7,
+            topP: 0.9,
+            maxOutputTokens: 2500,
+            responseMimeType: 'application/json',
+          },
+        }),
+      }
+    )
 
     const payload = await response.json()
     if (!response.ok) {
       res.status(response.status).json({
-        error: payload?.error?.message ?? 'OpenAI request failed',
+        error: payload?.error?.message ?? 'Gemini request failed',
       })
       return
     }
 
-    const text = payload?.choices?.[0]?.message?.content
+    const text = payload?.candidates?.[0]?.content?.parts?.[0]?.text
     if (!text) {
-      res.status(502).json({ error: 'No response text from OpenAI' })
+      res.status(502).json({ error: 'No response text from Gemini' })
       return
     }
 
