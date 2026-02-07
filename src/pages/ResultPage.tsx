@@ -16,19 +16,6 @@ import { CelebrityDisclaimer } from '../components/common/DisclaimerSection'
 import { getPersonalityTitle, getMemeQuotes, getMainMemeQuote, getCharacterMatch, getMBTIMatch } from '../utils/memeContent'
 import { getFactorAnalyses, getOverallAnalysis, type FactorAnalysis as LocalFactorAnalysis } from '../utils/personalityAnalysis'
 
-interface AnalysisFactor {
-  factor: Factor
-  overview: string
-  strengths: string[]
-  risks: string[]
-  growth: string
-}
-
-interface AnalysisResponse {
-  summary: string
-  factors: AnalysisFactor[]
-}
-
 const factorNamesKo: Record<Factor, string> = {
   H: '정직-겸손', E: '정서성', X: '외향성', A: '원만성', C: '성실성', O: '개방성',
 }
@@ -257,8 +244,6 @@ export default function ResultPage() {
   const [copied, setCopied] = useState(false)
   const [summaryCopied, setSummaryCopied] = useState(false)
   const [topMatches, setTopMatches] = useState<MatchResult[]>([])
-  const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null)
-  const [analysisError, setAnalysisError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
   const storeScores = useTestStore(state => state.scores)
@@ -267,11 +252,6 @@ export default function ResultPage() {
   const encodedResult = searchParams.get('r')
   const scores = encodedResult ? decodeResults(encodedResult) : storeScores
   const match = topMatches[0]
-  const analysisFactors = analysis
-    ? factors
-        .map(factor => analysis.factors.find(item => item.factor === factor))
-        .filter((item): item is AnalysisFactor => Boolean(item))
-    : []
 
   // Meme content (computed from scores)
   const personalityTitle = scores ? getPersonalityTitle(scores) : null
@@ -290,36 +270,16 @@ export default function ResultPage() {
 
     let cancelled = false
     setIsLoading(true)
-    setAnalysis(null)
-    setAnalysisError(null)
 
-    const delay = new Promise(resolve => { setTimeout(resolve, 4000) })
-    const matchesPromise = delay.then(() => findTopMatches(scores, 5))
-
-    const analysisPromise = fetch('/api/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ scores, language: i18n.language === 'ko' ? 'ko' : 'en' })
-    }).then(async response => {
-      if (!response.ok) throw new Error('Failed to load analysis')
-      return response.json() as Promise<AnalysisResponse>
-    })
-
-    Promise.allSettled([matchesPromise, analysisPromise]).then(results => {
+    // 로딩 애니메이션 후 매칭 결과 표시
+    const timer = setTimeout(() => {
       if (cancelled) return
-      const matchResult = results[0]
-      if (matchResult.status === 'fulfilled') setTopMatches(matchResult.value)
-      else setTopMatches(findTopMatches(scores, 5))
-
-      const analysisResult = results[1]
-      if (analysisResult.status === 'fulfilled') setAnalysis(analysisResult.value)
-      else setAnalysisError(i18n.language === 'ko' ? 'AI 분석을 불러오지 못했습니다.' : 'Failed to load AI analysis.')
-
+      setTopMatches(findTopMatches(scores, 5))
       setIsLoading(false)
-    })
+    }, 4000)
 
-    return () => { cancelled = true }
-  }, [scores, i18n.language])
+    return () => { cancelled = true; clearTimeout(timer) }
+  }, [scores])
 
   const chartData = scores
     ? factors.map(factor => ({ factor, value: scores[factor], fullMark: 100 }))
@@ -680,79 +640,6 @@ export default function ResultPage() {
               </motion.div>
             )}
           </div>
-
-          {/* AI Analysis */}
-          {analysis && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-              className="card"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  <Brain className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="font-bold text-white">
-                    {isKo ? 'AI 성격 분석 리포트' : 'AI Personality Analysis Report'}
-                  </h3>
-                  <p className="text-xs text-gray-400">
-                    {isKo ? 'AI 기반 분석' : 'AI-powered analysis'}
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-gray-300 text-sm mb-6 leading-relaxed">{analysis.summary}</p>
-
-              <div className="space-y-4">
-                {analysisFactors.map(item => (
-                  <div
-                    key={item.factor}
-                    className="rounded-xl p-4"
-                    style={{
-                      background: `linear-gradient(135deg, ${factorColors[item.factor]}15 0%, transparent 60%)`,
-                      borderLeft: `3px solid ${factorColors[item.factor]}`,
-                    }}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-lg font-bold" style={{ color: factorColors[item.factor] }}>{item.factor}</span>
-                      <span className="text-sm text-gray-400">{isKo ? factorNamesKo[item.factor] : factorNamesEn[item.factor]}</span>
-                    </div>
-                    <p className="text-sm text-gray-300 mb-3">{item.overview}</p>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                      <div className="bg-dark-bg/50 rounded-lg p-3">
-                        <p className="text-gray-400 font-medium mb-2">{isKo ? '강점' : 'Strengths'}</p>
-                        <ul className="text-gray-500 space-y-1">
-                          {item.strengths?.map((s, i) => (
-                            <li key={i} className="flex items-start gap-1"><span className="text-emerald-400">+</span> {s}</li>
-                          ))}
-                        </ul>
-                      </div>
-                      <div className="bg-dark-bg/50 rounded-lg p-3">
-                        <p className="text-gray-400 font-medium mb-2">{isKo ? '주의점' : 'Risks'}</p>
-                        <ul className="text-gray-500 space-y-1">
-                          {item.risks?.map((r, i) => (
-                            <li key={i} className="flex items-start gap-1"><span className="text-amber-400">!</span> {r}</li>
-                          ))}
-                        </ul>
-                      </div>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-3">
-                      <span className="text-purple-400 font-medium mr-2">{isKo ? '제안' : 'Growth'}</span>
-                      {item.growth}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-
-          {analysisError && (
-            <div className="card border border-amber-500/30 bg-amber-500/5 text-amber-200 text-sm">
-              {analysisError}
-            </div>
-          )}
 
           {/* Top 5 Matches */}
           {topMatches.length > 0 && (
