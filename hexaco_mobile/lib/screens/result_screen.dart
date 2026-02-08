@@ -214,6 +214,20 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     );
   }
 
+  Future<void> _ilchoClipboardFallback(String jsonStr, bool isKo) async {
+    if (!mounted) return;
+    await Clipboard.setData(ClipboardData(text: jsonStr));
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(isKo
+            ? '일초 앱에서 성격 프로필 > 가져오기에서 붙여넣기 하세요\n(일초 앱 최신 버전 필요)'
+            : 'Paste in Ilcho app: Personality > Import\n(Latest Ilcho version required)'),
+        duration: const Duration(seconds: 5),
+      ),
+    );
+  }
+
   Future<void> _exportToIlcho(bool isKo) async {
     final topMatch = matches.isNotEmpty ? matches.first : null;
     final exportData = {
@@ -238,32 +252,10 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     try {
       final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!launched) {
-        // 일초 앱이 설치되지 않은 경우 클립보드 폴백
-        if (!mounted) return;
-        await Clipboard.setData(ClipboardData(text: jsonStr));
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(isKo
-                ? '일초 앱이 설치되지 않았습니다. 데이터가 클립보드에 복사되었습니다.'
-                : 'Ilcho app not installed. Data copied to clipboard.'),
-            duration: const Duration(seconds: 4),
-          ),
-        );
+        await _ilchoClipboardFallback(jsonStr, isKo);
       }
     } catch (e) {
-      // launchUrl 예외 시 클립보드 폴백
-      if (!mounted) return;
-      await Clipboard.setData(ClipboardData(text: jsonStr));
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(isKo
-              ? '일초 앱이 설치되지 않았습니다. 데이터가 클립보드에 복사되었습니다.'
-              : 'Ilcho app not installed. Data copied to clipboard.'),
-          duration: const Duration(seconds: 4),
-        ),
-      );
+      await _ilchoClipboardFallback(jsonStr, isKo);
     }
   }
 
@@ -1243,6 +1235,81 @@ class _AIAnalysisCardState extends State<_AIAnalysisCard> {
                 );
               }),
             ],
+            // 나와 잘 맞는 MBTI
+            if (widget.analysis!.compatibleMBTIs.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: AppColors.darkBorder)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Text('💕', style: TextStyle(fontSize: 16)),
+                        const SizedBox(width: 8),
+                        Text(
+                          widget.isKo ? '나와 잘 맞는 MBTI' : 'Compatible MBTI Types',
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: widget.analysis!.compatibleMBTIs.map((cm) {
+                        return Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 3),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    AppColors.pink500.withValues(alpha: 0.1),
+                                    AppColors.purple500.withValues(alpha: 0.1),
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.pink500.withValues(alpha: 0.3)),
+                              ),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    cm.mbti,
+                                    style: const TextStyle(
+                                      color: AppColors.pink500,
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    cm.reason,
+                                    textAlign: TextAlign.center,
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: AppColors.gray400,
+                                          fontSize: 10,
+                                          height: 1.3,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ],
         ],
       ),
@@ -2122,7 +2189,7 @@ class _ShareCardContent extends StatelessWidget {
           ),
           const SizedBox(height: 14),
 
-          // 선택한 요인 상세 카드 (3열 그리드)
+          // 선택한 요인 상세 카드 (반응형 그리드)
           if (selectedFactors.isNotEmpty) ...[
             Container(
               width: double.infinity,
@@ -2137,93 +2204,112 @@ class _ShareCardContent extends StatelessWidget {
                     ),
               ),
             ),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: PersonalityAnalysisService.getFactorAnalyses(scores, isKo)
+            Builder(builder: (context) {
+              final items = PersonalityAnalysisService.getFactorAnalyses(scores, isKo)
                   .where((a) => selectedFactors.contains(a.factor))
-                  .map((analysis) {
-                final color = factorColors[analysis.factor] ?? AppColors.purple500;
-                final name = isKo ? analysis.nameKo : analysis.nameEn;
+                  .toList();
+              // 반응형 너비: 1~2개면 2열, 3개이상 3열
+              final cols = items.length <= 2 ? 2 : 3;
+              final cardWidth = (310 - (cols - 1) * 6) / cols;
+              return Wrap(
+                spacing: 6,
+                runSpacing: 6,
+                children: items.map((analysis) {
+                  final color = factorColors[analysis.factor] ?? AppColors.purple500;
+                  final name = isKo ? analysis.nameKo : analysis.nameEn;
+                  final summary = isKo ? analysis.summaryKo : analysis.summaryEn;
 
-                return SizedBox(
-                  width: 98,
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          AppColors.darkCard,
-                          color.withValues(alpha: 0.15),
-                        ],
+                  return SizedBox(
+                    width: cardWidth,
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.darkCard,
+                            color.withValues(alpha: 0.15),
+                          ],
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: color.withValues(alpha: 0.4)),
                       ),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: color.withValues(alpha: 0.4)),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              width: 20,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                color: color,
-                                borderRadius: BorderRadius.circular(5),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  analysis.factor,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 10,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                width: 20,
+                                height: 20,
+                                decoration: BoxDecoration(
+                                  color: color,
+                                  borderRadius: BorderRadius.circular(5),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    analysis.factor,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 10,
+                                    ),
                                   ),
                                 ),
                               ),
+                              Text(
+                                '${analysis.score.toStringAsFixed(0)}%',
+                                style: TextStyle(
+                                  color: color,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            '$name ${analysis.emoji}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: color.withValues(alpha: 0.9),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 9,
                             ),
-                            Text(
-                              '${analysis.score.toStringAsFixed(0)}%',
-                              style: TextStyle(
-                                color: color,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
+                          ),
+                          const SizedBox(height: 4),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(3),
+                            child: SizedBox(
+                              height: 4,
+                              child: LinearProgressIndicator(
+                                value: analysis.score / 100,
+                                backgroundColor: color.withValues(alpha: 0.15),
+                                valueColor: AlwaysStoppedAnimation<Color>(color),
                               ),
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          '$name ${analysis.emoji}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: color.withValues(alpha: 0.9),
-                            fontWeight: FontWeight.w600,
-                            fontSize: 9,
                           ),
-                        ),
-                        const SizedBox(height: 4),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(3),
-                          child: SizedBox(
-                            height: 4,
-                            child: LinearProgressIndicator(
-                              value: analysis.score / 100,
-                              backgroundColor: color.withValues(alpha: 0.15),
-                              valueColor: AlwaysStoppedAnimation<Color>(color),
-                            ),
+                          const SizedBox(height: 6),
+                          Text(
+                            summary,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.gray400,
+                                  fontSize: 7,
+                                  height: 1.3,
+                                ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              }).toList(),
-            ),
+                  );
+                }).toList(),
+              );
+            }),
             const SizedBox(height: 4),
           ],
 
@@ -2370,6 +2456,50 @@ class _ShareCardContent extends StatelessWidget {
                 ),
               );
             }),
+            // 나와 잘 맞는 MBTI (공유 이미지)
+            if (aiAnalysis!.compatibleMBTIs.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('💕', style: TextStyle(fontSize: 10)),
+                  const SizedBox(width: 4),
+                  Text(
+                    isKo ? '잘 맞는 MBTI' : 'Compatible MBTIs',
+                    style: TextStyle(color: AppColors.pink500, fontWeight: FontWeight.w700, fontSize: 9),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: aiAnalysis!.compatibleMBTIs.map((cm) {
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 4),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(colors: [
+                            AppColors.pink500.withValues(alpha: 0.15),
+                            AppColors.purple500.withValues(alpha: 0.15),
+                          ]),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: AppColors.pink500.withValues(alpha: 0.3)),
+                        ),
+                        child: Column(
+                          children: [
+                            Text(cm.mbti, style: const TextStyle(color: AppColors.pink500, fontWeight: FontWeight.w900, fontSize: 12)),
+                            const SizedBox(height: 2),
+                            Text(cm.reason, textAlign: TextAlign.center, maxLines: 2, overflow: TextOverflow.ellipsis,
+                              style: TextStyle(color: AppColors.gray400, fontSize: 6, height: 1.2)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
           ],
 
           // 웹사이트 링크

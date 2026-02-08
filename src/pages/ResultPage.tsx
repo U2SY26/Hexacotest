@@ -24,9 +24,15 @@ interface AIAnalysisFactor {
   growth: string
 }
 
+interface AICompatibleMBTI {
+  mbti: string
+  reason: string
+}
+
 interface AIAnalysisResponse {
   summary: string
   factors: AIAnalysisFactor[]
+  compatibleMBTIs?: AICompatibleMBTI[]
 }
 
 const factorNamesKo: Record<Factor, string> = {
@@ -748,6 +754,25 @@ export default function ResultPage() {
                 )}
               </div>
             )}
+
+            {/* Compatible MBTI Types */}
+            {aiAnalysis.compatibleMBTIs && aiAnalysis.compatibleMBTIs.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-dark-border">
+                <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                  <span>💕</span>
+                  {isKo ? '나와 잘 맞는 MBTI' : 'Compatible MBTI Types'}
+                </h4>
+                <div className="grid grid-cols-3 gap-2">
+                  {aiAnalysis.compatibleMBTIs.map((cm) => (
+                    <div key={cm.mbti} className="rounded-xl border border-pink-500/30 p-3 text-center"
+                      style={{ background: 'linear-gradient(135deg, rgba(236,72,153,0.1), rgba(139,92,246,0.1))' }}>
+                      <div className="text-lg font-black text-pink-400 mb-1">{cm.mbti}</div>
+                      <p className="text-[10px] text-gray-400 leading-snug">{cm.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
 
           {/* Meme Quotes Grid */}
@@ -1189,51 +1214,61 @@ export default function ResultPage() {
               <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 11, fontWeight: 600, marginBottom: 6 }}>
                 {isKo ? '성격 분석 상세' : 'Personality Details'}
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
-                {localAnalyses
-                  .filter(a => selectedFactors.has(a.factor))
-                  .map(a => {
-                    const color = factorColors[a.factor] || '#8B5CF6'
-                    return (
-                      <div key={a.factor} style={{
-                        background: `linear-gradient(135deg, #1E1432, ${color}26)`,
-                        border: `1px solid ${color}66`,
-                        borderRadius: 10, padding: 8, textAlign: 'center',
-                      }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                          <span style={{
-                            width: 20, height: 20, borderRadius: 5,
-                            background: color, display: 'inline-flex',
-                            alignItems: 'center', justifyContent: 'center',
-                            fontSize: 10, fontWeight: 700,
-                          }}>
-                            {a.factor}
-                          </span>
-                          <span style={{ color, fontWeight: 700, fontSize: 12 }}>
-                            {Math.round(a.score)}%
-                          </span>
-                        </div>
-                        <div style={{
-                          color: `${color}ee`, fontWeight: 600, fontSize: 9,
-                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
-                          marginBottom: 4,
+              {(() => {
+                const items = localAnalyses.filter(a => selectedFactors.has(a.factor))
+                const cols = items.length <= 2 ? 2 : 3
+                return (
+                  <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 6 }}>
+                    {items.map(a => {
+                      const color = factorColors[a.factor] || '#8B5CF6'
+                      return (
+                        <div key={a.factor} style={{
+                          background: `linear-gradient(135deg, #1E1432, ${color}26)`,
+                          border: `1px solid ${color}66`,
+                          borderRadius: 10, padding: 8,
                         }}>
-                          {isKo ? a.nameKo : a.nameEn} {a.emoji}
-                        </div>
-                        <div style={{
-                          height: 4, borderRadius: 3, overflow: 'hidden',
-                          background: `${color}26`,
-                        }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                            <span style={{
+                              width: 20, height: 20, borderRadius: 5,
+                              background: color, display: 'inline-flex',
+                              alignItems: 'center', justifyContent: 'center',
+                              fontSize: 10, fontWeight: 700,
+                            }}>
+                              {a.factor}
+                            </span>
+                            <span style={{ color, fontWeight: 700, fontSize: 12 }}>
+                              {Math.round(a.score)}%
+                            </span>
+                          </div>
                           <div style={{
-                            width: `${Math.round(a.score)}%`, height: '100%',
-                            background: color, borderRadius: 3,
-                          }} />
+                            color: `${color}ee`, fontWeight: 600, fontSize: 9,
+                            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                            marginBottom: 4,
+                          }}>
+                            {isKo ? a.nameKo : a.nameEn} {a.emoji}
+                          </div>
+                          <div style={{
+                            height: 4, borderRadius: 3, overflow: 'hidden',
+                            background: `${color}26`, marginBottom: 6,
+                          }}>
+                            <div style={{
+                              width: `${Math.round(a.score)}%`, height: '100%',
+                              background: color, borderRadius: 3,
+                            }} />
+                          </div>
+                          <div style={{
+                            color: '#9CA3AF', fontSize: 7, lineHeight: 1.3,
+                            display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' as const,
+                            overflow: 'hidden',
+                          }}>
+                            {isKo ? a.summaryKo : a.summaryEn}
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })
-                }
-              </div>
+                      )
+                    })}
+                  </div>
+                )
+              })()}
             </>
           )}
 
@@ -1311,6 +1346,31 @@ export default function ResultPage() {
                   )
                 })
               }
+
+              {/* Compatible MBTIs in share image */}
+              {aiAnalysis.compatibleMBTIs && aiAnalysis.compatibleMBTIs.length > 0 && (
+                <>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 8, marginBottom: 4 }}>
+                    <span style={{ fontSize: 10 }}>💕</span>
+                    <span style={{ color: '#EC4899', fontWeight: 700, fontSize: 9 }}>
+                      {isKo ? '잘 맞는 MBTI' : 'Compatible MBTIs'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    {aiAnalysis.compatibleMBTIs.map(cm => (
+                      <div key={cm.mbti} style={{
+                        flex: 1, textAlign: 'center',
+                        background: 'linear-gradient(135deg, rgba(236,72,153,0.15), rgba(139,92,246,0.15))',
+                        border: '1px solid rgba(236,72,153,0.3)',
+                        borderRadius: 8, padding: '6px 4px',
+                      }}>
+                        <div style={{ color: '#EC4899', fontWeight: 900, fontSize: 12 }}>{cm.mbti}</div>
+                        <div style={{ color: '#9CA3AF', fontSize: 6, lineHeight: 1.2, marginTop: 2 }}>{cm.reason}</div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </>
           )}
 

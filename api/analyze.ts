@@ -10,9 +10,15 @@ interface AnalysisFactor {
   growth: string
 }
 
+interface CompatibleMBTI {
+  mbti: string
+  reason: string
+}
+
 interface AnalysisResponse {
   summary: string
   factors: AnalysisFactor[]
+  compatibleMBTIs: CompatibleMBTI[]
 }
 
 const sanitizeScores = (scores: Record<string, unknown>): Scores => {
@@ -38,10 +44,10 @@ const buildPrompt = (scores: Scores, language: 'ko' | 'en') => {
       : 'Tone: Use warm, encouraging language. Say "you might find..." instead of "you lack...". Frame challenges as growth opportunities. Make the person feel seen and appreciated.',
     '',
     'HEXACO scores range from 0-100. Analyze the unique combination holistically.',
-    'Avoid clinical diagnoses, mental health claims, and MBTI references.',
+    'Avoid clinical diagnoses and mental health claims.',
     '',
     'Return JSON only with this schema:',
-    '{"summary":"<warm 3-4 sentence personality portrait>", "factors":[{"factor":"H","overview":"<warm 4-5 sentence analysis>","strengths":["<encouraging phrase>","<encouraging phrase>","<encouraging phrase>"],"risks":["<gently framed challenge>","<gently framed challenge>"],"growth":"<2 kind, actionable suggestions>"}]}',
+    '{"summary":"<warm 3-4 sentence personality portrait>", "factors":[{"factor":"H","overview":"<warm 4-5 sentence analysis>","strengths":["<encouraging phrase>","<encouraging phrase>","<encouraging phrase>"],"risks":["<gently framed challenge>","<gently framed challenge>"],"growth":"<2 kind, actionable suggestions>"}], "compatibleMBTIs":[{"mbti":"XXXX","reason":"<1 sentence why this type is compatible>"},{"mbti":"XXXX","reason":"<1 sentence why>"},{"mbti":"XXXX","reason":"<1 sentence why>"}]}',
     '',
     'Requirements:',
     '- Include all six factors exactly once: H, E, X, A, C, O',
@@ -50,6 +56,7 @@ const buildPrompt = (scores: Scores, language: 'ko' | 'en') => {
     '- strengths: 3 genuine strengths per factor, described encouragingly',
     '- risks: 2 challenges per factor, framed gently as areas for growth',
     '- growth: 2 kind, specific suggestions that feel like a friend\'s advice',
+    '- compatibleMBTIs: Based on HEXACO scores, suggest exactly 3 MBTI types that would be most compatible. Estimate the user\'s own MBTI from scores (X→E/I, O→N/S, A→F/T, C→J/P) and pick 3 complementary types. Each reason should be warm and insightful.',
     '',
     `Scores: H=${scores.H.toFixed(1)}, E=${scores.E.toFixed(1)}, X=${scores.X.toFixed(1)}, A=${scores.A.toFixed(1)}, C=${scores.C.toFixed(1)}, O=${scores.O.toFixed(1)}`,
   ].join('\n')
