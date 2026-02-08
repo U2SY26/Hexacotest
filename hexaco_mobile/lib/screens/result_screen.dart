@@ -8,6 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constants.dart';
 import '../controllers/test_controller.dart';
@@ -229,16 +230,41 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
       'similarity': topMatch?.similarity,
       'timestamp': DateTime.now().millisecondsSinceEpoch,
     };
-    await Clipboard.setData(ClipboardData(text: jsonEncode(exportData)));
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(isKo
-            ? '일초 앱에서 설정 > 성격 프로필 > 가져오기에서 붙여넣기 하세요'
-            : 'Paste in Ilcho app: Settings > Personality > Import'),
-        duration: const Duration(seconds: 4),
-      ),
-    );
+
+    final jsonStr = jsonEncode(exportData);
+    final base64Data = base64Url.encode(utf8.encode(jsonStr));
+    final uri = Uri.parse('ilcho://import?data=$base64Data');
+
+    try {
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        // 일초 앱이 설치되지 않은 경우 클립보드 폴백
+        if (!mounted) return;
+        await Clipboard.setData(ClipboardData(text: jsonStr));
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(isKo
+                ? '일초 앱이 설치되지 않았습니다. 데이터가 클립보드에 복사되었습니다.'
+                : 'Ilcho app not installed. Data copied to clipboard.'),
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      // launchUrl 예외 시 클립보드 폴백
+      if (!mounted) return;
+      await Clipboard.setData(ClipboardData(text: jsonStr));
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isKo
+              ? '일초 앱이 설치되지 않았습니다. 데이터가 클립보드에 복사되었습니다.'
+              : 'Ilcho app not installed. Data copied to clipboard.'),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
   }
 
   Future<void> _shareAsImage(bool isKo) async {
@@ -254,18 +280,74 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     if (selectedFactors == null || !mounted) return;
 
     final shareKey = GlobalKey();
+
+    // 로딩 표시
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (dialogContext) => _ShareImageDialog(
-        shareKey: shareKey,
-        matches: matches,
-        scores: scores,
-        isKo: isKo,
-        summaryText: _summaryText(isKo),
-        selectedFactors: selectedFactors,
+      builder: (_) => const PopScope(
+        canPop: false,
+        child: Center(
+          child: CircularProgressIndicator(color: AppColors.purple500),
+        ),
       ),
     );
+
+    // 오프스크린에서 공유 카드 렌더링 (Dialog 애니메이션 없이 캡처하여 이미지 반전 방지)
+    final overlay = OverlayEntry(
+      builder: (_) => Transform.translate(
+        offset: const Offset(-10000, 0),
+        child: RepaintBoundary(
+          key: shareKey,
+          child: _ShareCardContent(
+            matches: matches,
+            scores: scores,
+            isKo: isKo,
+            selectedFactors: selectedFactors,
+            aiAnalysis: _aiAnalysis,
+          ),
+        ),
+      ),
+    );
+
+    Overlay.of(context).insert(overlay);
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    try {
+      final boundary = shareKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) {
+        overlay.remove();
+        if (mounted) Navigator.of(context).pop();
+        return;
+      }
+
+      final image = await boundary.toImage(pixelRatio: 3.0);
+      final byteData =
+          await image.toByteData(format: ui.ImageByteFormat.png);
+      overlay.remove();
+
+      if (byteData == null) {
+        if (mounted) Navigator.of(context).pop();
+        return;
+      }
+
+      final tempDir = await getTemporaryDirectory();
+      final file = File('${tempDir.path}/hexaco_result.png');
+      await file.writeAsBytes(byteData.buffer.asUint8List());
+
+      if (mounted) Navigator.of(context).pop();
+
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: _summaryText(isKo),
+      );
+    } catch (e) {
+      overlay.remove();
+      debugPrint('Share image error: $e');
+      if (mounted) Navigator.of(context).pop();
+      await Share.share(_summaryText(isKo));
+    }
   }
 
   @override
@@ -1775,452 +1857,533 @@ class _ShareSelectionDialogState extends State<_ShareSelectionDialog> {
   }
 }
 
-class _ShareImageDialog extends StatefulWidget {
-  final GlobalKey shareKey;
+class _ShareCardContent extends StatelessWidget {
   final List<TypeMatch> matches;
   final Scores scores;
   final bool isKo;
-  final String summaryText;
   final Set<String> selectedFactors;
+  final AIAnalysisResult? aiAnalysis;
 
-  const _ShareImageDialog({
-    required this.shareKey,
+  const _ShareCardContent({
     required this.matches,
     required this.scores,
     required this.isKo,
-    required this.summaryText,
     required this.selectedFactors,
+    this.aiAnalysis,
   });
 
   @override
-  State<_ShareImageDialog> createState() => _ShareImageDialogState();
-}
-
-class _ShareImageDialogState extends State<_ShareImageDialog> {
-  bool _isCapturing = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _captureAndShare();
-    });
-  }
-
-  Future<void> _captureAndShare() async {
-    setState(() => _isCapturing = true);
-
-    await Future.delayed(const Duration(milliseconds: 300));
-
-    try {
-      final boundary = widget.shareKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
-      if (boundary == null) {
-        if (mounted) Navigator.of(context).pop();
-        return;
-      }
-
-      final image = await boundary.toImage(pixelRatio: 3.0);
-      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-      if (byteData == null) {
-        if (mounted) Navigator.of(context).pop();
-        return;
-      }
-
-      final tempDir = await getTemporaryDirectory();
-      final file = File('${tempDir.path}/hexaco_result.png');
-      await file.writeAsBytes(byteData.buffer.asUint8List());
-
-      if (mounted) Navigator.of(context).pop();
-
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: widget.summaryText,
-      );
-    } catch (e) {
-      if (mounted) Navigator.of(context).pop();
-      await Share.share(widget.summaryText);
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final topMatch = widget.matches.first;
-    final title = MemeContentService.getPersonalityTitle(widget.scores);
-    final mainMeme = MemeContentService.getMainMemeQuote(widget.scores);
-    final mbti = MemeContentService.getMBTIMatch(widget.scores);
-    final character = MemeContentService.getCharacterMatch(widget.scores);
+    final topMatch = matches.first;
+    final title = MemeContentService.getPersonalityTitle(scores);
+    final mainMeme = MemeContentService.getMainMemeQuote(scores);
+    final mbti = MemeContentService.getMBTIMatch(scores);
+    final character = MemeContentService.getCharacterMatch(scores);
 
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      insetPadding: const EdgeInsets.all(16),
+    return Container(
+      width: 350,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1A1035), Color(0xFF2D1B4E)],
+        ),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.purple500.withValues(alpha: 0.5)),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (_isCapturing)
-            const Padding(
-              padding: EdgeInsets.all(20),
-              child: CircularProgressIndicator(color: AppColors.purple500),
-            ),
-          RepaintBoundary(
-            key: widget.shareKey,
-            child: Container(
-              width: 350,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Color(0xFF1A1035), Color(0xFF2D1B4E)],
-                ),
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppColors.purple500.withValues(alpha: 0.5)),
+          // HEXACO 로고
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.hexagon, color: AppColors.purple500, size: 24),
+              const SizedBox(width: 6),
+              Text(
+                'HEXACO',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
               ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // HEXACO 로고
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+            ],
+          ),
+          const SizedBox(height: 16),
+
+          // 메인 타이틀 (밈)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [AppColors.purple500, AppColors.pink500],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  title.emoji,
+                  style: const TextStyle(fontSize: 24),
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    isKo ? title.titleKo : title.titleEn,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // 대표 밈 문구
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              color: AppColors.darkCard.withValues(alpha: 0.7),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.purple500.withValues(alpha: 0.3)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  mainMeme.emoji,
+                  style: const TextStyle(fontSize: 18),
+                ),
+                const SizedBox(width: 8),
+                Flexible(
+                  child: Text(
+                    isKo ? mainMeme.quoteKo : mainMeme.quoteEn,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.gray300,
+                          fontStyle: FontStyle.italic,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // MBTI + 캐릭터 매칭 (가로 배치)
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkCard.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
                     children: [
-                      const Icon(Icons.hexagon, color: AppColors.purple500, size: 24),
-                      const SizedBox(width: 6),
+                      const Text('🔮', style: TextStyle(fontSize: 20)),
+                      const SizedBox(height: 4),
                       Text(
-                        'HEXACO',
+                        mbti.mbti,
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              color: AppColors.pink500,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
                             ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // 메인 타이틀 (밈)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppColors.purple500, AppColors.pink500],
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          title.emoji,
-                          style: const TextStyle(fontSize: 24),
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            widget.isKo ? title.titleKo : title.titleEn,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-
-                  // 대표 밈 문구
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: AppColors.darkCard.withValues(alpha: 0.7),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.purple500.withValues(alpha: 0.3)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          mainMeme.emoji,
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                        const SizedBox(width: 8),
-                        Flexible(
-                          child: Text(
-                            widget.isKo ? mainMeme.quoteKo : mainMeme.quoteEn,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: AppColors.gray300,
-                                  fontStyle: FontStyle.italic,
-                                ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // MBTI + 캐릭터 매칭 (가로 배치)
-                  Row(
-                    children: [
-                      // MBTI
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.darkCard.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            children: [
-                              const Text('🔮', style: TextStyle(fontSize: 20)),
-                              const SizedBox(height: 4),
-                              Text(
-                                mbti.mbti,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      color: AppColors.pink500,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                              ),
-                              Text(
-                                widget.isKo ? mbti.descriptionKo : mbti.descriptionEn,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.gray400,
-                                      fontSize: 10,
-                                    ),
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      // 캐릭터 매칭
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: AppColors.darkCard.withValues(alpha: 0.5),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(character.emoji, style: const TextStyle(fontSize: 20)),
-                              const SizedBox(height: 4),
-                              Text(
-                                widget.isKo ? character.nameKo : character.nameEn,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.purple400,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                textAlign: TextAlign.center,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                character.source,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.gray500,
-                                      fontSize: 10,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  // 닮은 유명인
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          AppColors.purple500.withValues(alpha: 0.2),
-                          AppColors.pink500.withValues(alpha: 0.2),
-                        ],
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: const BoxDecoration(
-                            gradient: AppGradients.primaryButton,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Center(
-                            child: Text(
-                              (widget.isKo ? topMatch.profile.nameKo : topMatch.profile.nameEn)
-                                  .characters
-                                  .first,
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                widget.isKo ? '닮은 유명인' : 'Similar Celebrity',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.gray400,
-                                      fontSize: 10,
-                                    ),
-                              ),
-                              Text(
-                                widget.isKo ? topMatch.profile.nameKo : topMatch.profile.nameEn,
-                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.purple500,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '${topMatch.similarity}%',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-
-                  // 선택한 요인 상세 카드
-                  if (widget.selectedFactors.isNotEmpty) ...[
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 6),
-                      child: Text(
-                        widget.isKo ? '성격 분석 상세' : 'Personality Details',
-                        textAlign: TextAlign.center,
+                      Text(
+                        isKo ? mbti.descriptionKo : mbti.descriptionEn,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: AppColors.gray400,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 11,
+                              fontSize: 10,
+                            ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.darkCard.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(character.emoji, style: const TextStyle(fontSize: 20)),
+                      const SizedBox(height: 4),
+                      Text(
+                        isKo ? character.nameKo : character.nameEn,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.purple400,
+                              fontWeight: FontWeight.bold,
+                            ),
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        character.source,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.gray500,
+                              fontSize: 10,
                             ),
                       ),
-                    ),
-                    ...PersonalityAnalysisService.getFactorAnalyses(widget.scores, widget.isKo)
-                        .where((a) => widget.selectedFactors.contains(a.factor))
-                        .map((analysis) {
-                      final color = factorColors[analysis.factor] ?? AppColors.purple500;
-                      final name = widget.isKo ? analysis.nameKo : analysis.nameEn;
-                      final detail = widget.isKo ? analysis.detailKo : analysis.detailEn;
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
 
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                              colors: [
-                                AppColors.darkCard,
-                                color.withValues(alpha: 0.15),
-                              ],
+          // 닮은 유명인
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.purple500.withValues(alpha: 0.2),
+                  AppColors.pink500.withValues(alpha: 0.2),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: const BoxDecoration(
+                    gradient: AppGradients.primaryButton,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Text(
+                      (isKo ? topMatch.profile.nameKo : topMatch.profile.nameEn)
+                          .characters
+                          .first,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isKo ? '닮은 유명인' : 'Similar Celebrity',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.gray400,
+                              fontSize: 10,
                             ),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: color.withValues(alpha: 0.4)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 24,
-                                    height: 24,
-                                    decoration: BoxDecoration(
-                                      color: color,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        analysis.factor,
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    '$name ${analysis.emoji}',
-                                    style: TextStyle(
-                                      color: color,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  const Spacer(),
-                                  Text(
-                                    '${analysis.score.toStringAsFixed(0)}%',
-                                    style: TextStyle(
-                                      color: color,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 13,
-                                    ),
-                                  ),
-                                ],
+                      ),
+                      Text(
+                        isKo ? topMatch.profile.nameKo : topMatch.profile.nameEn,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.purple500,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${topMatch.similarity}%',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+
+          // 선택한 요인 상세 카드 (3열 그리드)
+          if (selectedFactors.isNotEmpty) ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Text(
+                isKo ? '성격 분석 상세' : 'Personality Details',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.gray400,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 11,
+                    ),
+              ),
+            ),
+            Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: PersonalityAnalysisService.getFactorAnalyses(scores, isKo)
+                  .where((a) => selectedFactors.contains(a.factor))
+                  .map((analysis) {
+                final color = factorColors[analysis.factor] ?? AppColors.purple500;
+                final name = isKo ? analysis.nameKo : analysis.nameEn;
+
+                return SizedBox(
+                  width: 98,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppColors.darkCard,
+                          color.withValues(alpha: 0.15),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: color.withValues(alpha: 0.4)),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: 20,
+                              height: 20,
+                              decoration: BoxDecoration(
+                                color: color,
+                                borderRadius: BorderRadius.circular(5),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                detail,
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.gray300,
-                                      fontSize: 10,
-                                      height: 1.4,
-                                    ),
+                              child: Center(
+                                child: Text(
+                                  analysis.factor,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 10,
+                                  ),
+                                ),
                               ),
-                            ],
+                            ),
+                            Text(
+                              '${analysis.score.toStringAsFixed(0)}%',
+                              style: TextStyle(
+                                color: color,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          '$name ${analysis.emoji}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: color.withValues(alpha: 0.9),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 9,
                           ),
                         ),
-                      );
-                    }),
-                    const SizedBox(height: 6),
-                  ],
-
-                  // 웹사이트 링크
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.darkCard.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      'hexacotest.vercel.app',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.gray500,
+                        const SizedBox(height: 4),
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(3),
+                          child: SizedBox(
+                            height: 4,
+                            child: LinearProgressIndicator(
+                              value: analysis.score / 100,
+                              backgroundColor: color.withValues(alpha: 0.15),
+                              valueColor: AlwaysStoppedAnimation<Color>(color),
+                            ),
                           ),
+                        ),
+                      ],
                     ),
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 4),
+          ],
+
+          // AI 심리분석 결과
+          if (aiAnalysis != null && selectedFactors.isNotEmpty) ...[
+            const SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('🧠', style: TextStyle(fontSize: 12)),
+                  const SizedBox(width: 4),
+                  Text(
+                    isKo ? 'AI 심리분석' : 'AI Psychology Report',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.purple400,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 11,
+                        ),
                   ),
                 ],
               ),
+            ),
+            const SizedBox(height: 6),
+            // AI 요약
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: AppColors.darkCard.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: AppColors.purple500.withValues(alpha: 0.2)),
+              ),
+              child: Text(
+                aiAnalysis!.summary,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppColors.gray300,
+                      fontSize: 9,
+                      height: 1.4,
+                    ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            // 요인별 AI 분석
+            ...aiAnalysis!.factors
+                .where((f) => selectedFactors.contains(f.factor))
+                .map((af) {
+              final color = factorColors[af.factor] ?? AppColors.purple500;
+              final factorName = isKo
+                  ? const {'H': '정직-겸손', 'E': '정서성', 'X': '외향성', 'A': '원만성', 'C': '성실성', 'O': '개방성'}[af.factor] ?? af.factor
+                  : const {'H': 'Honesty-Humility', 'E': 'Emotionality', 'X': 'Extraversion', 'A': 'Agreeableness', 'C': 'Conscientiousness', 'O': 'Openness'}[af.factor] ?? af.factor;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 6),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.darkCard,
+                        color.withValues(alpha: 0.1),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: color.withValues(alpha: 0.3)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // 요인 헤더
+                      Row(
+                        children: [
+                          Container(
+                            width: 18,
+                            height: 18,
+                            decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Center(
+                              child: Text(
+                                af.factor,
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 9),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            factorName,
+                            style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 10),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      // 개요
+                      Text(
+                        af.overview,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.gray300,
+                              fontSize: 8,
+                              height: 1.3,
+                            ),
+                      ),
+                      const SizedBox(height: 6),
+                      // 강점
+                      ...af.strengths.map((s) => Padding(
+                        padding: const EdgeInsets.only(bottom: 2),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('+ ', style: TextStyle(color: Colors.green[400], fontSize: 8, fontWeight: FontWeight.bold)),
+                            Expanded(child: Text(s, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400, fontSize: 8, height: 1.3))),
+                          ],
+                        ),
+                      )),
+                      const SizedBox(height: 4),
+                      // 성장 포인트
+                      ...af.risks.map((r) => Padding(
+                        padding: const EdgeInsets.only(bottom: 2),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('~ ', style: TextStyle(color: Colors.amber[400], fontSize: 8, fontWeight: FontWeight.bold)),
+                            Expanded(child: Text(r, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400, fontSize: 8, height: 1.3))),
+                          ],
+                        ),
+                      )),
+                      const SizedBox(height: 4),
+                      // 성장 조언
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('💡 ', style: TextStyle(fontSize: 8)),
+                          Expanded(child: Text(af.growth, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.purple400, fontSize: 8, height: 1.3))),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ],
+
+          // 웹사이트 링크
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: AppColors.darkCard.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              'hexacotest.vercel.app',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.gray500,
+                  ),
             ),
           ),
         ],

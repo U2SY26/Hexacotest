@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useRef } from 'react'
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -6,7 +6,7 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis,
   PolarRadiusAxis, ResponsiveContainer
 } from 'recharts'
-import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle, Info, Brain, Sparkles, Copy, Coffee, ExternalLink } from 'lucide-react'
+import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle, Info, Brain, Sparkles, Copy, Coffee, ExternalLink, Image, X, Share2, CheckCircle, Circle } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import { decodeResults, useTestStore } from '../stores/testStore'
 import { factorColors, factors, Factor } from '../data/questions'
@@ -254,12 +254,17 @@ export default function ResultPage() {
   const { t, i18n } = useTranslation()
   const [searchParams] = useSearchParams()
   const resultRef = useRef<HTMLDivElement>(null)
+  const shareCardRef = useRef<HTMLDivElement>(null)
   const [copied, setCopied] = useState(false)
   const [summaryCopied, setSummaryCopied] = useState(false)
   const [topMatches, setTopMatches] = useState<MatchResult[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [aiAnalysis, setAiAnalysis] = useState<AIAnalysisResponse | null>(null)
   const [aiLoading, setAiLoading] = useState(false)
+  const [showShareModal, setShowShareModal] = useState(false)
+  const [selectedFactors, setSelectedFactors] = useState<Set<string>>(new Set())
+  const [shareMode, setShareMode] = useState<'download' | 'share'>('download')
+  const [isCapturing, setIsCapturing] = useState(false)
 
   const storeScores = useTestStore(state => state.scores)
   const reset = useTestStore(state => state.reset)
@@ -369,18 +374,80 @@ export default function ResultPage() {
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${url}`, '_blank')
   }
 
-  const downloadImage = async () => {
-    if (!resultRef.current) return
-    try {
-      const canvas = await html2canvas(resultRef.current, { backgroundColor: '#0f0f23', scale: 2 })
-      const link = document.createElement('a')
-      link.download = 'hexaco-result.png'
-      link.href = canvas.toDataURL()
-      link.click()
-    } catch (error) {
-      console.error('Failed to download image:', error)
+  const openShareModal = (mode: 'download' | 'share') => {
+    setShareMode(mode)
+    setSelectedFactors(new Set())
+    setShowShareModal(true)
+  }
+
+  const toggleFactor = (f: string) => {
+    setSelectedFactors(prev => {
+      const next = new Set(prev)
+      if (next.has(f)) next.delete(f)
+      else next.add(f)
+      return next
+    })
+  }
+
+  const toggleAllFactors = () => {
+    if (selectedFactors.size === factors.length) {
+      setSelectedFactors(new Set())
+    } else {
+      setSelectedFactors(new Set(factors))
     }
   }
+
+  const captureShareCard = useCallback(async () => {
+    setShowShareModal(false)
+    setIsCapturing(true)
+
+    // Wait for share card to render
+    await new Promise(r => setTimeout(r, 300))
+
+    if (!shareCardRef.current) {
+      setIsCapturing(false)
+      return
+    }
+
+    try {
+      const canvas = await html2canvas(shareCardRef.current, {
+        backgroundColor: null,
+        scale: 3,
+        useCORS: true,
+        logging: false,
+      })
+
+      if (shareMode === 'share' && navigator.share && navigator.canShare?.()) {
+        canvas.toBlob(async (blob) => {
+          if (!blob) { setIsCapturing(false); return }
+          const file = new File([blob], 'hexaco-result.png', { type: 'image/png' })
+          try {
+            await navigator.share({
+              title: 'HEXACO Personality Test',
+              text: getSummaryText(),
+              files: [file],
+            })
+          } catch {
+            // User cancelled or share failed - download instead
+            const link = document.createElement('a')
+            link.download = 'hexaco-result.png'
+            link.href = canvas.toDataURL()
+            link.click()
+          }
+          setIsCapturing(false)
+        }, 'image/png')
+      } else {
+        const link = document.createElement('a')
+        link.download = 'hexaco-result.png'
+        link.href = canvas.toDataURL()
+        link.click()
+        setIsCapturing(false)
+      }
+    } catch (error) {
+      console.error('Failed to capture share card:', error)
+      setIsCapturing(false)
+    }
+  }, [shareMode, selectedFactors, scores, isKo])
 
   if (isLoading) return <LoadingScreen language={i18n.language} />
 
@@ -833,7 +900,6 @@ export default function ResultPage() {
           transition={{ delay: 1 }}
           className="mt-6 space-y-4"
         >
-          {/* Copy Summary (matching mobile's _copySummary) */}
           <div className="flex flex-wrap justify-center gap-3">
             <button onClick={copySummary} className="btn-secondary flex items-center gap-2">
               {summaryCopied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
@@ -849,9 +915,13 @@ export default function ResultPage() {
               <Twitter className="w-4 h-4" />
               Twitter
             </button>
-            <button onClick={downloadImage} className="btn-secondary flex items-center gap-2">
+            <button onClick={() => openShareModal('download')} className="btn-secondary flex items-center gap-2">
               <Download className="w-4 h-4" />
               {isKo ? '이미지 저장' : 'Save Image'}
+            </button>
+            <button onClick={() => openShareModal('share')} className="btn-secondary flex items-center gap-2">
+              <Image className="w-4 h-4" />
+              {isKo ? '이미지 공유' : 'Share Image'}
             </button>
           </div>
 
@@ -886,6 +956,373 @@ export default function ResultPage() {
             </Link>
           </div>
         </motion.div>
+      </div>
+
+      {/* Share Selection Modal */}
+      <AnimatePresence>
+        {showShareModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            onClick={() => setShowShareModal(false)}
+          >
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              className="relative w-full max-w-md rounded-2xl p-5"
+              style={{
+                background: '#1A1035',
+                border: '1px solid rgba(139, 92, 246, 0.5)',
+              }}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center gap-2">
+                  <Share2 className="w-5 h-5 text-purple-400" />
+                  <h3 className="text-white font-bold text-lg">
+                    {isKo ? '이미지 공유' : 'Share Image'}
+                  </h3>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={toggleAllFactors}
+                    className="text-purple-400 text-sm hover:text-purple-300 transition-colors"
+                  >
+                    {selectedFactors.size === factors.length
+                      ? (isKo ? '전체 해제' : 'Deselect All')
+                      : (isKo ? '전체 선택' : 'Select All')}
+                  </button>
+                  <button onClick={() => setShowShareModal(false)} className="text-gray-400 hover:text-white">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+              <p className="text-gray-400 text-sm mb-4">
+                {isKo ? '포함할 성격 분석 카드를 선택하세요' : 'Select personality cards to include'}
+              </p>
+
+              <div className="space-y-2">
+                {localAnalyses.map(a => {
+                  const color = factorColors[a.factor] || '#8B5CF6'
+                  const isSelected = selectedFactors.has(a.factor)
+                  return (
+                    <button
+                      key={a.factor}
+                      onClick={() => toggleFactor(a.factor)}
+                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all"
+                      style={{
+                        background: isSelected ? `${color}22` : 'rgba(30, 20, 50, 0.8)',
+                        border: `1px solid ${isSelected ? `${color}99` : 'rgba(60, 50, 80, 0.5)'}`,
+                      }}
+                    >
+                      <span
+                        className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold"
+                        style={{
+                          background: isSelected ? color : `${color}44`,
+                          color: isSelected ? '#fff' : color,
+                        }}
+                      >
+                        {a.factor}
+                      </span>
+                      <div className="flex-1 text-left">
+                        <span className="text-sm font-semibold" style={{ color: isSelected ? '#fff' : '#D1D5DB' }}>
+                          {isKo ? a.nameKo : a.nameEn} {a.emoji}
+                        </span>
+                        <p className="text-xs truncate" style={{ color: '#6B7280' }}>
+                          {Math.round(a.score)}% — {isKo ? a.summaryKo : a.summaryEn}
+                        </p>
+                      </div>
+                      {isSelected
+                        ? <CheckCircle className="w-5 h-5 flex-shrink-0" style={{ color }} />
+                        : <Circle className="w-5 h-5 flex-shrink-0 text-gray-600" />
+                      }
+                    </button>
+                  )
+                })}
+              </div>
+
+              <div className="flex gap-3 mt-5">
+                <button
+                  onClick={() => setShowShareModal(false)}
+                  className="flex-1 py-2.5 rounded-xl text-gray-400 text-sm hover:bg-white/5 transition-colors"
+                >
+                  {isKo ? '취소' : 'Cancel'}
+                </button>
+                <button
+                  onClick={captureShareCard}
+                  className="flex-[2] py-2.5 rounded-xl text-white text-sm font-medium flex items-center justify-center gap-2 transition-all hover:brightness-110"
+                  style={{ background: '#8B5CF6' }}
+                >
+                  {shareMode === 'download' ? <Download className="w-4 h-4" /> : <Image className="w-4 h-4" />}
+                  {selectedFactors.size === 0
+                    ? (isKo ? '기본 이미지 저장' : 'Save Basic Image')
+                    : (isKo
+                      ? `${selectedFactors.size}개 카드 포함 ${shareMode === 'download' ? '저장' : '공유'}`
+                      : `${shareMode === 'download' ? 'Save' : 'Share'} with ${selectedFactors.size} cards`)}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Capturing indicator */}
+      {isCapturing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="animate-spin w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full" />
+        </div>
+      )}
+
+      {/* Hidden Share Card (rendered offscreen for html2canvas capture) */}
+      <div style={{ position: 'fixed', left: '-9999px', top: 0 }}>
+        <div
+          ref={shareCardRef}
+          style={{
+            width: 350,
+            padding: 20,
+            background: 'linear-gradient(135deg, #1A1035, #2D1B4E)',
+            borderRadius: 24,
+            border: '1px solid rgba(139, 92, 246, 0.5)',
+            fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif",
+            color: '#fff',
+          }}
+        >
+          {/* HEXACO Logo */}
+          <div style={{ textAlign: 'center', marginBottom: 16 }}>
+            <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', letterSpacing: 2 }}>
+              ⬡ HEXACO
+            </span>
+          </div>
+
+          {/* Main Title */}
+          <div style={{
+            background: 'linear-gradient(90deg, #8B5CF6, #EC4899)',
+            borderRadius: 16, padding: '10px 16px',
+            textAlign: 'center', marginBottom: 12,
+          }}>
+            <span style={{ fontSize: 24 }}>{personalityTitle?.emoji} </span>
+            <span style={{ fontWeight: 700, fontSize: 16 }}>
+              {isKo ? personalityTitle?.titleKo : personalityTitle?.titleEn}
+            </span>
+          </div>
+
+          {/* Main Meme Quote */}
+          <div style={{
+            background: 'rgba(30, 20, 50, 0.7)',
+            border: '1px solid rgba(139, 92, 246, 0.3)',
+            borderRadius: 12, padding: '10px 14px',
+            textAlign: 'center', marginBottom: 16,
+          }}>
+            <span style={{ fontSize: 18 }}>{mainMeme?.emoji} </span>
+            <span style={{ color: '#D1D5DB', fontStyle: 'italic', fontSize: 13 }}>
+              {isKo ? mainMeme?.quoteKo : mainMeme?.quoteEn}
+            </span>
+          </div>
+
+          {/* MBTI + Character */}
+          <div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+            <div style={{
+              flex: 1, background: 'rgba(30, 20, 50, 0.5)',
+              borderRadius: 12, padding: 12, textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 20 }}>🔮</div>
+              <div style={{ color: '#EC4899', fontWeight: 700, fontSize: 16, marginTop: 4 }}>
+                {mbtiMatch?.mbti}
+              </div>
+              <div style={{ color: '#9CA3AF', fontSize: 10 }}>
+                {isKo ? mbtiMatch?.descriptionKo : mbtiMatch?.descriptionEn}
+              </div>
+            </div>
+            <div style={{
+              flex: 1, background: 'rgba(30, 20, 50, 0.5)',
+              borderRadius: 12, padding: 12, textAlign: 'center',
+            }}>
+              <div style={{ fontSize: 20 }}>{characterMatch?.emoji}</div>
+              <div style={{ color: '#A78BFA', fontWeight: 700, fontSize: 13, marginTop: 4 }}>
+                {isKo ? characterMatch?.nameKo : characterMatch?.nameEn}
+              </div>
+              <div style={{ color: '#6B7280', fontSize: 10 }}>
+                {characterMatch?.source}
+              </div>
+            </div>
+          </div>
+
+          {/* Celebrity Match */}
+          {match && (
+            <div style={{
+              background: 'linear-gradient(90deg, rgba(139,92,246,0.2), rgba(236,72,153,0.2))',
+              borderRadius: 12, padding: 12, display: 'flex', alignItems: 'center', gap: 12,
+              marginBottom: 14,
+            }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: '50%',
+                background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 18, fontWeight: 700, flexShrink: 0,
+              }}>
+                {(isKo ? match.persona.name.ko : match.persona.name.en).charAt(0)}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ color: '#9CA3AF', fontSize: 10 }}>
+                  {isKo ? '닮은 유명인' : 'Similar Celebrity'}
+                </div>
+                <div style={{ fontWeight: 700, fontSize: 14 }}>
+                  {isKo ? match.persona.name.ko : match.persona.name.en}
+                </div>
+              </div>
+              <div style={{
+                background: '#8B5CF6', borderRadius: 12,
+                padding: '4px 10px', fontWeight: 700, fontSize: 12,
+              }}>
+                {match.similarity}%
+              </div>
+            </div>
+          )}
+
+          {/* Selected Factor Details (3-column grid) */}
+          {selectedFactors.size > 0 && (
+            <>
+              <div style={{ textAlign: 'center', color: '#9CA3AF', fontSize: 11, fontWeight: 600, marginBottom: 6 }}>
+                {isKo ? '성격 분석 상세' : 'Personality Details'}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+                {localAnalyses
+                  .filter(a => selectedFactors.has(a.factor))
+                  .map(a => {
+                    const color = factorColors[a.factor] || '#8B5CF6'
+                    return (
+                      <div key={a.factor} style={{
+                        background: `linear-gradient(135deg, #1E1432, ${color}26)`,
+                        border: `1px solid ${color}66`,
+                        borderRadius: 10, padding: 8, textAlign: 'center',
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                          <span style={{
+                            width: 20, height: 20, borderRadius: 5,
+                            background: color, display: 'inline-flex',
+                            alignItems: 'center', justifyContent: 'center',
+                            fontSize: 10, fontWeight: 700,
+                          }}>
+                            {a.factor}
+                          </span>
+                          <span style={{ color, fontWeight: 700, fontSize: 12 }}>
+                            {Math.round(a.score)}%
+                          </span>
+                        </div>
+                        <div style={{
+                          color: `${color}ee`, fontWeight: 600, fontSize: 9,
+                          whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis',
+                          marginBottom: 4,
+                        }}>
+                          {isKo ? a.nameKo : a.nameEn} {a.emoji}
+                        </div>
+                        <div style={{
+                          height: 4, borderRadius: 3, overflow: 'hidden',
+                          background: `${color}26`,
+                        }}>
+                          <div style={{
+                            width: `${Math.round(a.score)}%`, height: '100%',
+                            background: color, borderRadius: 3,
+                          }} />
+                        </div>
+                      </div>
+                    )
+                  })
+                }
+              </div>
+            </>
+          )}
+
+          {/* AI Psychology Report */}
+          {aiAnalysis && selectedFactors.size > 0 && (
+            <>
+              <div style={{ textAlign: 'center', marginTop: 10, marginBottom: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+                <span style={{ fontSize: 12 }}>🧠</span>
+                <span style={{ color: '#A78BFA', fontWeight: 700, fontSize: 11 }}>
+                  {isKo ? 'AI 심리분석' : 'AI Psychology Report'}
+                </span>
+              </div>
+
+              {/* AI Summary */}
+              <div style={{
+                background: 'rgba(30, 20, 50, 0.6)',
+                border: '1px solid rgba(139, 92, 246, 0.2)',
+                borderRadius: 10, padding: 10, marginBottom: 8,
+              }}>
+                <p style={{ color: '#D1D5DB', fontSize: 9, lineHeight: 1.4, margin: 0 }}>
+                  {aiAnalysis.summary}
+                </p>
+              </div>
+
+              {/* Per-factor AI analysis */}
+              {aiAnalysis.factors
+                .filter(af => selectedFactors.has(af.factor))
+                .map(af => {
+                  const color = factorColors[af.factor as keyof typeof factorColors] || '#8B5CF6'
+                  const factorName = isKo
+                    ? ({ H: '정직-겸손', E: '정서성', X: '외향성', A: '원만성', C: '성실성', O: '개방성' }[af.factor] ?? af.factor)
+                    : ({ H: 'Honesty-Humility', E: 'Emotionality', X: 'Extraversion', A: 'Agreeableness', C: 'Conscientiousness', O: 'Openness' }[af.factor] ?? af.factor)
+                  return (
+                    <div key={af.factor} style={{
+                      background: `linear-gradient(135deg, #1E1432, ${color}1a)`,
+                      border: `1px solid ${color}4d`,
+                      borderRadius: 10, padding: 10, marginBottom: 6,
+                    }}>
+                      {/* Factor header */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+                        <span style={{
+                          width: 18, height: 18, borderRadius: 4,
+                          background: color, display: 'inline-flex',
+                          alignItems: 'center', justifyContent: 'center',
+                          fontSize: 9, fontWeight: 700,
+                        }}>{af.factor}</span>
+                        <span style={{ color, fontWeight: 600, fontSize: 10 }}>{factorName}</span>
+                      </div>
+                      {/* Overview */}
+                      <p style={{ color: '#D1D5DB', fontSize: 8, lineHeight: 1.3, margin: '0 0 6px 0' }}>
+                        {af.overview}
+                      </p>
+                      {/* Strengths */}
+                      {af.strengths.map((s, i) => (
+                        <div key={`s${i}`} style={{ display: 'flex', gap: 4, marginBottom: 2 }}>
+                          <span style={{ color: '#4ADE80', fontSize: 8, fontWeight: 700, flexShrink: 0 }}>+</span>
+                          <span style={{ color: '#9CA3AF', fontSize: 8, lineHeight: 1.3 }}>{s}</span>
+                        </div>
+                      ))}
+                      <div style={{ height: 4 }} />
+                      {/* Risks */}
+                      {af.risks.map((r, i) => (
+                        <div key={`r${i}`} style={{ display: 'flex', gap: 4, marginBottom: 2 }}>
+                          <span style={{ color: '#FBBF24', fontSize: 8, fontWeight: 700, flexShrink: 0 }}>~</span>
+                          <span style={{ color: '#9CA3AF', fontSize: 8, lineHeight: 1.3 }}>{r}</span>
+                        </div>
+                      ))}
+                      <div style={{ height: 4 }} />
+                      {/* Growth */}
+                      <div style={{ display: 'flex', gap: 4 }}>
+                        <span style={{ fontSize: 8, flexShrink: 0 }}>💡</span>
+                        <span style={{ color: '#A78BFA', fontSize: 8, lineHeight: 1.3 }}>{af.growth}</span>
+                      </div>
+                    </div>
+                  )
+                })
+              }
+            </>
+          )}
+
+          {/* Footer */}
+          <div style={{
+            textAlign: 'center', marginTop: 6,
+            background: 'rgba(30, 20, 50, 0.5)',
+            borderRadius: 8, padding: '6px 12px',
+          }}>
+            <span style={{ color: '#6B7280', fontSize: 12 }}>hexacotest.vercel.app</span>
+          </div>
+        </div>
       </div>
     </div>
   )
