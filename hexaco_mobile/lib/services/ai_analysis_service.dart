@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:http/http.dart' as http;
 import '../models/score.dart';
 
@@ -70,14 +71,85 @@ class AIAnalysisResult {
 }
 
 class AIAnalysisService {
-  static const _apiUrl = 'https://hexacotest.vercel.app/api/analyze';
+  static GenerativeModel? _model;
+  static const _fallbackUrl = 'https://hexacotest.vercel.app/api/analyze';
 
+  static GenerativeModel _getModel() {
+    return _model ??= FirebaseAI.vertexAI().generativeModel(
+      model: 'gemini-2.5-flash-lite',
+      generationConfig: GenerationConfig(
+        temperature: 0.7,
+        topP: 0.9,
+        maxOutputTokens: 2500,
+        responseMimeType: 'application/json',
+      ),
+    );
+  }
+
+  static String _buildPrompt(Scores scores, bool isKo) {
+    return [
+      isKo
+          ? '당신은 따뜻하고 공감 능력이 뛰어난 성격 심리학 전문가입니다. 마치 오랜 경험을 가진 심리상담사가 내담자에게 이야기하듯, 편안하고 다정한 말투로 분석해주세요.'
+          : 'You are a warm, empathetic personality psychologist. Write as if you are a caring counselor speaking gently to a client, making them feel understood and valued.',
+      '',
+      isKo
+          ? '말투 지침: 반말이 아닌 존댓말을 사용하세요. "~하시네요", "~이실 거예요", "~해보시는 건 어떨까요?" 같은 부드러운 표현을 쓰세요. 판단하지 말고, 있는 그대로의 모습을 긍정적으로 바라봐주세요. 단점도 따뜻하게 감싸안는 표현으로 전달하세요.'
+          : 'Tone: Use warm, encouraging language. Say "you might find..." instead of "you lack...". Frame challenges as growth opportunities. Make the person feel seen and appreciated.',
+      '',
+      'HEXACO scores range from 0-100. Analyze the unique combination holistically.',
+      'Avoid clinical diagnoses and mental health claims.',
+      '',
+      'Return JSON only with this schema:',
+      '{"summary":"<warm 3-4 sentence personality portrait>", "factors":[{"factor":"H","overview":"<warm 4-5 sentence analysis>","strengths":["<encouraging phrase>","<encouraging phrase>","<encouraging phrase>"],"risks":["<gently framed challenge>","<gently framed challenge>"],"growth":"<2 kind, actionable suggestions>"}], "compatibleMBTIs":[{"mbti":"XXXX","reason":"<1 sentence why this type is compatible>"},{"mbti":"XXXX","reason":"<1 sentence why>"},{"mbti":"XXXX","reason":"<1 sentence why>"}]}',
+      '',
+      'Requirements:',
+      '- Include all six factors exactly once: H, E, X, A, C, O',
+      '- summary: Paint a warm, holistic portrait that makes the person feel understood',
+      '- overview: Explain each factor with empathy and insight (4-5 sentences)',
+      '- strengths: 3 genuine strengths per factor, described encouragingly',
+      '- risks: 2 challenges per factor, framed gently as areas for growth',
+      '- growth: 2 kind, specific suggestions that feel like a friend\'s advice',
+      '- compatibleMBTIs: Based on HEXACO scores, suggest exactly 3 MBTI types that would be most compatible. Estimate the user\'s own MBTI from scores (X→E/I, O→N/S, A→F/T, C→J/P) and pick 3 complementary types. Each reason should be warm and insightful.',
+      '',
+      'Scores: H=${scores.h.toStringAsFixed(1)}, E=${scores.e.toStringAsFixed(1)}, X=${scores.x.toStringAsFixed(1)}, A=${scores.a.toStringAsFixed(1)}, C=${scores.c.toStringAsFixed(1)}, O=${scores.o.toStringAsFixed(1)}',
+    ].join('\n');
+  }
+
+  static String? _extractJson(String text) {
+    final cleaned = text.replaceAll(RegExp(r'```json|```'), '').trim();
+    final start = cleaned.indexOf('{');
+    final end = cleaned.lastIndexOf('}');
+    if (start == -1 || end == -1 || end <= start) return null;
+    return cleaned.substring(start, end + 1);
+  }
+
+  /// Firebase AI Logic으로 분석, 실패 시 Vercel API 폴백
   static Future<AIAnalysisResult?> fetchAnalysis(Scores scores,
       {bool isKo = true}) async {
+    // 1차: Firebase AI Logic
     try {
+      final prompt = _buildPrompt(scores, isKo);
+      final response =
+          await _getModel().generateContent([Content.text(prompt)]);
+      final text = response.text;
+
+      if (text != null && text.isNotEmpty) {
+        final jsonText = _extractJson(text);
+        if (jsonText != null) {
+          return AIAnalysisResult.fromJson(
+              jsonDecode(jsonText) as Map<String, dynamic>);
+        }
+      }
+    } catch (e) {
+      debugPrint('Firebase AI error: $e');
+    }
+
+    // 2차: Vercel API 폴백
+    try {
+      debugPrint('Falling back to Vercel API...');
       final response = await http
           .post(
-            Uri.parse(_apiUrl),
+            Uri.parse(_fallbackUrl),
             headers: {'Content-Type': 'application/json'},
             body: jsonEncode({
               'scores': {
@@ -93,16 +165,15 @@ class AIAnalysisService {
           )
           .timeout(const Duration(seconds: 30));
 
-      if (response.statusCode != 200) {
-        debugPrint('AI API error: ${response.statusCode} ${response.body}');
-        return null;
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        return AIAnalysisResult.fromJson(json);
       }
-
-      final json = jsonDecode(response.body) as Map<String, dynamic>;
-      return AIAnalysisResult.fromJson(json);
+      debugPrint('Vercel API error: ${response.statusCode}');
     } catch (e) {
-      debugPrint('AI analysis error: $e');
-      return null;
+      debugPrint('Vercel API fallback error: $e');
     }
+
+    return null;
   }
 }
