@@ -76,6 +76,27 @@
           "desc": "Aesthetic appreciation, curiosity, creativity, unconventionality"
         }
       }
+    },
+    "vsMbti": {
+      "sectionTitle": "HEXACO vs MBTI: What's the Difference?",
+      "sectionDesc": "HEXACO is a more precise, scientific personality model than MBTI.",
+      "hexaco": "HEXACO",
+      "mbti": "MBTI",
+      "row1label": "Factors",
+      "row1hexaco": "6 factors (scored)",
+      "row1mbti": "4 factors (binary)",
+      "row2label": "Measurement",
+      "row2hexaco": "Continuous spectrum (0–100)",
+      "row2mbti": "Type classification (16 types)",
+      "row3label": "Honesty-Humility",
+      "row3hexaco": "Included (unique factor)",
+      "row3mbti": "Not included",
+      "row4label": "Purpose",
+      "row4hexaco": "Self-understanding & growth",
+      "row4mbti": "Type classification",
+      "row5label": "Evidence",
+      "row5hexaco": "International academic research",
+      "row5mbti": "Empirical classification"
     }
   },
   "test": {
@@ -116,6 +137,11 @@
       "politician": "Politician",
       "entrepreneur": "Entrepreneur"
     },
+    "hexacoBanner": "Unlike MBTI, HEXACO quantifies 6 personality factors on a 0–100 scale, providing a scientific analysis focused on self-understanding.",
+    "mbtiRef": "MBTI Estimate (Reference Only)",
+    "mbtiRefDesc": "Estimated from HEXACO scores and may differ from actual MBTI. The core of HEXACO is the detailed 6-factor analysis below.",
+    "regionMatches": "Famous Matches",
+    "regionMatchesDesc": "Famous people with personalities similar to yours, suggested by AI",
     "factorDetail": {
       "H": {
         "high": "You are sincere and fair, valuing moral principles over material gain.",

@@ -15,10 +15,18 @@ interface CompatibleMBTI {
   reason: string
 }
 
+interface CelebrityMatch {
+  name: string
+  description: string
+  similarity: number
+  reason: string
+}
+
 interface AnalysisResponse {
   summary: string
   factors: AnalysisFactor[]
   compatibleMBTIs: CompatibleMBTI[]
+  celebrityMatches?: CelebrityMatch[]
 }
 
 const sanitizeScores = (scores: Record<string, unknown>): Scores => {
@@ -31,10 +39,16 @@ const sanitizeScores = (scores: Record<string, unknown>): Scores => {
   return sanitized
 }
 
-const buildPrompt = (scores: Scores, language: 'ko' | 'en') => {
+const buildPrompt = (scores: Scores, language: 'ko' | 'en', country?: string) => {
   const isKo = language === 'ko'
+  const includeCelebrities = !isKo && !!country
 
-  return [
+  const schemaBase = '{"summary":"<warm 3-4 sentence personality portrait>", "factors":[{"factor":"H","overview":"<warm 4-5 sentence analysis>","strengths":["<encouraging phrase>","<encouraging phrase>","<encouraging phrase>"],"risks":["<gently framed challenge>","<gently framed challenge>"],"growth":"<2 kind, actionable suggestions>"}], "compatibleMBTIs":[{"mbti":"XXXX","reason":"<1 sentence why this type is compatible>"},{"mbti":"XXXX","reason":"<1 sentence why>"},{"mbti":"XXXX","reason":"<1 sentence why>"}]'
+  const schema = includeCelebrities
+    ? schemaBase + ', "celebrityMatches":[{"name":"<full name>","description":"<brief role/title>","similarity":<70-95>,"reason":"<1 sentence why personality matches>"}]}'
+    : schemaBase + '}'
+
+  const lines = [
     isKo
       ? '당신은 따뜻하고 공감 능력이 뛰어난 성격 심리학 전문가입니다. 마치 오랜 경험을 가진 심리상담사가 내담자에게 이야기하듯, 편안하고 다정한 말투로 분석해주세요.'
       : 'You are a warm, empathetic personality psychologist. Write as if you are a caring counselor speaking gently to a client, making them feel understood and valued.',
@@ -47,7 +61,7 @@ const buildPrompt = (scores: Scores, language: 'ko' | 'en') => {
     'Avoid clinical diagnoses and mental health claims.',
     '',
     'Return JSON only with this schema:',
-    '{"summary":"<warm 3-4 sentence personality portrait>", "factors":[{"factor":"H","overview":"<warm 4-5 sentence analysis>","strengths":["<encouraging phrase>","<encouraging phrase>","<encouraging phrase>"],"risks":["<gently framed challenge>","<gently framed challenge>"],"growth":"<2 kind, actionable suggestions>"}], "compatibleMBTIs":[{"mbti":"XXXX","reason":"<1 sentence why this type is compatible>"},{"mbti":"XXXX","reason":"<1 sentence why>"},{"mbti":"XXXX","reason":"<1 sentence why>"}]}',
+    schema,
     '',
     'Requirements:',
     '- Include all six factors exactly once: H, E, X, A, C, O',
@@ -57,9 +71,21 @@ const buildPrompt = (scores: Scores, language: 'ko' | 'en') => {
     '- risks: 2 challenges per factor, framed gently as areas for growth',
     '- growth: 2 kind, specific suggestions that feel like a friend\'s advice',
     '- compatibleMBTIs: Based on HEXACO scores, suggest exactly 3 MBTI types that would be most compatible. Estimate the user\'s own MBTI from scores (X→E/I, O→N/S, A→F/T, C→J/P) and pick 3 complementary types. Each reason should be warm and insightful.',
+  ]
+
+  if (includeCelebrities) {
+    const region = country === 'international' ? 'globally recognized' : `from ${country} or internationally recognized`
+    lines.push(
+      `- celebrityMatches: Suggest exactly 5 well-known public figures ${region} whose personality would closely match this HEXACO profile. Include actors, musicians, athletes, leaders, or entrepreneurs that most people would recognize. Each similarity score should realistically reflect how close their personality is (70-95 range).`
+    )
+  }
+
+  lines.push(
     '',
     `Scores: H=${scores.H.toFixed(1)}, E=${scores.E.toFixed(1)}, X=${scores.X.toFixed(1)}, A=${scores.A.toFixed(1)}, C=${scores.C.toFixed(1)}, O=${scores.O.toFixed(1)}`,
-  ].join('\n')
+  )
+
+  return lines.join('\n')
 }
 
 const extractJson = (text: string) => {
@@ -97,7 +123,7 @@ export default async function handler(req: any, res: any) {
   }
 
   try {
-    const { scores, language } = req.body ?? {}
+    const { scores, language, country } = req.body ?? {}
     if (!scores || typeof scores !== 'object') {
       res.status(400).json({ error: 'Invalid scores payload' })
       return
@@ -105,7 +131,8 @@ export default async function handler(req: any, res: any) {
 
     const sanitizedScores = sanitizeScores(scores)
     const lang = language === 'en' ? 'en' : 'ko'
-    const prompt = buildPrompt(sanitizedScores, lang)
+    const countryStr = typeof country === 'string' ? country : undefined
+    const prompt = buildPrompt(sanitizedScores, lang, countryStr)
 
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
@@ -117,7 +144,7 @@ export default async function handler(req: any, res: any) {
           generationConfig: {
             temperature: 0.7,
             topP: 0.9,
-            maxOutputTokens: 2500,
+            maxOutputTokens: 3500,
             responseMimeType: 'application/json',
           },
         }),

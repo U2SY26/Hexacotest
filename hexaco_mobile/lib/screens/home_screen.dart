@@ -97,6 +97,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 titleEn: 'Recommended',
               ),
               const SizedBox(height: 28),
+              _HexacoVsMbtiSection(isKo: isKo),
+              const SizedBox(height: 28),
               _HexacoSection(isKo: isKo),
               const SizedBox(height: 28),
               _VersionSelectionSection(controller: widget.controller, isKo: isKo),
@@ -1150,6 +1152,169 @@ class _FeatureCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _HexacoVsMbtiSection extends StatelessWidget {
+  final bool isKo;
+
+  const _HexacoVsMbtiSection({required this.isKo});
+
+  @override
+  Widget build(BuildContext context) {
+    final rows = [
+      {
+        'label': isKo ? '요인 수' : 'Factors',
+        'hexaco': isKo ? '6개 요인 (수치화)' : '6 factors (scored)',
+        'mbti': isKo ? '4개 요인 (이분법)' : '4 factors (binary)',
+      },
+      {
+        'label': isKo ? '측정 방식' : 'Measurement',
+        'hexaco': isKo ? '연속 스펙트럼\n(0~100점)' : 'Continuous\n(0–100)',
+        'mbti': isKo ? '유형 분류\n(16가지)' : 'Type classification\n(16 types)',
+      },
+      {
+        'label': isKo ? '정직-겸손' : 'Honesty-\nHumility',
+        'hexaco': isKo ? '포함\n(독자적 요인)' : 'Included\n(unique factor)',
+        'mbti': isKo ? '미포함' : 'Not included',
+      },
+      {
+        'label': isKo ? '주요 목적' : 'Purpose',
+        'hexaco': isKo ? '자기 이해와 성장' : 'Self-understanding\n& growth',
+        'mbti': isKo ? '유형 분류' : 'Type classification',
+      },
+      {
+        'label': isKo ? '학술 근거' : 'Evidence',
+        'hexaco': isKo ? '국제 학술 연구 기반' : 'International\nacademic research',
+        'mbti': isKo ? '경험적 분류' : 'Empirical\nclassification',
+      },
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          isKo ? 'HEXACO vs MBTI, 뭐가 다를까?' : 'HEXACO vs MBTI: What\'s Different?',
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          isKo
+              ? 'HEXACO는 MBTI보다 더 정밀한 과학적 성격 분석 모델입니다.'
+              : 'HEXACO is a more precise, scientific personality model than MBTI.',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
+        ),
+        const SizedBox(height: 16),
+        DarkCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              // Header
+              Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: AppColors.darkBorder)),
+                ),
+                child: Row(
+                  children: [
+                    const Expanded(flex: 3, child: SizedBox()),
+                    Expanded(
+                      flex: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Center(
+                          child: GradientText(
+                            'HEXACO',
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 4,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Center(
+                          child: Text(
+                            'MBTI',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.gray500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Rows
+              for (var i = 0; i < rows.length; i++)
+                Container(
+                  decoration: BoxDecoration(
+                    border: i < rows.length - 1
+                        ? Border(bottom: BorderSide(color: AppColors.darkBorder))
+                        : null,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            rows[i]['label']!,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.gray400,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 11,
+                                ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 4,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border(
+                              left: BorderSide(color: AppColors.darkBorder),
+                              right: BorderSide(color: AppColors.darkBorder),
+                            ),
+                          ),
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            rows[i]['hexaco']!,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.purple400,
+                                  fontSize: 11,
+                                ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 4,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            rows[i]['mbti']!,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppColors.gray500,
+                                  fontSize: 11,
+                                ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

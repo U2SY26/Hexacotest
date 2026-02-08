@@ -44,15 +44,40 @@ class AICompatibleMBTI {
   }
 }
 
+class AICelebrityMatch {
+  final String name;
+  final String description;
+  final int similarity;
+  final String reason;
+
+  const AICelebrityMatch({
+    required this.name,
+    required this.description,
+    required this.similarity,
+    required this.reason,
+  });
+
+  factory AICelebrityMatch.fromJson(Map<String, dynamic> json) {
+    return AICelebrityMatch(
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      similarity: (json['similarity'] as num?)?.toInt() ?? 80,
+      reason: json['reason'] ?? '',
+    );
+  }
+}
+
 class AIAnalysisResult {
   final String summary;
   final List<AIFactorAnalysis> factors;
   final List<AICompatibleMBTI> compatibleMBTIs;
+  final List<AICelebrityMatch> celebrityMatches;
 
   const AIAnalysisResult({
     required this.summary,
     required this.factors,
     this.compatibleMBTIs = const [],
+    this.celebrityMatches = const [],
   });
 
   factory AIAnalysisResult.fromJson(Map<String, dynamic> json) {
@@ -64,6 +89,10 @@ class AIAnalysisResult {
           [],
       compatibleMBTIs: (json['compatibleMBTIs'] as List<dynamic>?)
               ?.map((m) => AICompatibleMBTI.fromJson(m))
+              .toList() ??
+          [],
+      celebrityMatches: (json['celebrityMatches'] as List<dynamic>?)
+              ?.map((c) => AICelebrityMatch.fromJson(c))
               .toList() ??
           [],
     );
@@ -80,14 +109,21 @@ class AIAnalysisService {
       generationConfig: GenerationConfig(
         temperature: 0.7,
         topP: 0.9,
-        maxOutputTokens: 2500,
+        maxOutputTokens: 3500,
         responseMimeType: 'application/json',
       ),
     );
   }
 
-  static String _buildPrompt(Scores scores, bool isKo) {
-    return [
+  static String _buildPrompt(Scores scores, bool isKo, {String? country}) {
+    final includeCelebrities = !isKo && country != null;
+
+    final schemaBase = '{"summary":"<warm 3-4 sentence personality portrait>", "factors":[{"factor":"H","overview":"<warm 4-5 sentence analysis>","strengths":["<encouraging phrase>","<encouraging phrase>","<encouraging phrase>"],"risks":["<gently framed challenge>","<gently framed challenge>"],"growth":"<2 kind, actionable suggestions>"}], "compatibleMBTIs":[{"mbti":"XXXX","reason":"<1 sentence why this type is compatible>"},{"mbti":"XXXX","reason":"<1 sentence why>"},{"mbti":"XXXX","reason":"<1 sentence why>"}]';
+    final schema = includeCelebrities
+        ? '$schemaBase, "celebrityMatches":[{"name":"<full name>","description":"<brief role/title>","similarity":<70-95>,"reason":"<1 sentence why personality matches>"}]}'
+        : '$schemaBase}';
+
+    final lines = [
       isKo
           ? '당신은 따뜻하고 공감 능력이 뛰어난 성격 심리학 전문가입니다. 마치 오랜 경험을 가진 심리상담사가 내담자에게 이야기하듯, 편안하고 다정한 말투로 분석해주세요.'
           : 'You are a warm, empathetic personality psychologist. Write as if you are a caring counselor speaking gently to a client, making them feel understood and valued.',
@@ -100,7 +136,7 @@ class AIAnalysisService {
       'Avoid clinical diagnoses and mental health claims.',
       '',
       'Return JSON only with this schema:',
-      '{"summary":"<warm 3-4 sentence personality portrait>", "factors":[{"factor":"H","overview":"<warm 4-5 sentence analysis>","strengths":["<encouraging phrase>","<encouraging phrase>","<encouraging phrase>"],"risks":["<gently framed challenge>","<gently framed challenge>"],"growth":"<2 kind, actionable suggestions>"}], "compatibleMBTIs":[{"mbti":"XXXX","reason":"<1 sentence why this type is compatible>"},{"mbti":"XXXX","reason":"<1 sentence why>"},{"mbti":"XXXX","reason":"<1 sentence why>"}]}',
+      schema,
       '',
       'Requirements:',
       '- Include all six factors exactly once: H, E, X, A, C, O',
@@ -110,9 +146,23 @@ class AIAnalysisService {
       '- risks: 2 challenges per factor, framed gently as areas for growth',
       '- growth: 2 kind, specific suggestions that feel like a friend\'s advice',
       '- compatibleMBTIs: Based on HEXACO scores, suggest exactly 3 MBTI types that would be most compatible. Estimate the user\'s own MBTI from scores (X→E/I, O→N/S, A→F/T, C→J/P) and pick 3 complementary types. Each reason should be warm and insightful.',
+    ];
+
+    if (includeCelebrities) {
+      final region = country == 'international'
+          ? 'globally recognized'
+          : 'from $country or internationally recognized';
+      lines.add(
+        '- celebrityMatches: Suggest exactly 5 well-known public figures $region whose personality would closely match this HEXACO profile. Include actors, musicians, athletes, leaders, or entrepreneurs that most people would recognize. Each similarity score should realistically reflect how close their personality is (70-95 range).',
+      );
+    }
+
+    lines.addAll([
       '',
       'Scores: H=${scores.h.toStringAsFixed(1)}, E=${scores.e.toStringAsFixed(1)}, X=${scores.x.toStringAsFixed(1)}, A=${scores.a.toStringAsFixed(1)}, C=${scores.c.toStringAsFixed(1)}, O=${scores.o.toStringAsFixed(1)}',
-    ].join('\n');
+    ]);
+
+    return lines.join('\n');
   }
 
   static String? _extractJson(String text) {
@@ -125,10 +175,10 @@ class AIAnalysisService {
 
   /// Firebase AI Logic으로 분석, 실패 시 Vercel API 폴백
   static Future<AIAnalysisResult?> fetchAnalysis(Scores scores,
-      {bool isKo = true}) async {
+      {bool isKo = true, String? country}) async {
     // 1차: Firebase AI Logic
     try {
-      final prompt = _buildPrompt(scores, isKo);
+      final prompt = _buildPrompt(scores, isKo, country: country);
       final response =
           await _getModel().generateContent([Content.text(prompt)]);
       final text = response.text;
@@ -147,21 +197,24 @@ class AIAnalysisService {
     // 2차: Vercel API 폴백
     try {
       debugPrint('Falling back to Vercel API...');
+      final body = <String, dynamic>{
+        'scores': {
+          'H': scores.h,
+          'E': scores.e,
+          'X': scores.x,
+          'A': scores.a,
+          'C': scores.c,
+          'O': scores.o,
+        },
+        'language': isKo ? 'ko' : 'en',
+      };
+      if (country != null) body['country'] = country;
+
       final response = await http
           .post(
             Uri.parse(_fallbackUrl),
             headers: {'Content-Type': 'application/json'},
-            body: jsonEncode({
-              'scores': {
-                'H': scores.h,
-                'E': scores.e,
-                'X': scores.x,
-                'A': scores.a,
-                'C': scores.c,
-                'O': scores.o,
-              },
-              'language': isKo ? 'ko' : 'en',
-            }),
+            body: jsonEncode(body),
           )
           .timeout(const Duration(seconds: 30));
 

@@ -747,6 +747,58 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* HEXACO vs MBTI Comparison */}
+      <section className="py-20">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center mb-10"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              {t('landing.vsMbti.sectionTitle')}
+            </h2>
+            <p className="text-gray-400 max-w-2xl mx-auto">
+              {t('landing.vsMbti.sectionDesc')}
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="rounded-2xl border border-dark-border overflow-hidden"
+            style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(236, 72, 153, 0.05) 100%)' }}
+          >
+            {/* Header Row */}
+            <div className="grid grid-cols-3 text-center">
+              <div className="p-4 border-b border-r border-dark-border" />
+              <div className="p-4 border-b border-r border-dark-border">
+                <span className="text-lg font-bold gradient-text">{t('landing.vsMbti.hexaco')}</span>
+              </div>
+              <div className="p-4 border-b border-dark-border">
+                <span className="text-lg font-bold text-gray-500">{t('landing.vsMbti.mbti')}</span>
+              </div>
+            </div>
+            {/* Data Rows */}
+            {[1, 2, 3, 4, 5].map((row) => (
+              <div key={row} className={`grid grid-cols-3 text-center ${row < 5 ? 'border-b border-dark-border' : ''}`}>
+                <div className="p-3 md:p-4 border-r border-dark-border flex items-center justify-center">
+                  <span className="text-sm font-medium text-gray-400">{t(`landing.vsMbti.row${row}label`)}</span>
+                </div>
+                <div className="p-3 md:p-4 border-r border-dark-border flex items-center justify-center">
+                  <span className="text-sm text-purple-300">{t(`landing.vsMbti.row${row}hexaco`)}</span>
+                </div>
+                <div className="p-3 md:p-4 flex items-center justify-center">
+                  <span className="text-sm text-gray-500">{t(`landing.vsMbti.row${row}mbti`)}</span>
+                </div>
+              </div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
       {/* HEXACO Explanation Section */}
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4">

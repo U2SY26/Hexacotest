@@ -161,7 +161,14 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
   Future<void> _fetchAIAnalysis() async {
     setState(() => _aiLoading = true);
     final isKo = widget.controller.language == 'ko';
-    final result = await AIAnalysisService.fetchAnalysis(scores, isKo: isKo);
+    // Detect country for non-Korean users
+    String? country;
+    if (!isKo) {
+      final locale = Platform.localeName; // e.g. "en_US", "ja_JP"
+      final parts = locale.split('_');
+      country = parts.length > 1 ? parts[1] : 'international';
+    }
+    final result = await AIAnalysisService.fetchAnalysis(scores, isKo: isKo, country: country);
     if (mounted) {
       setState(() {
         _aiAnalysis = result;
@@ -491,6 +498,62 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
             ),
           ),
           const SizedBox(height: 16),
+          // HEXACO 6요인 분석 배너
+          Container(
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadii.lg),
+              border: Border.all(color: AppColors.purple500.withValues(alpha: 0.2)),
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.purple500.withValues(alpha: 0.08),
+                  Colors.blue.withValues(alpha: 0.06),
+                ],
+              ),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 32,
+                  height: 32,
+                  margin: const EdgeInsets.only(right: 12, top: 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.purple500.withValues(alpha: 0.15),
+                  ),
+                  child: const Icon(Icons.hexagon_outlined, color: AppColors.purple500, size: 18),
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        isKo ? 'HEXACO 6요인 분석' : 'HEXACO 6-Factor Analysis',
+                        style: const TextStyle(
+                          color: AppColors.purple500,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isKo
+                            ? 'HEXACO는 MBTI와 달리 6가지 성격 요인의 강도를 0~100점으로 수치화하여, 자기 이해에 초점을 맞춘 과학적 분석입니다.'
+                            : 'Unlike MBTI, HEXACO quantifies 6 personality factors on a 0–100 scale, providing a scientific analysis focused on self-understanding.',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppColors.gray400,
+                              fontSize: 11,
+                              height: 1.4,
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
           DarkCard(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -586,29 +649,63 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
             isKo: isKo,
           ),
           const SizedBox(height: 16),
-          Text(
-            isKo ? '추천 유형 TOP 5' : 'Top 5 Matches',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: 10),
-          Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Color(0x332A1F4F), Color(0x332D1B3C)],
+          // Matches: Korean → DB, Non-Korean → AI celebrities
+          if (isKo || _aiAnalysis == null || _aiAnalysis!.celebrityMatches.isEmpty) ...[
+            Text(
+              isKo ? '추천 유형 TOP 5' : 'Top 5 Matches',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 10),
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0x332A1F4F), Color(0x332D1B3C)],
+                ),
+                borderRadius: BorderRadius.circular(AppRadii.xl),
+                border: Border.all(color: AppColors.darkBorder),
               ),
-              borderRadius: BorderRadius.circular(AppRadii.xl),
-              border: Border.all(color: AppColors.darkBorder),
-            ),
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                for (var i = 0; i < matches.length; i += 1) ...[
-                  _MatchRow(match: matches[i], isKo: isKo, rank: i + 1),
-                  if (i != matches.length - 1) const SizedBox(height: 12),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  for (var i = 0; i < matches.length; i += 1) ...[
+                    _MatchRow(match: matches[i], isKo: isKo, rank: i + 1),
+                    if (i != matches.length - 1) const SizedBox(height: 12),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
+          ] else ...[
+            Text(
+              'Famous Matches',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'Famous people with personalities similar to yours, suggested by AI',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.gray400,
+                  ),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0x332A1F4F), Color(0x332D1B3C)],
+                ),
+                borderRadius: BorderRadius.circular(AppRadii.xl),
+                border: Border.all(color: AppColors.darkBorder),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  for (var i = 0; i < _aiAnalysis!.celebrityMatches.length; i += 1) ...[
+                    _AICelebrityRow(celeb: _aiAnalysis!.celebrityMatches[i], rank: i + 1),
+                    if (i != _aiAnalysis!.celebrityMatches.length - 1) const SizedBox(height: 12),
+                  ],
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 8),
           Text(
             isKo
@@ -1658,6 +1755,73 @@ class _MatchRow extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           '${match.similarity}%',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.purple400),
+        ),
+      ],
+    );
+  }
+}
+
+class _AICelebrityRow extends StatelessWidget {
+  final AICelebrityMatch celeb;
+  final int rank;
+
+  const _AICelebrityRow({required this.celeb, required this.rank});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 52,
+          height: 52,
+          decoration: const BoxDecoration(
+            gradient: AppGradients.primaryButton,
+            shape: BoxShape.circle,
+          ),
+          child: Center(
+            child: Text(
+              celeb.name.characters.first,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      celeb.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '#$rank',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray500),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                celeb.reason,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          '${celeb.similarity}%',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.purple400),
         ),
       ],
@@ -2771,16 +2935,30 @@ class _MemeContentSection extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          '🔮',
-                          style: TextStyle(fontSize: 24),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            isKo ? '참고용' : 'Ref',
+                            style: const TextStyle(
+                              color: Colors.amber,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: 6),
+                        const Text('🔮', style: TextStyle(fontSize: 16)),
+                        const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            isKo ? 'MBTI 추정' : 'MBTI Guess',
+                            isKo ? 'MBTI 추정' : 'MBTI Est.',
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                   color: AppColors.gray400,
+                                  fontSize: 11,
                                 ),
                           ),
                         ),
@@ -2805,7 +2983,9 @@ class _MemeContentSection extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      isKo ? '※ HEXACO 기반 추정치' : '※ Estimated from HEXACO',
+                      isKo
+                          ? '※ HEXACO 기반 추정이며, 핵심은 6요인 분석입니다'
+                          : '※ Estimated from HEXACO. Core analysis is the 6 factors.',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.gray600,
                             fontSize: 9,

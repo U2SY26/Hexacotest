@@ -6,7 +6,7 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis,
   PolarRadiusAxis, ResponsiveContainer
 } from 'recharts'
-import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle, Info, Brain, Sparkles, Copy, Coffee, ExternalLink, Image, X, Share2, CheckCircle, Circle } from 'lucide-react'
+import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle, Info, Brain, Sparkles, Copy, Coffee, ExternalLink, Image, X, Share2, CheckCircle, Circle, Hexagon } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import { decodeResults, useTestStore } from '../stores/testStore'
 import { factorColors, factors, Factor } from '../data/questions'
@@ -32,10 +32,18 @@ interface AICompatibleMBTI {
   reason: string
 }
 
+interface AICelebrityMatch {
+  name: string
+  description: string
+  similarity: number
+  reason: string
+}
+
 interface AIAnalysisResponse {
   summary: string
   factors: AIAnalysisFactor[]
   compatibleMBTIs?: AICompatibleMBTI[]
+  celebrityMatches?: AICelebrityMatch[]
 }
 
 const factorNamesKo: Record<Factor, string> = {
@@ -369,10 +377,14 @@ export default function ResultPage() {
     let cancelled = false
     setAiLoading(true)
 
+    // Detect country from browser locale for non-Korean users
+    const browserLocale = navigator.language || 'ko'
+    const countryCode = !isKo ? (browserLocale.split('-')[1] || 'international') : undefined
+
     fetch('/api/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ scores, language: i18n.language }),
+      body: JSON.stringify({ scores, language: i18n.language, country: countryCode }),
     })
       .then(res => res.ok ? res.json() : Promise.reject(new Error(`API ${res.status}`)))
       .then(data => { if (!cancelled) setAiAnalysis(data) })
@@ -604,6 +616,29 @@ export default function ResultPage() {
               </div>
             </motion.div>
           )}
+
+          {/* HEXACO Explanation Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="rounded-xl p-4 border border-purple-500/20"
+            style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%)' }}
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <Hexagon className="w-4 h-4 text-purple-400" />
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-purple-300 mb-1">
+                  {isKo ? 'HEXACO 6요인 분석' : 'HEXACO 6-Factor Analysis'}
+                </h4>
+                <p className="text-xs text-gray-400 leading-relaxed">
+                  {t('result.hexacoBanner')}
+                </p>
+              </div>
+            </div>
+          </motion.div>
 
           {/* Radar Chart */}
           <motion.div
@@ -887,7 +922,7 @@ export default function ResultPage() {
               </motion.div>
             )}
 
-            {/* MBTI Estimation */}
+            {/* MBTI Estimation (Reference Only) */}
             {mbtiMatch && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -895,9 +930,14 @@ export default function ResultPage() {
                 transition={{ delay: 0.7 }}
                 className="card"
               >
-                <h3 className="text-sm font-bold text-gray-400 mb-3">
-                  {isKo ? 'MBTI 추정' : 'MBTI Estimate'}
-                </h3>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 font-medium">
+                    {isKo ? '참고용' : 'Reference'}
+                  </span>
+                  <h3 className="text-sm font-bold text-gray-400">
+                    {t('result.mbtiRef')}
+                  </h3>
+                </div>
                 <div className="text-center">
                   <div className="text-4xl mb-2">🔮</div>
                   <h4 className="text-3xl font-bold text-white mb-1 tracking-wider">
@@ -906,35 +946,71 @@ export default function ResultPage() {
                   <p className="text-sm text-gray-400 mt-2">
                     {isKo ? mbtiMatch.descriptionKo : mbtiMatch.descriptionEn}
                   </p>
-                  <p className="text-xs text-gray-500 mt-3">
-                    {isKo
-                      ? '※ HEXACO 기반 추정이며 실제 MBTI와 다를 수 있습니다'
-                      : '※ Estimated from HEXACO, may differ from actual MBTI'}
+                  <p className="text-xs text-gray-500 mt-3 leading-relaxed">
+                    {t('result.mbtiRefDesc')}
                   </p>
                 </div>
               </motion.div>
             )}
           </div>
 
-          {/* Top 5 Matches */}
-          {topMatches.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="card"
-            >
-              <h3 className="text-lg font-bold text-white mb-2">
-                {isKo ? '추천 유형 TOP 5' : 'Top 5 Matches'}
-              </h3>
-              <p className="text-gray-400 text-sm mb-4">{t('result.matchDescription')}</p>
-              <div className="space-y-3">
-                {topMatches.map((item, index) => (
-                  <MatchCard key={item.persona.id} match={item} rank={index + 1} language={i18n.language} />
-                ))}
-              </div>
-              <CelebrityDisclaimer />
-            </motion.div>
+          {/* Top 5 Matches (DB for Korean, AI for international) */}
+          {isKo ? (
+            topMatches.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="card"
+              >
+                <h3 className="text-lg font-bold text-white mb-2">
+                  {t('result.matchTitle')}
+                </h3>
+                <p className="text-gray-400 text-sm mb-4">{t('result.matchDescription')}</p>
+                <div className="space-y-3">
+                  {topMatches.map((item, index) => (
+                    <MatchCard key={item.persona.id} match={item} rank={index + 1} language={i18n.language} />
+                  ))}
+                </div>
+                <CelebrityDisclaimer />
+              </motion.div>
+            )
+          ) : (
+            aiAnalysis?.celebrityMatches && aiAnalysis.celebrityMatches.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="card"
+              >
+                <h3 className="text-lg font-bold text-white mb-2">
+                  {t('result.regionMatches')}
+                </h3>
+                <p className="text-gray-400 text-sm mb-4">{t('result.regionMatchesDesc')}</p>
+                <div className="space-y-3">
+                  {aiAnalysis.celebrityMatches.map((celeb, index) => (
+                    <div key={index} className="flex items-center gap-4 p-4 rounded-xl bg-dark-bg/50">
+                      <div className="relative flex-shrink-0">
+                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                          <span className="text-xl font-bold text-white">{celeb.name[0]}</span>
+                        </div>
+                        <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-dark-card border border-dark-border flex items-center justify-center">
+                          <span className="text-xs font-bold text-gray-400">#{index + 1}</span>
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-white truncate">{celeb.name}</h3>
+                        <p className="text-sm text-gray-400 line-clamp-2">{celeb.reason}</p>
+                      </div>
+                      <div className="flex-shrink-0 text-right">
+                        <div className="text-lg font-bold text-purple-400">{celeb.similarity}%</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <CelebrityDisclaimer />
+              </motion.div>
+            )
           )}
 
           {/* Legal Notice */}

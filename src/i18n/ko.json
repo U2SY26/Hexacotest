@@ -76,6 +76,27 @@
           "desc": "미적 감상, 호기심, 창의성, 비관습성"
         }
       }
+    },
+    "vsMbti": {
+      "sectionTitle": "HEXACO vs MBTI, 뭐가 다를까?",
+      "sectionDesc": "HEXACO는 MBTI보다 더 정밀한 과학적 성격 분석 모델입니다.",
+      "hexaco": "HEXACO",
+      "mbti": "MBTI",
+      "row1label": "요인 수",
+      "row1hexaco": "6개 요인 (수치화)",
+      "row1mbti": "4개 요인 (이분법)",
+      "row2label": "측정 방식",
+      "row2hexaco": "연속 스펙트럼 (0~100점)",
+      "row2mbti": "유형 분류 (16가지)",
+      "row3label": "정직-겸손",
+      "row3hexaco": "포함 (독자적 요인)",
+      "row3mbti": "미포함",
+      "row4label": "주요 목적",
+      "row4hexaco": "자기 이해와 성장",
+      "row4mbti": "유형 분류",
+      "row5label": "학술 근거",
+      "row5hexaco": "국제 학술 연구 기반",
+      "row5mbti": "경험적 분류"
     }
   },
   "test": {
@@ -116,6 +137,11 @@
       "politician": "정치인",
       "entrepreneur": "경제인"
     },
+    "hexacoBanner": "HEXACO는 MBTI와 달리 6가지 성격 요인의 강도를 0~100점으로 수치화하여, 자기 이해에 초점을 맞춘 과학적 분석입니다.",
+    "mbtiRef": "참고용 MBTI 추정",
+    "mbtiRefDesc": "HEXACO 점수 기반 추정이며, 실제 MBTI와 다를 수 있습니다. HEXACO의 핵심은 아래 6개 요인별 분석입니다.",
+    "regionMatches": "당신과 비슷한 유명인",
+    "regionMatchesDesc": "AI가 분석한 당신의 성격과 유사한 유명인입니다",
     "factorDetail": {
       "H": {
         "high": "당신은 진실되고 공정하며, 물질적 이득보다 도덕적 가치를 중시합니다.",
