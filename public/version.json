@@ -1,6 +1,6 @@
 {
   "minVersion": "1.0.0",
-  "latestVersion": "1.0.22",
+  "latestVersion": "1.0.23",
   "forceUpdate": false,
   "updateMessage": "✨ v1.0.22 업데이트\n\n• 일초 앱 연동: Deep Link로 한 번에 결과 전달\n• 공유 이미지에 AI 심리분석 포함\n• AI 심리분석 Firebase AI Logic으로 전환",
   "updateMessageEn": "✨ v1.0.22 Updates\n\n• Ilcho app integration: Send results via Deep Link\n• Share images now include AI psychology report\n• AI analysis switched to Firebase AI Logic"
