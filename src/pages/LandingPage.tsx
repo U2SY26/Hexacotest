@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Brain, Users, Share2, Sparkles, ChevronRight, Hexagon, Clock, Zap, Target, Star, TrendingUp, Globe, CheckCircle, AlertTriangle } from 'lucide-react'
-import { useTestStore } from '../stores/testStore'
+import { Brain, Users, Share2, Sparkles, ChevronRight, Hexagon, Clock, Zap, Target, Star, TrendingUp, Globe, CheckCircle, AlertTriangle, Lock } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { useTestStore, encodeResults } from '../stores/testStore'
 import { testVersions } from '../data/questions'
+import { personas } from '../data/personas'
 import ElectricBorder from '../components/ElectricBorder'
 import DecryptedText from '../components/DecryptedText'
 import DisclaimerSection from '../components/common/DisclaimerSection'
+import PinDialog from '../components/common/PinDialog'
+import { useHistoryStore, type SavedResult } from '../stores/historyStore'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -185,6 +189,90 @@ function SampleQuestionPreview() {
         ))}
       </div>
     </motion.div>
+  )
+}
+
+// Saved Results section
+function SavedResultsSection() {
+  const { i18n } = useTranslation()
+  const navigate = useNavigate()
+  const entries = useHistoryStore(state => state.entries)
+  const [pinOpen, setPinOpen] = useState(false)
+  const [selected, setSelected] = useState<SavedResult | null>(null)
+  const [pinError, setPinError] = useState('')
+  const isKo = i18n.language === 'ko'
+
+  if (entries.length === 0) return null
+
+  const handleTap = (entry: SavedResult) => {
+    setSelected(entry)
+    setPinError('')
+    setPinOpen(true)
+  }
+
+  const handlePin = (pin: string) => {
+    if (!selected) return
+    if (pin !== selected.pin) {
+      setPinError(isKo ? 'PIN이 일치하지 않습니다.' : 'Incorrect PIN.')
+      return
+    }
+    setPinOpen(false)
+    const encoded = encodeResults(selected.scores)
+    navigate(`/result?r=${encoded}`)
+  }
+
+  const formatDate = (ts: number) => {
+    const d = new Date(ts)
+    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
+  }
+
+  const getPersonaName = (id: string) => {
+    const p = personas.find(p => p.id === id)
+    return p ? (isKo ? p.name.ko : p.name.en) : id
+  }
+
+  return (
+    <section className="py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Lock className="w-5 h-5 text-purple-400" />
+          <h2 className="text-lg font-bold text-white">
+            {isKo ? '저장된 결과' : 'Saved Results'}
+          </h2>
+        </div>
+        <div className="space-y-2">
+          {entries.map(entry => (
+            <button
+              key={entry.id}
+              onClick={() => handleTap(entry)}
+              className="w-full flex items-center gap-4 px-4 py-3 rounded-xl border border-white/10 hover:border-purple-500/50 transition-colors text-left"
+              style={{ backgroundColor: '#1A1A2E' }}
+            >
+              <Lock className="w-4 h-4 text-gray-500 flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="text-sm font-medium text-white truncate">
+                  {getPersonaName(entry.topMatchId)}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {formatDate(entry.timestamp)} · {entry.testVersion}{isKo ? '문항' : 'Q'}
+                </div>
+              </div>
+              <div className="text-purple-400 text-sm font-semibold flex-shrink-0">
+                {entry.similarity}%
+              </div>
+            </button>
+          ))}
+        </div>
+        <PinDialog
+          isOpen={pinOpen}
+          onClose={() => setPinOpen(false)}
+          onConfirm={handlePin}
+          title={isKo ? 'PIN 입력' : 'Enter PIN'}
+          subtitle={isKo ? '결과를 보려면 PIN을 입력하세요' : 'Enter PIN to view result'}
+          error={pinError}
+        />
+      </div>
+    </section>
   )
 }
 
@@ -583,6 +671,9 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Saved Results Section */}
+      <SavedResultsSection />
 
       {/* Stats Section */}
       <StatsSection />

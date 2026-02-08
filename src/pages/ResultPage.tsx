@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -13,6 +13,9 @@ import { factorColors, factors, Factor } from '../data/questions'
 import { findTopMatches, MatchResult } from '../utils/matching'
 import { categoryColors } from '../data/personas'
 import { CelebrityDisclaimer } from '../components/common/DisclaimerSection'
+import PinDialog from '../components/common/PinDialog'
+import SavePromptDialog from '../components/common/SavePromptDialog'
+import { useHistoryStore } from '../stores/historyStore'
 import { getPersonalityTitle, getMemeQuotes, getMainMemeQuote, getCharacterMatch, getMBTIMatch } from '../utils/memeContent'
 import { getFactorAnalyses, getOverallAnalysis, type FactorAnalysis as LocalFactorAnalysis } from '../utils/personalityAnalysis'
 
@@ -271,9 +274,16 @@ export default function ResultPage() {
   const [selectedFactors, setSelectedFactors] = useState<Set<string>>(new Set())
   const [shareMode, setShareMode] = useState<'download' | 'share'>('download')
   const [isCapturing, setIsCapturing] = useState(false)
+  const [showSavePrompt, setShowSavePrompt] = useState(false)
+  const [showPinDialog, setShowPinDialog] = useState(false)
+  const [pinError, setPinError] = useState('')
+  const [pendingNav, setPendingNav] = useState<string | null>(null)
 
+  const navigate = useNavigate()
   const storeScores = useTestStore(state => state.scores)
+  const testVersion = useTestStore(state => state.testVersion)
   const reset = useTestStore(state => state.reset)
+  const saveResult = useHistoryStore(state => state.saveResult)
 
   const encodedResult = searchParams.get('r')
   const scores = useMemo(
@@ -290,6 +300,45 @@ export default function ResultPage() {
   const mbtiMatch = scores ? getMBTIMatch(scores) : null
   const localAnalyses = scores ? getFactorAnalyses(scores) : []
   const overallText = scores ? getOverallAnalysis(scores, i18n.language === 'ko') : ''
+  const isKo = i18n.language === 'ko'
+  const isSharedView = !!encodedResult
+
+  const handleExit = (target: string) => {
+    if (isSharedView) {
+      navigate(target)
+      return
+    }
+    setPendingNav(target)
+    setShowSavePrompt(true)
+  }
+
+  const handleSaveConfirm = () => {
+    setShowSavePrompt(false)
+    setShowPinDialog(true)
+    setPinError('')
+  }
+
+  const handlePinConfirm = (pin: string) => {
+    if (!scores || !match) return
+    setShowPinDialog(false)
+    saveResult({
+      id: Date.now().toString(),
+      timestamp: Date.now(),
+      scores,
+      topMatchId: match.persona.id,
+      similarity: match.similarity,
+      pin,
+      testVersion,
+    })
+    reset()
+    if (pendingNav) navigate(pendingNav)
+  }
+
+  const handleDiscard = () => {
+    setShowSavePrompt(false)
+    reset()
+    if (pendingNav) navigate(pendingNav)
+  }
 
   useEffect(() => {
     if (!scores) {
@@ -336,8 +385,6 @@ export default function ResultPage() {
   const chartData = scores
     ? factors.map(factor => ({ factor, value: scores[factor], fullMark: 100 }))
     : []
-
-  const isKo = i18n.language === 'ko'
 
   // Build summary text (matching mobile's _summaryText)
   const getSummaryText = (): string => {
@@ -971,14 +1018,14 @@ export default function ResultPage() {
 
           {/* Action Buttons */}
           <div className="flex justify-center gap-4">
-            <Link to="/test" onClick={() => reset()} className="btn-primary flex items-center gap-2">
+            <button onClick={() => handleExit('/test')} className="btn-primary flex items-center gap-2">
               <RotateCcw className="w-4 h-4" />
               {t('common.retry')}
-            </Link>
-            <Link to="/" className="btn-secondary flex items-center gap-2">
+            </button>
+            <button onClick={() => handleExit('/')} className="btn-secondary flex items-center gap-2">
               <Home className="w-4 h-4" />
               {t('common.home')}
-            </Link>
+            </button>
           </div>
         </motion.div>
       </div>
@@ -1384,6 +1431,22 @@ export default function ResultPage() {
           </div>
         </div>
       </div>
+
+      <SavePromptDialog
+        isOpen={showSavePrompt}
+        onSave={handleSaveConfirm}
+        onDiscard={handleDiscard}
+        onCancel={() => setShowSavePrompt(false)}
+        isKo={isKo}
+      />
+      <PinDialog
+        isOpen={showPinDialog}
+        onClose={() => setShowPinDialog(false)}
+        onConfirm={handlePinConfirm}
+        title={isKo ? 'PIN 설정' : 'Set PIN'}
+        subtitle={isKo ? '결과를 보호할 4자리 PIN을 입력하세요' : 'Enter a 4-digit PIN to protect your result'}
+        error={pinError}
+      />
     </div>
   )
 }

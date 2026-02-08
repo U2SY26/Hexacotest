@@ -5,16 +5,20 @@ import 'package:flutter/material.dart';
 
 import '../constants.dart';
 import '../controllers/test_controller.dart';
+import '../models/result_history.dart';
+import '../services/history_service.dart';
 import '../ui/app_tokens.dart';
 import '../widgets/app_header.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/buttons.dart';
 import '../widgets/dark_card.dart';
 import '../widgets/gradient_text.dart';
+import '../widgets/pin_dialog.dart';
 import '../widgets/ad_banner.dart';
 import '../widgets/native_ad.dart';
 import '../config/admob_ids.dart';
 import '../services/version_check_service.dart';
+import 'result_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final TestController controller;
@@ -80,6 +84,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 onLearnMore: _scrollToLearnMore,
               ),
               const SizedBox(height: 28),
+              _SavedResultsSection(controller: widget.controller, isKo: isKo),
               _StatsSection(isKo: isKo),
               const SizedBox(height: 28),
               _SampleQuestionSection(key: _learnMoreKey, isKo: isKo),
@@ -105,6 +110,153 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _SavedResultsSection extends StatefulWidget {
+  final TestController controller;
+  final bool isKo;
+
+  const _SavedResultsSection({required this.controller, required this.isKo});
+
+  @override
+  State<_SavedResultsSection> createState() => _SavedResultsSectionState();
+}
+
+class _SavedResultsSectionState extends State<_SavedResultsSection> {
+  List<ResultHistoryEntry> _history = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHistory();
+  }
+
+  Future<void> _loadHistory() async {
+    final loaded = await HistoryService.load();
+    if (mounted) setState(() => _history = loaded);
+  }
+
+  String _formatDate(int timestamp) {
+    final dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    return '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')}';
+  }
+
+  Future<void> _onTapEntry(ResultHistoryEntry entry) async {
+    final pin = await PinDialog.show(
+      context,
+      isKo: widget.isKo,
+      title: widget.isKo ? 'PIN 입력' : 'Enter PIN',
+      subtitle: widget.isKo ? '결과를 보려면 PIN을 입력하세요' : 'Enter PIN to view result',
+    );
+    if (pin == null || !mounted) return;
+
+    if (pin != entry.pin) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(widget.isKo ? 'PIN이 일치하지 않습니다.' : 'Incorrect PIN.'),
+          backgroundColor: AppColors.red500,
+        ),
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ResultScreen(
+          controller: widget.controller,
+          data: widget.controller.data,
+          savedEntry: entry,
+        ),
+      ),
+    ).then((_) => _loadHistory());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_history.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Icon(Icons.lock_outline, color: AppColors.purple400, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              widget.isKo ? '저장된 결과' : 'Saved Results',
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        ...List.generate(_history.length, (i) {
+          final entry = _history[i];
+          final profile = widget.controller.data.types.firstWhere(
+            (type) => type.id == entry.topMatchId,
+            orElse: () => widget.controller.data.types.first,
+          );
+          final name = widget.isKo ? profile.nameKo : profile.nameEn;
+
+          return Padding(
+            padding: EdgeInsets.only(bottom: i < _history.length - 1 ? 8 : 0),
+            child: DarkCard(
+              padding: EdgeInsets.zero,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () => _onTapEntry(entry),
+                  borderRadius: BorderRadius.circular(AppRadii.lg),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.lock, color: AppColors.gray500, size: 18),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${_formatDate(entry.timestamp)} · ${entry.testVersion}${widget.isKo ? '문항' : 'Q'}',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.gray500,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          '${entry.similarity}%',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: AppColors.purple400,
+                                fontWeight: FontWeight.w600,
+                              ),
+                        ),
+                        const SizedBox(width: 4),
+                        const Icon(Icons.chevron_right, color: AppColors.gray500, size: 20),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+        const SizedBox(height: 28),
+      ],
     );
   }
 }

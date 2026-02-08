@@ -1,9 +1,11 @@
-﻿class ResultHistoryEntry {
+class ResultHistoryEntry {
   final String id;
   final int timestamp;
   final Map<String, double> scores;
   final String topMatchId;
   final int similarity;
+  final String pin;
+  final int testVersion;
 
   const ResultHistoryEntry({
     required this.id,
@@ -11,6 +13,8 @@
     required this.scores,
     required this.topMatchId,
     required this.similarity,
+    required this.pin,
+    this.testVersion = 60,
   });
 
   Map<String, dynamic> toJson() {
@@ -20,6 +24,8 @@
       'scores': scores,
       'topMatchId': topMatchId,
       'similarity': similarity,
+      'pin': pin,
+      'testVersion': testVersion,
     };
   }
 
@@ -31,6 +37,8 @@
       scores: rawScores.map((key, value) => MapEntry(key, (value as num).toDouble())),
       topMatchId: json['topMatchId'] as String,
       similarity: json['similarity'] as int,
+      pin: json['pin'] as String? ?? '',
+      testVersion: json['testVersion'] as int? ?? 60,
     );
   }
 }

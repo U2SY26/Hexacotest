@@ -30,12 +30,20 @@ import '../widgets/native_ad.dart';
 import '../config/admob_ids.dart';
 import '../services/rewarded_ad_service.dart';
 import '../services/ai_analysis_service.dart';
+import '../widgets/pin_dialog.dart';
+import '../widgets/save_prompt_dialog.dart';
 
 class ResultScreen extends StatefulWidget {
   final TestController controller;
   final AppData data;
+  final ResultHistoryEntry? savedEntry;
 
-  const ResultScreen({super.key, required this.controller, required this.data});
+  const ResultScreen({
+    super.key,
+    required this.controller,
+    required this.data,
+    this.savedEntry,
+  });
 
   @override
   State<ResultScreen> createState() => _ResultScreenState();
@@ -44,8 +52,6 @@ class ResultScreen extends StatefulWidget {
 class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMixin {
   late Scores scores;
   late List<TypeMatch> matches;
-  List<ResultHistoryEntry> _history = [];
-  bool _saved = false;
   bool _isLoading = true;
   int _loadingMessageIndex = 0;
   Timer? _loadingTimer;
@@ -73,11 +79,20 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     'Preparing your results...',
   ];
 
+  bool get _isViewingSaved => widget.savedEntry != null;
+
   @override
   void initState() {
     super.initState();
-    scores = widget.controller.calculateScores();
-    matches = RecommendationService.topMatches(scores, widget.data.types, count: 5);
+
+    if (_isViewingSaved) {
+      scores = Scores.fromMap(widget.savedEntry!.scores);
+      matches = RecommendationService.topMatches(scores, widget.data.types, count: 5);
+      _isLoading = false;
+    } else {
+      scores = widget.controller.calculateScores();
+      matches = RecommendationService.topMatches(scores, widget.data.types, count: 5);
+    }
 
     _fadeController = AnimationController(
       vsync: this,
@@ -90,9 +105,12 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
       duration: const Duration(milliseconds: 2000),
     );
 
-    RewardedAdService.loadAd();
-    _startLoadingAnimation();
-    _saveAndLoadHistory();
+    if (_isViewingSaved) {
+      _fadeController.value = 1.0;
+    } else {
+      RewardedAdService.loadAd();
+      _startLoadingAnimation();
+    }
   }
 
   void _startLoadingAnimation() {
@@ -160,29 +178,41 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     super.dispose();
   }
 
-  Future<void> _saveAndLoadHistory() async {
-    if (!_saved) {
+  Future<void> _handleExitAttempt({String targetRoute = '/'}) async {
+    if (_isViewingSaved) {
+      Navigator.pop(context);
+      return;
+    }
+
+    final isKo = widget.controller.language == 'ko';
+    final wantsSave = await SavePromptDialog.show(context, isKo: isKo);
+
+    if (wantsSave == null || !mounted) return;
+
+    if (wantsSave) {
+      final pin = await PinDialog.show(
+        context,
+        isKo: isKo,
+        title: isKo ? 'PIN 설정' : 'Set PIN',
+        subtitle: isKo ? '결과를 보호할 4자리 PIN을 입력하세요' : 'Enter a 4-digit PIN to protect your result',
+      );
+      if (pin == null || !mounted) return;
+
       final entry = ResultHistoryEntry(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         timestamp: DateTime.now().millisecondsSinceEpoch,
         scores: scores.toMap(),
         topMatchId: matches.first.profile.id,
         similarity: matches.first.similarity,
+        pin: pin,
+        testVersion: widget.controller.testVersion,
       );
       await HistoryService.save(entry);
-      _saved = true;
     }
-    final loaded = await HistoryService.load();
-    if (mounted) {
-      setState(() {
-        _history = loaded;
-      });
-    }
-  }
 
-  String _formatDate(int timestamp) {
-    final dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
-    return '${dt.year}.${dt.month.toString().padLeft(2, '0')}.${dt.day.toString().padLeft(2, '0')}';
+    if (!mounted) return;
+    widget.controller.reset();
+    Navigator.pushNamedAndRemoveUntil(context, targetRoute, (route) => false);
   }
 
   String _summaryText(bool isKo) {
@@ -346,8 +376,6 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
   Widget build(BuildContext context) {
     final isKo = widget.controller.language == 'ko';
     final topMatch = matches.first;
-    final historyPreview = _history.take(5).toList(growable: false);
-
     if (_isLoading) {
       return _LoadingScreen(
         isKo: isKo,
@@ -356,7 +384,12 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
       );
     }
 
-    return AppScaffold(
+    return PopScope(
+      canPop: _isViewingSaved,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _handleExitAttempt();
+      },
+      child: AppScaffold(
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: Column(
@@ -589,38 +622,6 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
           ),
           const SizedBox(height: 16),
           const NativeAdWidget(),
-          if (historyPreview.isNotEmpty) ...[
-            const SizedBox(height: 16),
-            DarkCard(
-              padding: EdgeInsets.zero,
-              child: ExpansionTile(
-                collapsedIconColor: AppColors.gray400,
-                iconColor: AppColors.gray400,
-                title: Text(
-                  isKo ? '최근 기록' : 'Recent Results',
-                  style: Theme.of(context).textTheme.titleSmall,
-                ),
-                tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                childrenPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                children: [
-                  for (var i = 0; i < historyPreview.length; i += 1) ...[
-                    _HistoryRow(
-                      name: (() {
-                        final profile = widget.data.types.firstWhere(
-                          (type) => type.id == historyPreview[i].topMatchId,
-                          orElse: () => widget.data.types.first,
-                        );
-                        return isKo ? profile.nameKo : profile.nameEn;
-                      })(),
-                      date: _formatDate(historyPreview[i].timestamp),
-                      similarity: historyPreview[i].similarity,
-                    ),
-                    if (i != historyPreview.length - 1) const SizedBox(height: 12),
-                  ]
-                ],
-              ),
-            ),
-          ],
           const SizedBox(height: 16),
           BannerAdSection(adUnitId: bannerAdUnitId),
           const SizedBox(height: 16),
@@ -671,10 +672,7 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
             children: [
               Expanded(
                 child: PrimaryButton(
-                  onPressed: () {
-                    widget.controller.reset();
-                    Navigator.pushNamedAndRemoveUntil(context, '/test', (route) => false);
-                  },
+                  onPressed: () => _handleExitAttempt(targetRoute: '/test'),
                   child: Text(
                     isKo ? '다시하기' : 'Retry',
                     maxLines: 1,
@@ -685,10 +683,7 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
               const SizedBox(width: 12),
               Expanded(
                 child: SecondaryButton(
-                  onPressed: () {
-                    widget.controller.reset();
-                    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
-                  },
+                  onPressed: () => _handleExitAttempt(),
                   child: Text(
                     isKo ? '홈으로' : 'Home',
                     maxLines: 1,
@@ -737,6 +732,7 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
             ),
           ),
         ],
+      ),
       ),
       ),
     );
@@ -1662,48 +1658,6 @@ class _MatchRow extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           '${match.similarity}%',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.purple400),
-        ),
-      ],
-    );
-  }
-}
-
-class _HistoryRow extends StatelessWidget {
-  final String name;
-  final String date;
-  final int similarity;
-
-  const _HistoryRow({
-    required this.name,
-    required this.date,
-    required this.similarity,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleSmall,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                date,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
-              ),
-            ],
-          ),
-        ),
-        Text(
-          '$similarity%',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.purple400),
         ),
       ],
