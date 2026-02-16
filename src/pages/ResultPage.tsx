@@ -838,7 +838,7 @@ export default function ResultPage() {
             )}
 
             {/* Compatible MBTI Types */}
-            {aiAnalysis.compatibleMBTIs && aiAnalysis.compatibleMBTIs.length > 0 && (
+            {aiAnalysis?.compatibleMBTIs && aiAnalysis.compatibleMBTIs.length > 0 && (
               <div className="mt-4 pt-4 border-t border-dark-border">
                 <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
                   <span>💕</span>
@@ -1471,7 +1471,7 @@ export default function ResultPage() {
               }
 
               {/* Compatible MBTIs in share image */}
-              {aiAnalysis.compatibleMBTIs && aiAnalysis.compatibleMBTIs.length > 0 && (
+              {aiAnalysis?.compatibleMBTIs && aiAnalysis.compatibleMBTIs.length > 0 && (
                 <>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, marginTop: 8, marginBottom: 4 }}>
                     <span style={{ fontSize: 10 }}>💕</span>
