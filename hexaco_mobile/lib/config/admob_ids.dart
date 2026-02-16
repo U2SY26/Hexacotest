@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 
 // AdMob App ID
-const String admobAppId = 'ca-app-pub-3715008468517611~1225705615';
+const String admobAppId = 'ca-app-pub-3715008468517611~1399646186';
 
 // Production Ad Unit IDs
-const String bannerAdUnitId = 'ca-app-pub-3715008468517611/2406091191';
-const String nativeAdUnitId = 'ca-app-pub-3715008468517611/4554141769';
-const String rewardedInterstitialAdUnitId = 'ca-app-pub-3715008468517611/1927978422';
+const String bannerAdUnitId = 'ca-app-pub-3715008468517611/6697146847';
+const String nativeAdUnitId = 'ca-app-pub-3715008468517611/1661266990';
+const String rewardedInterstitialAdUnitId = 'ca-app-pub-3715008468517611/9267469862';
 
 // Test Ad Unit IDs
 const String testBannerAdUnitIdAndroid = 'ca-app-pub-3940256099942544/6300978111';

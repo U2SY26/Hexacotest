@@ -26,6 +26,13 @@ class HistoryService {
     await prefs.setString(_key, jsonEncode(trimmed.map((e) => e.toJson()).toList()));
   }
 
+  static Future<void> delete(String id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = await load();
+    final updated = list.where((e) => e.id != id).toList();
+    await prefs.setString(_key, jsonEncode(updated.map((e) => e.toJson()).toList()));
+  }
+
   static Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_key);

@@ -126,18 +126,45 @@ class _SavedResultsSection extends StatefulWidget {
   State<_SavedResultsSection> createState() => _SavedResultsSectionState();
 }
 
-class _SavedResultsSectionState extends State<_SavedResultsSection> {
+class _SavedResultsSectionState extends State<_SavedResultsSection>
+    with SingleTickerProviderStateMixin {
   List<ResultHistoryEntry> _history = [];
+  bool _expanded = false;
+  late final AnimationController _animController;
+  late final Animation<double> _expandAnimation;
 
   @override
   void initState() {
     super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _expandAnimation = CurvedAnimation(
+      parent: _animController,
+      curve: Curves.easeOutCubic,
+    );
     _loadHistory();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadHistory() async {
     final loaded = await HistoryService.load();
     if (mounted) setState(() => _history = loaded);
+  }
+
+  void _toggleExpanded() {
+    setState(() => _expanded = !_expanded);
+    if (_expanded) {
+      _animController.forward();
+    } else {
+      _animController.reverse();
+    }
   }
 
   String _formatDate(int timestamp) {
@@ -177,6 +204,75 @@ class _SavedResultsSectionState extends State<_SavedResultsSection> {
     ).then((_) => _loadHistory());
   }
 
+  Future<void> _onDeleteEntry(ResultHistoryEntry entry) async {
+    // PIN verification first
+    final pin = await PinDialog.show(
+      context,
+      isKo: widget.isKo,
+      title: widget.isKo ? 'PIN 입력' : 'Enter PIN',
+      subtitle: widget.isKo ? '삭제하려면 PIN을 입력하세요' : 'Enter PIN to delete',
+    );
+    if (pin == null || !mounted) return;
+
+    if (pin != entry.pin) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(widget.isKo ? 'PIN이 일치하지 않습니다.' : 'Incorrect PIN.'),
+          backgroundColor: AppColors.red500,
+        ),
+      );
+      return;
+    }
+
+    // Confirmation dialog
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppColors.darkCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          widget.isKo ? '결과 삭제' : 'Delete Result',
+          style: const TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          widget.isKo
+              ? '이 결과를 삭제하시겠습니까?\n삭제된 결과는 복구할 수 없습니다.'
+              : 'Delete this result?\nThis action cannot be undone.',
+          style: const TextStyle(color: AppColors.gray400),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(
+              widget.isKo ? '취소' : 'Cancel',
+              style: const TextStyle(color: AppColors.gray500),
+            ),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(
+              widget.isKo ? '삭제' : 'Delete',
+              style: const TextStyle(color: AppColors.red500),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    await HistoryService.delete(entry.id);
+    await _loadHistory();
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(widget.isKo ? '결과가 삭제되었습니다.' : 'Result deleted.'),
+        backgroundColor: AppColors.gray700,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_history.isEmpty) return const SizedBox.shrink();
@@ -184,79 +280,133 @@ class _SavedResultsSectionState extends State<_SavedResultsSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            const Icon(Icons.lock_outline, color: AppColors.purple400, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              widget.isKo ? '저장된 결과' : 'Saved Results',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-          ],
+        // Header row - tappable to toggle
+        GestureDetector(
+          onTap: _toggleExpanded,
+          behavior: HitTestBehavior.opaque,
+          child: Row(
+            children: [
+              const Icon(Icons.lock_outline, color: AppColors.purple400, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  widget.isKo ? '저장된 결과' : 'Saved Results',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppColors.purple500.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  '${_history.length}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.purple400,
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              AnimatedRotation(
+                turns: _expanded ? 0.5 : 0.0,
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeOutCubic,
+                child: const Icon(
+                  Icons.keyboard_arrow_down,
+                  color: AppColors.gray500,
+                  size: 24,
+                ),
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
-        ...List.generate(_history.length, (i) {
-          final entry = _history[i];
-          final profile = widget.controller.data.types.firstWhere(
-            (type) => type.id == entry.topMatchId,
-            orElse: () => widget.controller.data.types.first,
-          );
-          final name = widget.isKo ? profile.nameKo : profile.nameEn;
+        // Animated list
+        SizeTransition(
+          sizeFactor: _expandAnimation,
+          axisAlignment: -1.0,
+          child: Column(
+            children: List.generate(_history.length, (i) {
+              final entry = _history[i];
+              final profile = widget.controller.data.types.firstWhere(
+                (type) => type.id == entry.topMatchId,
+                orElse: () => widget.controller.data.types.first,
+              );
+              final name = widget.isKo ? profile.nameKo : profile.nameEn;
 
-          return Padding(
-            padding: EdgeInsets.only(bottom: i < _history.length - 1 ? 8 : 0),
-            child: DarkCard(
-              padding: EdgeInsets.zero,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () => _onTapEntry(entry),
-                  borderRadius: BorderRadius.circular(AppRadii.lg),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.lock, color: AppColors.gray500, size: 18),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                name,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.titleSmall,
+              return Padding(
+                padding: EdgeInsets.only(bottom: i < _history.length - 1 ? 8 : 0),
+                child: DarkCard(
+                  padding: EdgeInsets.zero,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () => _onTapEntry(entry),
+                      borderRadius: BorderRadius.circular(AppRadii.lg),
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10, right: 4),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.lock, color: AppColors.gray500, size: 18),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.titleSmall,
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    '${_formatDate(entry.timestamp)} · ${entry.testVersion}${widget.isKo ? '문항' : 'Q'}',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                          color: AppColors.gray500,
+                                        ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: 2),
-                              Text(
-                                '${_formatDate(entry.timestamp)} · ${entry.testVersion}${widget.isKo ? '문항' : 'Q'}',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColors.gray500,
-                                    ),
+                            ),
+                            Text(
+                              '${entry.similarity}%',
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    color: AppColors.purple400,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                            const SizedBox(width: 2),
+                            const Icon(Icons.chevron_right, color: AppColors.gray500, size: 20),
+                            // Delete button
+                            SizedBox(
+                              width: 36,
+                              height: 36,
+                              child: IconButton(
+                                onPressed: () => _onDeleteEntry(entry),
+                                padding: EdgeInsets.zero,
+                                icon: const Icon(
+                                  Icons.delete_outline,
+                                  color: AppColors.gray600,
+                                  size: 18,
+                                ),
+                                splashRadius: 18,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          '${entry.similarity}%',
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppColors.purple400,
-                                fontWeight: FontWeight.w600,
-                              ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(Icons.chevron_right, color: AppColors.gray500, size: 20),
-                      ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-          );
-        }),
+              );
+            }),
+          ),
+        ),
         const SizedBox(height: 28),
       ],
     );

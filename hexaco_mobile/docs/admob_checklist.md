@@ -1,8 +1,10 @@
 ﻿# AdMob Release Checklist
 
 ## Current Configuration
-- App ID: `ca-app-pub-3715008468517611~7590886146`
-- Banner Ad Unit: `ca-app-pub-3715008468517611/5799114717`
+- App ID: `ca-app-pub-3715008468517611~1399646186`
+- Banner Ad Unit: `ca-app-pub-3715008468517611/6697146847`
+- Native Ad Unit: `ca-app-pub-3715008468517611/1661266990`
+- Rewarded Interstitial Ad Unit: `ca-app-pub-3715008468517611/9267469862`
 - Debug/Profile builds use Google test IDs (see `lib/widgets/ad_banner.dart`).
 
 ## Pre-release Checklist
