@@ -498,7 +498,7 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
             ),
           ),
           const SizedBox(height: 16),
-          // HEXACO 6요인 분석 배너
+          // 6가지 심리 유형 분석 배너
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
@@ -529,7 +529,7 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isKo ? 'HEXACO 6요인 분석' : 'HEXACO 6-Factor Analysis',
+                        isKo ? '6가지 심리 유형 분석' : '6-Type Personality Analysis',
                         style: const TextStyle(
                           color: AppColors.purple500,
                           fontWeight: FontWeight.bold,
@@ -539,8 +539,8 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
                       const SizedBox(height: 4),
                       Text(
                         isKo
-                            ? 'HEXACO는 MBTI와 달리 6가지 성격 요인의 강도를 0~100점으로 수치화하여, 자기 이해에 초점을 맞춘 과학적 분석입니다.'
-                            : 'Unlike MBTI, HEXACO quantifies 6 personality factors on a 0–100 scale, providing a scientific analysis focused on self-understanding.',
+                            ? '본 테스트는 MBTI와 달리 6가지 성격 요인의 강도를 0~100점으로 수치화하여, 자기 이해에 초점을 맞춘 과학적 분석입니다.'
+                            : 'Unlike MBTI, this test quantifies 6 personality factors on a 0–100 scale, providing a scientific analysis focused on self-understanding.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: AppColors.gray400,
                               fontSize: 11,
@@ -813,11 +813,11 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
                 const SizedBox(height: 8),
                 Text(
                   isKo
-                      ? '• 본 테스트는 비공식이며 HEXACO-PI-R과 무관합니다.\n'
-                        '• 결과는 오락 및 자기이해 목적이며 전문 심리 진단을 대체하지 않습니다.\n'
+                      ? '• 본 테스트는 비공식이며 오락/자기이해 목적으로 제공됩니다.\n'
+                        '• 결과는 전문 심리 진단을 대체하지 않습니다.\n'
                         '• 테스트 결과는 기기에만 저장되며 수집하지 않습니다.'
-                      : '• Unofficial test, not affiliated with HEXACO-PI-R.\n'
-                        '• For entertainment/self-understanding only, not professional diagnosis.\n'
+                      : '• Unofficial test for entertainment and self-understanding.\n'
+                        '• Not a substitute for professional diagnosis.\n'
                         '• Results are stored locally and not collected.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: AppColors.gray500,
@@ -2080,14 +2080,14 @@ class _ShareCardContent extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // HEXACO 로고
+          // Logo
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.hexagon, color: AppColors.purple500, size: 24),
               const SizedBox(width: 6),
               Text(
-                'HEXACO',
+                '6가지 심리 유형',
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -2984,8 +2984,8 @@ class _MemeContentSection extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       isKo
-                          ? '※ HEXACO 기반 추정이며, 핵심은 6요인 분석입니다'
-                          : '※ Estimated from HEXACO. Core analysis is the 6 factors.',
+                          ? '※ 6가지 유형 점수 기반 추정이며, 핵심은 6요인 분석입니다'
+                          : '※ Estimated from 6-type scores. Core analysis is the 6 factors.',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.gray600,
                             fontSize: 9,

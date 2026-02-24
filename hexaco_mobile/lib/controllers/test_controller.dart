@@ -45,18 +45,29 @@ class TestController extends ChangeNotifier {
   }
 
   // Randomly select questions from each factor
+  // Ensures no duplicate question text appears in a single test session
   void _selectRandomQuestions() {
     final factors = ['H', 'E', 'X', 'A', 'C', 'O'];
     final selected = <Question>[];
+    final usedTexts = <String>{};
 
     for (final factor in factors) {
       final factorQuestions = data.questions
           .where((q) => q.factor == factor)
           .toList();
 
-      // Shuffle and take the required number
+      // Shuffle and take unique-text questions
       factorQuestions.shuffle(_random);
-      selected.addAll(factorQuestions.take(_questionsPerFactor));
+      int count = 0;
+      for (final q in factorQuestions) {
+        if (count >= _questionsPerFactor) break;
+        // Skip questions with duplicate text (ko or en)
+        if (usedTexts.contains(q.ko) || usedTexts.contains(q.en)) continue;
+        usedTexts.add(q.ko);
+        usedTexts.add(q.en);
+        selected.add(q);
+        count++;
+      }
     }
 
     // Shuffle the final list so questions from different factors are mixed

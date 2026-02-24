@@ -672,7 +672,7 @@ class MemeContentService {
 
   /// MBTI 추정 매칭
   static MBTIMatch getMBTIMatch(Scores scores) {
-    // HEXACO → MBTI 대략적 매핑
+    // 6가지 유형 → MBTI 대략적 매핑
     // X(외향성) → E/I
     // O(개방성) → N/S
     // A(원만성) → F/T (반대)

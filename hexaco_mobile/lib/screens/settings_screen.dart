@@ -216,13 +216,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 12),
                     Text(
                       isKo
-                          ? '• 본 테스트는 비공식이며 HEXACO-PI-R과 무관합니다.\n'
-                            '• 결과는 오락 및 자기이해 목적이며 전문 심리 진단을 대체하지 않습니다.\n'
+                          ? '• 본 테스트는 비공식이며 오락/자기이해 목적으로 제공됩니다.\n'
+                            '• 결과는 전문 심리 진단을 대체하지 않습니다.\n'
                             '• 개인정보를 수집하지 않으며, 결과는 기기에만 저장됩니다.\n'
                             '• 유명인 매칭은 공개 정보 기반 추정치입니다.\n'
                             '• 본 서비스는 만 16세 이상을 대상으로 합니다.'
-                          : '• Unofficial test, NOT affiliated with HEXACO-PI-R.\n'
-                            '• For entertainment/self-understanding only, not professional diagnosis.\n'
+                          : '• Unofficial test for entertainment and self-understanding.\n'
+                            '• Not a substitute for professional diagnosis.\n'
                             '• We do not collect personal data. Results are stored locally.\n'
                             '• Celebrity matches are estimates based on public info.\n'
                             '• This service is intended for users aged 16 and above.',
@@ -247,12 +247,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'HEXACO Personality Test v1.0.17',
+                      '6-Type Personality Test v1.0.17',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray600),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Based on HEXACO theory (Ashton & Lee)',
+                      'Based on 6-Type Personality Theory',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.gray600,
                             fontSize: 11,

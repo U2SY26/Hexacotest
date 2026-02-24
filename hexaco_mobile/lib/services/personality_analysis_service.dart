@@ -464,7 +464,7 @@ class PersonalityAnalysisService {
 
     if (isKo) {
       return '🌟 당신만의 특별한 성격 프로필 🌟\n\n'
-          '축하합니다! 당신의 HEXACO 성격 분석이 완료되었습니다.\n\n'
+          '축하합니다! 당신의 6가지 심리 유형 분석이 완료되었습니다.\n\n'
           '당신은 $traitList을(를) 가진 특별한 사람입니다. '
           '이런 성격 조합은 $strengthList에서 빛을 발합니다.\n\n'
           '세상에는 완벽한 성격이란 없습니다. 모든 성향에는 고유한 강점이 있으며, '
@@ -478,7 +478,7 @@ class PersonalityAnalysisService {
           '※ 이 결과는 재미와 자기 이해를 위한 것이며, 당신의 무한한 가능성을 제한하지 않습니다.';
     } else {
       return '🌟 Your Special Personality Profile 🌟\n\n'
-          'Congratulations! Your HEXACO personality analysis is complete.\n\n'
+          'Congratulations! Your 6-type personality analysis is complete.\n\n'
           'You are a special person with $traitList. '
           'This personality combination shines in $strengthList.\n\n'
           'There is no perfect personality in the world. Every trait has its unique strengths, '

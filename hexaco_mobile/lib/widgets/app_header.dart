@@ -46,7 +46,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   const SizedBox(height: 1),
                   Text(
-                    isKo ? '헥사코 성격 테스트' : 'HEXACO Personality Test',
+                    isKo ? '6가지 심리 유형 테스트' : '6-Type Personality Test',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.gray400,
                           fontSize: 11,

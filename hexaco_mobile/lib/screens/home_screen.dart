@@ -426,11 +426,11 @@ class _HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = 'HEXACO';
+    final title = isKo ? '6가지 심리 유형' : '6-Type';
     final subtitle = isKo ? '성격 테스트' : 'Personality Test';
     final description = isKo
-        ? '세계적으로 권위 있는 심리학 연구를 기반으로 한 HEXACO 모델로\n당신의 성격을 6가지 요인으로 분석합니다.'
-        : 'Based on world-renowned psychological research,\nHEXACO analyzes your personality across 6 factors.';
+        ? '세계적으로 권위 있는 심리학 연구를 기반으로\n당신의 성격을 6가지 유형으로 분석합니다.'
+        : 'Based on world-renowned psychological research,\nanalyze your personality across 6 scientific dimensions.';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -1147,14 +1147,14 @@ class _BenefitsPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final benefits = isKo
         ? const [
-            '과학적으로 검증된 HEXACO 모델 기반',
+            '과학적으로 검증된 6가지 심리 유형 모델 기반',
             '상황 기반 질문으로 진짜 성향 파악',
             'AI 없이도 명확한 성격 요약 제공',
             '유형별 100가지 추천 결과',
             '무료로 즉시 결과 확인',
           ]
         : const [
-            'Based on scientifically validated HEXACO model',
+            'Based on scientifically validated 6-type personality model',
             'Situation-based questions reveal true traits',
             'Clear summary without AI dependency',
             '100-type recommendations',
@@ -1219,7 +1219,7 @@ class _FeaturesSection extends StatelessWidget {
       _FeatureItem(
         icon: Icons.psychology,
         title: isKo ? '과학적 분석' : 'Scientific Analysis',
-        description: isKo ? '검증된 HEXACO-60 문항 기반' : 'Validated HEXACO-60 questionnaire',
+        description: isKo ? '검증된 60문항 기반 분석' : 'Validated 60-question assessment',
       ),
       _FeatureItem(
         icon: Icons.people_alt,
@@ -1345,14 +1345,14 @@ class _HexacoVsMbtiSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isKo ? 'HEXACO vs MBTI, 뭐가 다를까?' : 'HEXACO vs MBTI: What\'s Different?',
+          isKo ? '6가지 심리 유형 vs MBTI, 뭐가 다를까?' : '6-Type vs MBTI: What\'s Different?',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         Text(
           isKo
-              ? 'HEXACO는 MBTI보다 더 정밀한 과학적 성격 분석 모델입니다.'
-              : 'HEXACO is a more precise, scientific personality model than MBTI.',
+              ? '6가지 심리 유형은 MBTI보다 더 정밀한 과학적 성격 분석 모델입니다.'
+              : 'The 6-Type model is a more precise, scientific personality model than MBTI.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
         ),
         const SizedBox(height: 16),
@@ -1374,7 +1374,7 @@ class _HexacoVsMbtiSection extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(vertical: 12),
                         child: Center(
                           child: GradientText(
-                            'HEXACO',
+                            '6가지 유형',
                             style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -1497,14 +1497,14 @@ class _HexacoSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isKo ? 'HEXACO 모델이란?' : 'What is the HEXACO Model?',
+          isKo ? '6가지 심리 유형이란?' : 'What Are the 6 Personality Types?',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         Text(
           isKo
-              ? 'HEXACO는 Big Five에 정직-겸손 요인을 추가한 성격 구조 모델입니다.'
-              : 'HEXACO extends Big Five with Honesty-Humility for more precise traits.',
+              ? '6가지 심리 유형은 Big Five에 정직-겸손 요인을 추가한 성격 구조 모델입니다.'
+              : 'The 6-Type model extends Big Five with Honesty-Humility for more precise traits.',
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
         ),
         const SizedBox(height: 16),
@@ -1736,7 +1736,7 @@ class _DisclaimerSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final notices = isKo
         ? const [
-            '⚠️ 본 테스트는 비공식이며 HEXACO-PI-R과 무관합니다.',
+            '⚠️ 본 테스트는 비공식이며 오락/자기이해 목적으로 제공됩니다.',
             '🎭 결과는 오락 및 자기이해 목적이며 전문 심리 진단을 대체하지 않습니다.',
             '✍️ 모든 문항은 독자적으로 제작된 상황 기반 문항입니다.',
             '🔒 개인정보를 수집하지 않으며, 테스트 결과는 기기에만 저장됩니다.',
@@ -1744,7 +1744,7 @@ class _DisclaimerSection extends StatelessWidget {
             '🔞 본 서비스는 만 16세 이상을 대상으로 합니다.',
           ]
         : const [
-            '⚠️ This is an unofficial test and NOT affiliated with HEXACO-PI-R.',
+            '⚠️ This is an unofficial test for entertainment and self-understanding.',
             '🎭 Results are for entertainment/self-understanding only, not professional diagnosis.',
             '✍️ All questions are original situation-based items.',
             '🔒 We do not collect personal data. Results are stored locally on your device.',
@@ -1792,14 +1792,14 @@ class _FooterSection extends StatelessWidget {
     return Column(
       children: [
         Text(
-          'HEXACO Personality Test',
+          '6-Type Personality Test',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray500),
         ),
         const SizedBox(height: 6),
         Text(
           isKo
-              ? 'HEXACO 이론 기반 (Ashton & Lee) | 비공식 테스트'
-              : 'Based on HEXACO theory (Ashton & Lee) | Unofficial Test',
+              ? '6가지 심리 유형 이론 기반 | 비공식 테스트'
+              : 'Based on 6-Type Personality Theory | Unofficial Test',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray600),
           textAlign: TextAlign.center,
         ),

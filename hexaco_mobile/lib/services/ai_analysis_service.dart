@@ -132,7 +132,7 @@ class AIAnalysisService {
           ? '말투 지침: 반말이 아닌 존댓말을 사용하세요. "~하시네요", "~이실 거예요", "~해보시는 건 어떨까요?" 같은 부드러운 표현을 쓰세요. 판단하지 말고, 있는 그대로의 모습을 긍정적으로 바라봐주세요. 단점도 따뜻하게 감싸안는 표현으로 전달하세요.'
           : 'Tone: Use warm, encouraging language. Say "you might find..." instead of "you lack...". Frame challenges as growth opportunities. Make the person feel seen and appreciated.',
       '',
-      'HEXACO scores range from 0-100. Analyze the unique combination holistically.',
+      'Personality scores range from 0-100 across 6 dimensions (H, E, X, A, C, O). Analyze the unique combination holistically.',
       'Avoid clinical diagnoses and mental health claims.',
       '',
       'Return JSON only with this schema:',
@@ -145,7 +145,7 @@ class AIAnalysisService {
       '- strengths: 3 genuine strengths per factor, described encouragingly',
       '- risks: 2 challenges per factor, framed gently as areas for growth',
       '- growth: 2 kind, specific suggestions that feel like a friend\'s advice',
-      '- compatibleMBTIs: Based on HEXACO scores, suggest exactly 3 MBTI types that would be most compatible. Estimate the user\'s own MBTI from scores (X→E/I, O→N/S, A→F/T, C→J/P) and pick 3 complementary types. Each reason should be warm and insightful.',
+      '- compatibleMBTIs: Based on 6-factor scores, suggest exactly 3 MBTI types that would be most compatible. Estimate the user\'s own MBTI from scores (X→E/I, O→N/S, A→F/T, C→J/P) and pick 3 complementary types. Each reason should be warm and insightful.',
     ];
 
     if (includeCelebrities) {
@@ -153,7 +153,7 @@ class AIAnalysisService {
           ? 'globally recognized'
           : 'from $country or internationally recognized';
       lines.add(
-        '- celebrityMatches: Suggest exactly 5 well-known public figures $region whose personality would closely match this HEXACO profile. Include actors, musicians, athletes, leaders, or entrepreneurs that most people would recognize. Each similarity score should realistically reflect how close their personality is (70-95 range).',
+        '- celebrityMatches: Suggest exactly 5 well-known public figures $region whose personality would closely match this 6-factor profile. Include actors, musicians, athletes, leaders, or entrepreneurs that most people would recognize. Each similarity score should realistically reflect how close their personality is (70-95 range).',
       );
     }
 
