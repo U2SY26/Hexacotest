@@ -1,7 +1,7 @@
 {
   "header": {
     "tagline": "5 Min to Know Yourself",
-    "subtitle": "HEXACO Personality Test"
+    "subtitle": "6-Type Personality Test"
   },
   "common": {
     "start": "Start Test",
@@ -16,14 +16,14 @@
     "home": "Home"
   },
   "landing": {
-    "title": "HEXACO",
+    "title": "6-Type",
     "subtitle": "Personality Test",
-    "description": "Based on world-renowned psychological research,\nthe HEXACO model analyzes your personality across 6 factors.",
+    "description": "Based on world-renowned psychological research,\nanalyze your personality across 6 scientific dimensions.",
     "cta": "Start Free Test",
     "features": {
       "scientific": {
         "title": "Scientific Analysis",
-        "description": "Uses academically validated HEXACO-60 questionnaire"
+        "description": "Uses academically validated 60-question assessment"
       },
       "persona": {
         "title": "Celebrity Match",
@@ -42,8 +42,8 @@
       "time": "About {{minutes}} min"
     },
     "hexaco": {
-      "title": "What is the HEXACO Model?",
-      "description": "HEXACO is a personality structure model developed by Canadian psychologists. It adds Honesty-Humility to the traditional Big Five model for more precise personality measurement.",
+      "title": "What Are the 6 Personality Types?",
+      "description": "The 6-Type Personality Model is developed by Canadian psychologists. It adds Honesty-Humility to the traditional Big Five model for more precise personality measurement.",
       "factors": {
         "H": {
           "name": "Honesty-Humility",
@@ -78,9 +78,9 @@
       }
     },
     "vsMbti": {
-      "sectionTitle": "HEXACO vs MBTI: What's the Difference?",
-      "sectionDesc": "HEXACO is a more precise, scientific personality model than MBTI.",
-      "hexaco": "HEXACO",
+      "sectionTitle": "6-Type vs MBTI: What's the Difference?",
+      "sectionDesc": "The 6-Type model is a more precise, scientific personality model than MBTI.",
+      "hexaco": "6-Type",
       "mbti": "MBTI",
       "row1label": "Factors",
       "row1hexaco": "6 factors (scored)",
@@ -126,7 +126,7 @@
     }
   },
   "result": {
-    "title": "Your HEXACO Results",
+    "title": "Your 6-Type Personality Results",
     "analyzing": "Analyzing...",
     "matchTitle": "Your Top 5 Matches",
     "matchDescription": "Five people closest to your personality profile",
@@ -137,9 +137,9 @@
       "politician": "Politician",
       "entrepreneur": "Entrepreneur"
     },
-    "hexacoBanner": "Unlike MBTI, HEXACO quantifies 6 personality factors on a 0–100 scale, providing a scientific analysis focused on self-understanding.",
+    "hexacoBanner": "Unlike MBTI, this test quantifies 6 personality factors on a 0–100 scale, providing a scientific analysis focused on self-understanding.",
     "mbtiRef": "MBTI Estimate (Reference Only)",
-    "mbtiRefDesc": "Estimated from HEXACO scores and may differ from actual MBTI. The core of HEXACO is the detailed 6-factor analysis below.",
+    "mbtiRefDesc": "Estimated from 6-type scores and may differ from actual MBTI. The core analysis is the detailed 6-factor breakdown below.",
     "regionMatches": "Famous Matches",
     "regionMatchesDesc": "Famous people with personalities similar to yours, suggested by AI",
     "factorDetail": {

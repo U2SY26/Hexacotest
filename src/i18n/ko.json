@@ -1,7 +1,7 @@
 {
   "header": {
     "tagline": "5분 나를 알아보는 시간",
-    "subtitle": "헥사코 성격 테스트"
+    "subtitle": "6가지 심리 유형 테스트"
   },
   "common": {
     "start": "테스트 시작하기",
@@ -16,14 +16,14 @@
     "home": "홈으로"
   },
   "landing": {
-    "title": "HEXACO",
+    "title": "6가지 심리 유형",
     "subtitle": "성격 테스트",
-    "description": "세계적으로 권위 있는 심리학 연구를 기반으로 한 HEXACO 모델로\n당신의 성격을 6가지 요인으로 분석합니다.",
+    "description": "세계적으로 권위 있는 심리학 연구를 기반으로\n당신의 성격을 6가지 유형으로 분석합니다.",
     "cta": "무료로 테스트 시작하기",
     "features": {
       "scientific": {
         "title": "과학적 분석",
-        "description": "학술적으로 검증된 HEXACO-60 문항을 사용합니다"
+        "description": "학술적으로 검증된 60문항을 사용합니다"
       },
       "persona": {
         "title": "위인 매칭",
@@ -42,8 +42,8 @@
       "time": "약 {{minutes}}분 소요"
     },
     "hexaco": {
-      "title": "HEXACO 모델이란?",
-      "description": "HEXACO는 캐나다의 심리학자들이 개발한 성격 구조 모델로, 기존의 Big Five 모델에 정직-겸손(Honesty-Humility) 요인을 추가하여 인간의 성격을 더욱 정밀하게 측정합니다.",
+      "title": "6가지 심리 유형이란?",
+      "description": "6가지 심리 유형은 캐나다의 심리학자들이 개발한 성격 구조 모델로, 기존의 Big Five 모델에 정직-겸손(Honesty-Humility) 요인을 추가하여 인간의 성격을 더욱 정밀하게 측정합니다.",
       "factors": {
         "H": {
           "name": "정직-겸손",
@@ -78,9 +78,9 @@
       }
     },
     "vsMbti": {
-      "sectionTitle": "HEXACO vs MBTI, 뭐가 다를까?",
-      "sectionDesc": "HEXACO는 MBTI보다 더 정밀한 과학적 성격 분석 모델입니다.",
-      "hexaco": "HEXACO",
+      "sectionTitle": "6가지 심리 유형 vs MBTI, 뭐가 다를까?",
+      "sectionDesc": "6가지 심리 유형은 MBTI보다 더 정밀한 과학적 성격 분석 모델입니다.",
+      "hexaco": "6가지 유형",
       "mbti": "MBTI",
       "row1label": "요인 수",
       "row1hexaco": "6개 요인 (수치화)",
@@ -126,7 +126,7 @@
     }
   },
   "result": {
-    "title": "당신의 HEXACO 결과",
+    "title": "당신의 6가지 심리 유형 결과",
     "analyzing": "분석 중...",
     "matchTitle": "당신과 가장 유사한 인물 5명",
     "matchDescription": "당신의 성격 프로필과 점수가 가장 가까운 5명입니다",
@@ -137,9 +137,9 @@
       "politician": "정치인",
       "entrepreneur": "경제인"
     },
-    "hexacoBanner": "HEXACO는 MBTI와 달리 6가지 성격 요인의 강도를 0~100점으로 수치화하여, 자기 이해에 초점을 맞춘 과학적 분석입니다.",
+    "hexacoBanner": "본 테스트는 MBTI와 달리 6가지 성격 요인의 강도를 0~100점으로 수치화하여, 자기 이해에 초점을 맞춘 과학적 분석입니다.",
     "mbtiRef": "참고용 MBTI 추정",
-    "mbtiRefDesc": "HEXACO 점수 기반 추정이며, 실제 MBTI와 다를 수 있습니다. HEXACO의 핵심은 아래 6개 요인별 분석입니다.",
+    "mbtiRefDesc": "6가지 유형 점수 기반 추정이며, 실제 MBTI와 다를 수 있습니다. 핵심은 아래 6개 요인별 분석입니다.",
     "regionMatches": "당신과 비슷한 유명인",
     "regionMatchesDesc": "AI가 분석한 당신의 성격과 유사한 유명인입니다",
     "factorDetail": {

@@ -433,8 +433,8 @@ export default function ResultPage() {
 
   const shareTwitter = () => {
     const text = isKo
-      ? `나의 HEXACO 성격 테스트 결과! ${personalityTitle?.emoji} ${personalityTitle?.titleKo} - ${match?.persona.name.ko}와(과) ${match?.similarity}% 유사합니다.`
-      : `My HEXACO Personality Test Results! ${personalityTitle?.emoji} ${personalityTitle?.titleEn} - ${match?.similarity}% similar to ${match?.persona.name.en}.`
+      ? `나의 6가지 심리 유형 테스트 결과! ${personalityTitle?.emoji} ${personalityTitle?.titleKo} - ${match?.persona.name.ko}와(과) ${match?.similarity}% 유사합니다.`
+      : `My 6-Type Personality Test Results! ${personalityTitle?.emoji} ${personalityTitle?.titleEn} - ${match?.similarity}% similar to ${match?.persona.name.en}.`
     const url = encodeURIComponent(window.location.href)
     window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${url}`, '_blank')
   }
@@ -488,7 +488,7 @@ export default function ResultPage() {
           const file = new File([blob], 'hexaco-result.png', { type: 'image/png' })
           try {
             await navigator.share({
-              title: 'HEXACO Personality Test',
+              title: '6-Type Personality Test',
               text: getSummaryText(),
               files: [file],
             })
@@ -617,7 +617,7 @@ export default function ResultPage() {
             </motion.div>
           )}
 
-          {/* HEXACO Explanation Banner */}
+          {/* 6-Type Explanation Banner */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -631,7 +631,7 @@ export default function ResultPage() {
               </div>
               <div>
                 <h4 className="text-sm font-bold text-purple-300 mb-1">
-                  {isKo ? 'HEXACO 6요인 분석' : 'HEXACO 6-Factor Analysis'}
+                  {isKo ? '6가지 심리 유형 분석' : '6-Type Personality Analysis'}
                 </h4>
                 <p className="text-xs text-gray-400 leading-relaxed">
                   {t('result.hexacoBanner')}
@@ -1027,7 +1027,7 @@ export default function ResultPage() {
             <ul className="text-xs text-gray-500 space-y-1.5">
               <li className="flex items-start gap-2">
                 <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
-                <span>{isKo ? '본 테스트는 비공식이며 HEXACO-PI-R과 무관합니다.' : 'Unofficial test, not affiliated with HEXACO-PI-R.'}</span>
+                <span>{isKo ? '본 테스트는 비공식이며 오락/자기이해 목적으로 제공됩니다.' : 'Unofficial test, provided for entertainment and self-understanding.'}</span>
               </li>
               <li className="flex items-start gap-2">
                 <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
@@ -1239,10 +1239,10 @@ export default function ResultPage() {
             color: '#fff',
           }}
         >
-          {/* HEXACO Logo */}
+          {/* Logo */}
           <div style={{ textAlign: 'center', marginBottom: 16 }}>
             <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', letterSpacing: 2 }}>
-              ⬡ HEXACO
+              ⬡ 6가지 심리 유형
             </span>
           </div>
 

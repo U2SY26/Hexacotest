@@ -354,13 +354,13 @@ function BenefitsList() {
   const { i18n } = useTranslation()
 
   const benefits = i18n.language === 'ko' ? [
-    '과학적으로 검증된 HEXACO 모델 기반',
+    '과학적으로 검증된 6가지 심리 유형 모델 기반',
     '상황 기반 질문으로 진짜 성격 파악',
     'AI 기반 맞춤형 성격 분석 리포트',
     '나와 비슷한 유명인 매칭',
     '무료로 즉시 결과 확인',
   ] : [
-    'Based on scientifically validated HEXACO model',
+    'Based on scientifically validated 6-type personality model',
     'Situation-based questions reveal true personality',
     'AI-powered personalized analysis report',
     'Match with similar famous personalities',
@@ -747,7 +747,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* HEXACO vs MBTI Comparison */}
+      {/* 6-Type vs MBTI Comparison */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4">
           <motion.div
@@ -799,7 +799,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* HEXACO Explanation Section */}
+      {/* 6-Type Explanation Section */}
       <section className="py-20">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
@@ -956,11 +956,11 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="py-8 border-t border-dark-border">
         <div className="max-w-6xl mx-auto px-4 text-center text-gray-500 text-sm">
-          <p>HEXACO Personality Test</p>
+          <p>6-Type Personality Test</p>
           <p className="mt-1">
             {i18n.language === 'ko'
-              ? 'HEXACO 이론 기반 (Ashton & Lee) | 비공식 테스트'
-              : 'Based on HEXACO theory (Ashton & Lee) | Unofficial Test'
+              ? '6가지 심리 유형 이론 기반 | 비공식 테스트'
+              : 'Based on 6-Type Personality Theory | Unofficial Test'
             }
           </p>
           <div className="mt-3 flex flex-wrap justify-center gap-4">

@@ -40,10 +40,10 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-xl font-semibold text-white mb-3">1. Introduction / 소개</h2>
               <p className="mb-3">
-                HEXACO Personality Test ("we", "us", or "our") respects your privacy and is committed to protecting your personal data. This privacy policy explains how we collect, use, and safeguard your information when you use our website.
+                6-Type Personality Test ("we", "us", or "our") respects your privacy and is committed to protecting your personal data. This privacy policy explains how we collect, use, and safeguard your information when you use our website.
               </p>
               <p>
-                HEXACO 성격 테스트("당사")는 귀하의 개인정보를 존중하며 보호하기 위해 최선을 다합니다. 본 개인정보처리방침은 당사 웹사이트 이용 시 귀하의 정보가 어떻게 수집, 사용, 보호되는지 설명합니다.
+                6가지 심리 유형 테스트("당사")는 귀하의 개인정보를 존중하며 보호하기 위해 최선을 다합니다. 본 개인정보처리방침은 당사 웹사이트 이용 시 귀하의 정보가 어떻게 수집, 사용, 보호되는지 설명합니다.
               </p>
             </section>
 
@@ -51,7 +51,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-xl font-semibold text-white mb-3">2. Data Controller / 개인정보 관리자</h2>
               <p className="mb-3">
-                <strong>Controller:</strong> HEXACO Personality Test<br />
+                <strong>Controller:</strong> 6-Type Personality Test<br />
                 <strong>Website:</strong> hexacotest.vercel.app<br />
                 <strong>Publisher ID:</strong> pub-2988937021017804
               </p>
@@ -234,19 +234,19 @@ export default function PrivacyPage() {
               <h3 className="text-lg font-medium text-white mt-4 mb-2">14.1 Unofficial Test / 비공식 테스트</h3>
               <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4 mb-4">
                 <p className="mb-2">
-                  <strong>This is an unofficial test and is NOT affiliated with the official HEXACO-PI-R assessment.</strong>
+                  <strong>This is an unofficial personality test provided for entertainment and self-understanding purposes.</strong>
                 </p>
                 <p>
-                  <strong>본 테스트는 비공식 테스트이며, 공식 HEXACO-PI-R 검사와 무관합니다.</strong>
+                  <strong>본 테스트는 비공식 성격 테스트이며, 오락 및 자기 이해 목적으로 제공됩니다.</strong>
                 </p>
               </div>
 
               <h3 className="text-lg font-medium text-white mt-4 mb-2">14.2 Original Questions / 자체 제작 문항</h3>
               <p className="mb-3">
-                All test questions are original situation-based items created independently. We do not use or copy questions from the official HEXACO-PI-R inventory developed by Ashton & Lee.
+                All test questions are original situation-based items created independently.
               </p>
               <p className="mb-3">
-                모든 테스트 문항은 독자적으로 제작된 상황 기반 문항입니다. Ashton & Lee가 개발한 공식 HEXACO-PI-R 검사의 문항을 사용하거나 복제하지 않습니다.
+                모든 테스트 문항은 독자적으로 제작된 상황 기반 문항입니다.
               </p>
 
               <h3 className="text-lg font-medium text-white mt-4 mb-2">14.3 Entertainment Purpose Only / 오락 목적</h3>
@@ -287,15 +287,12 @@ export default function PrivacyPage() {
                 </p>
               </div>
 
-              <h3 className="text-lg font-medium text-white mt-4 mb-2">14.6 HEXACO Model Attribution / HEXACO 모델 출처</h3>
+              <h3 className="text-lg font-medium text-white mt-4 mb-2">14.6 Model Attribution / 모델 출처</h3>
               <p className="mb-3">
-                The HEXACO model of personality structure was developed by Professors Michael C. Ashton and Kibeom Lee. We gratefully acknowledge their work while clarifying that this test is an independent implementation not endorsed by the original researchers.
+                This test is based on the 6-factor personality structure model from psychological research. It is an independent implementation for entertainment and self-understanding purposes.
               </p>
               <p className="mb-3">
-                HEXACO 성격 구조 모델은 Michael C. Ashton 교수와 Kibeom Lee 교수가 개발했습니다. 그들의 연구에 감사드리며, 본 테스트는 원 연구자들의 승인을 받지 않은 독립적인 구현임을 명시합니다.
-              </p>
-              <p className="text-sm text-gray-500">
-                Reference: Ashton, M. C., & Lee, K. (2007). Empirical, theoretical, and practical advantages of the HEXACO model of personality structure. Personality and Social Psychology Review, 11(2), 150-166.
+                본 테스트는 심리학 연구의 6가지 성격 구조 모델을 기반으로 합니다. 오락 및 자기 이해 목적의 독립적인 구현입니다.
               </p>
 
               <h3 className="text-lg font-medium text-white mt-4 mb-2">14.7 Limitation of Liability / 책임 제한</h3>
@@ -309,12 +306,12 @@ export default function PrivacyPage() {
 
             {/* Trademark Notice */}
             <section>
-              <h2 className="text-xl font-semibold text-white mb-3">15. Trademark Notice / 상표 고지</h2>
+              <h2 className="text-xl font-semibold text-white mb-3">15. Disclaimer / 고지</h2>
               <p className="mb-3">
-                HEXACO and HEXACO-PI-R are trademarks associated with the work of Ashton & Lee. Our use of the term "HEXACO" is solely to describe the personality model framework and does not imply any official endorsement or affiliation.
+                This test uses a 6-factor personality model for entertainment and self-understanding. It does not imply any official endorsement or affiliation with any academic institution.
               </p>
               <p>
-                HEXACO 및 HEXACO-PI-R은 Ashton & Lee의 연구와 관련된 상표입니다. "HEXACO"라는 용어의 사용은 성격 모델 프레임워크를 설명하기 위한 것일 뿐 공식적인 승인이나 제휴를 의미하지 않습니다.
+                본 테스트는 6가지 성격 요인 모델을 오락 및 자기 이해 목적으로 사용합니다. 어떠한 학술 기관의 공식적인 승인이나 제휴를 의미하지 않습니다.
               </p>
             </section>
 

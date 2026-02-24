@@ -116,7 +116,7 @@ export const IntroScene: React.FC<Props> = ({ orientation }) => {
               letterSpacing: '-0.02em',
             }}
           >
-            HEXACO
+            6가지 심리 유형
           </h1>
         </div>
 

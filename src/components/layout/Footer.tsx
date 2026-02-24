@@ -28,7 +28,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           {/* Copyright */}
           <div className="text-gray-500 text-sm">
-            © {currentYear} HEXACO Personality Test. All rights reserved.
+            © {currentYear} 6-Type Personality Test. All rights reserved.
           </div>
 
           {/* Links */}

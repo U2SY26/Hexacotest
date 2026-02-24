@@ -15,8 +15,8 @@ export default function DisclaimerSection({
 
   const disclaimers = {
     unofficial: {
-      ko: '본 테스트는 비공식 테스트이며, 공식 HEXACO-PI-R 검사와 무관합니다.',
-      en: 'This is an unofficial test and is not affiliated with the official HEXACO-PI-R assessment.'
+      ko: '본 테스트는 비공식 테스트이며, 오락 및 자기 이해 목적으로 제공됩니다.',
+      en: 'This is an unofficial test, provided for entertainment and self-understanding purposes.'
     },
     academic: {
       ko: '본 테스트는 오락 및 자기 이해 목적으로만 제공되며, 학술 연구나 임상 진단용으로 사용할 수 없습니다.',
@@ -31,12 +31,12 @@ export default function DisclaimerSection({
       en: 'Test results are for reference only and cannot replace professional psychological assessment.'
     },
     hexaco: {
-      ko: 'HEXACO 모델은 Ashton & Lee 교수가 개발한 과학적 성격 이론입니다.',
-      en: 'The HEXACO model is a scientific personality theory developed by Professors Ashton & Lee.'
+      ko: '본 테스트는 심리학 연구를 기반으로 한 6가지 심리 유형 분석 테스트입니다.',
+      en: 'This test is a 6-type personality analysis based on psychological research.'
     },
     copyright: {
-      ko: '본 테스트의 질문은 자체 제작된 상황 기반 문항이며, 공식 HEXACO-PI-R 문항을 사용하지 않습니다.',
-      en: 'Test questions are original situation-based items and do not use official HEXACO-PI-R questions.'
+      ko: '본 테스트의 질문은 자체 제작된 상황 기반 문항입니다.',
+      en: 'Test questions are original situation-based items.'
     }
   }
 
@@ -139,15 +139,9 @@ export default function DisclaimerSection({
         </div>
       </div>
 
-      {/* HEXACO Attribution */}
+      {/* Attribution */}
       <div className="pt-4 border-t border-gray-700 text-xs text-gray-500">
         <p>{disclaimers.hexaco[isKo ? 'ko' : 'en']}</p>
-        <p className="mt-1">
-          {isKo
-            ? '참고: Ashton, M. C., & Lee, K. (2007). Empirical, theoretical, and practical advantages of the HEXACO model of personality structure. Personality and Social Psychology Review, 11(2), 150-166.'
-            : 'Reference: Ashton, M. C., & Lee, K. (2007). Empirical, theoretical, and practical advantages of the HEXACO model of personality structure. Personality and Social Psychology Review, 11(2), 150-166.'
-          }
-        </p>
       </div>
     </div>
   )

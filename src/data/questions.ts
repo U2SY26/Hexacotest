@@ -42,30 +42,40 @@ export const getQuestionsForVersion = (version: TestVersion): Question[] => {
   return allQuestions.filter(q => q.tier <= maxTier)
 }
 
+// Fisher-Yates shuffle helper
+const shuffle = <T>(arr: T[]): T[] => {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
 // Randomly select N questions per factor from the 600-question pool
 // version 60 = 10/factor, 120 = 20/factor, 180 = 30/factor
+// Ensures no duplicate question text appears in a single test session
 export const selectRandomQuestions = (version: TestVersion): Question[] => {
   const perFactor = version === 60 ? 10 : version === 120 ? 20 : 30
   const selected: Question[] = []
+  const usedTexts = new Set<string>()
 
   for (const factor of factors) {
     const factorQuestions = allQuestions.filter(q => q.factor === factor)
-    // Shuffle using Fisher-Yates
-    const shuffled = [...factorQuestions]
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    const shuffled = shuffle(factorQuestions)
+    let count = 0
+    for (const q of shuffled) {
+      if (count >= perFactor) break
+      // Skip questions with duplicate text (ko or en)
+      if (usedTexts.has(q.ko) || usedTexts.has(q.en)) continue
+      usedTexts.add(q.ko)
+      usedTexts.add(q.en)
+      selected.push(q)
+      count++
     }
-    selected.push(...shuffled.slice(0, perFactor))
   }
 
-  // Shuffle all selected questions together
-  for (let i = selected.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [selected[i], selected[j]] = [selected[j], selected[i]]
-  }
-
-  return selected
+  return shuffle(selected)
 }
 
 export const factorColors: Record<string, string> = {
