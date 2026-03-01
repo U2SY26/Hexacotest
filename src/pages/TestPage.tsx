@@ -122,7 +122,7 @@ function CompletionPopup({
   )
 }
 
-// Ad break overlay shown every 15 questions
+// Ad break overlay shown every 15 questions (native banner + 3s loading bar)
 function AdBreakOverlay({
   isKo,
   onContinue,
@@ -131,12 +131,24 @@ function AdBreakOverlay({
   onContinue: () => void
 }) {
   const [canContinue, setCanContinue] = useState(false)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setCanContinue(true)
-    }, 3000)
-    return () => clearTimeout(timer)
+    const startTime = Date.now()
+    const duration = 3000
+    let raf: number
+    const tick = () => {
+      const elapsed = Date.now() - startTime
+      const p = Math.min(elapsed / duration, 1)
+      setProgress(p)
+      if (p < 1) {
+        raf = requestAnimationFrame(tick)
+      } else {
+        setCanContinue(true)
+      }
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
   }, [])
 
   return (
@@ -157,65 +169,58 @@ function AdBreakOverlay({
         }}
       >
         {/* Icon */}
-        <motion.div
-          className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
-          style={{
-            background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
-          }}
-          animate={{
-            boxShadow: [
-              '0 0 20px rgba(139, 92, 246, 0.3)',
-              '0 0 40px rgba(139, 92, 246, 0.5)',
-              '0 0 20px rgba(139, 92, 246, 0.3)',
-            ],
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
+        <div className="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
+          style={{ background: 'linear-gradient(135deg, #8B5CF6, #6366F1)' }}
         >
-          <Coffee className="w-8 h-8 text-white" />
-        </motion.div>
+          <Coffee className="w-6 h-6 text-white" />
+        </div>
 
         {/* Title */}
-        <h2 className="text-xl font-bold text-white mb-2">
+        <h2 className="text-lg font-bold text-white mb-1">
           {isKo ? '잠시 쉬어가세요' : 'Take a Short Break'}
         </h2>
-        <p className="text-gray-400 text-sm mb-5">
+        <p className="text-gray-400 text-xs mb-4">
           {isKo
             ? '잠시 눈을 쉬고, 다음 질문을 준비해보세요.'
             : 'Rest your eyes for a moment before continuing.'}
         </p>
 
-        {/* Ad Banner */}
-        <div className="mb-5 rounded-xl overflow-hidden bg-dark-bg/50 border border-dark-border">
+        {/* Native Ad Banner */}
+        <div className="mb-4 rounded-xl overflow-hidden bg-dark-bg/50 border border-dark-border">
           <AdBanner />
         </div>
 
-        {/* Continue button */}
-        <AnimatePresence>
-          {canContinue ? (
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              onClick={onContinue}
-              className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-white font-bold border border-purple-500/50"
-              style={{
-                background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
-              }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {isKo ? '계속하기' : 'Continue'}
-            </motion.button>
-          ) : (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-gray-500 text-sm"
-            >
-              {isKo ? '잠시만 기다려주세요...' : 'Please wait a moment...'}
-            </motion.p>
-          )}
-        </AnimatePresence>
+        {/* 3-second progress bar + continue button */}
+        {canContinue ? (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            onClick={onContinue}
+            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-white font-bold border border-purple-500/50"
+            style={{
+              background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {isKo ? '계속하기' : 'Continue'}
+          </motion.button>
+        ) : (
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-full h-1.5 bg-dark-card rounded-full overflow-hidden">
+              <div
+                className="h-full rounded-full transition-none"
+                style={{
+                  width: `${progress * 100}%`,
+                  background: 'linear-gradient(90deg, #8B5CF6, #EC4899)',
+                }}
+              />
+            </div>
+            <p className="text-gray-500 text-xs">
+              {isKo ? '잠시만 기다려주세요...' : 'Please wait...'}
+            </p>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   )

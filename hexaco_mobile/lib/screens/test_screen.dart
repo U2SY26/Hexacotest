@@ -10,6 +10,7 @@ import '../widgets/app_scaffold.dart';
 import '../widgets/buttons.dart';
 import '../widgets/dark_card.dart';
 import '../widgets/ad_banner.dart';
+import '../widgets/native_ad.dart';
 import '../config/admob_ids.dart';
 
 class TestScreen extends StatefulWidget {
@@ -251,30 +252,30 @@ class _AdBreakDialog extends StatefulWidget {
   State<_AdBreakDialog> createState() => _AdBreakDialogState();
 }
 
-class _AdBreakDialogState extends State<_AdBreakDialog> {
+class _AdBreakDialogState extends State<_AdBreakDialog>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _progressController;
   bool _canContinue = false;
 
   @override
   void initState() {
     super.initState();
-    // 광고를 보여주고, 3초 후 계속하기 버튼 활성화
-    _showAdThenEnable();
+    _progressController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 3),
+    );
+    _progressController.forward();
+    _progressController.addStatusListener((status) {
+      if (status == AnimationStatus.completed && mounted) {
+        setState(() => _canContinue = true);
+      }
+    });
   }
 
-  Future<void> _showAdThenEnable() async {
-    if (RewardedAdService.isAdReady) {
-      await RewardedAdService.showAd(
-        onAdDismissed: () {
-          if (!mounted) return;
-          setState(() => _canContinue = true);
-        },
-      );
-    } else {
-      // 광고 미로드시 3초 대기 후 활성화
-      await Future.delayed(const Duration(seconds: 3));
-      if (!mounted) return;
-      setState(() => _canContinue = true);
-    }
+  @override
+  void dispose() {
+    _progressController.dispose();
+    super.dispose();
   }
 
   @override
@@ -297,13 +298,13 @@ class _AdBreakDialogState extends State<_AdBreakDialog> {
           children: [
             // 커피 아이콘
             Container(
-              width: 56,
-              height: 56,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   colors: [AppColors.purple500, Color(0xFF6366F1)],
                 ),
-                borderRadius: BorderRadius.circular(28),
+                borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.purple500.withAlpha(77),
@@ -312,29 +313,33 @@ class _AdBreakDialogState extends State<_AdBreakDialog> {
                   ),
                 ],
               ),
-              child: const Icon(Icons.coffee_rounded, color: Colors.white, size: 28),
+              child: const Icon(Icons.coffee_rounded, color: Colors.white, size: 24),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             Text(
               widget.isKo ? '잠시 쉬어가세요' : 'Take a Short Break',
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.w800,
                 color: Colors.white,
               ),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 6),
             Text(
               widget.isKo
                   ? '잠시 눈을 쉬고, 다음 질문을 준비해보세요.'
                   : 'Rest your eyes for a moment before continuing.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 13,
+                fontSize: 12,
                 color: Colors.white.withAlpha(102),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
+            // 네이티브 광고
+            const NativeAdWidget(),
+            const SizedBox(height: 16),
+            // 3초 로딩바 + 계속하기 버튼
             if (_canContinue)
               SizedBox(
                 width: double.infinity,
@@ -357,19 +362,28 @@ class _AdBreakDialogState extends State<_AdBreakDialog> {
             else
               Column(
                 children: [
-                  const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.purple400,
-                    ),
+                  // 3초 프로그레스 바
+                  AnimatedBuilder(
+                    animation: _progressController,
+                    builder: (context, _) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(4),
+                        child: LinearProgressIndicator(
+                          value: _progressController.value,
+                          minHeight: 6,
+                          backgroundColor: AppColors.darkBorder,
+                          valueColor: const AlwaysStoppedAnimation<Color>(
+                            AppColors.purple500,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    widget.isKo ? '잠시만 기다려주세요...' : 'Please wait a moment...',
+                    widget.isKo ? '잠시만 기다려주세요...' : 'Please wait...',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: Colors.white.withAlpha(77),
                     ),
                   ),
