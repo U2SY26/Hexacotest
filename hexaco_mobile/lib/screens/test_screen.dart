@@ -61,20 +61,26 @@ class _TestScreenState extends State<TestScreen> {
 
     if (currentAnswer == null) return;
 
-    if (_shouldShowAd() && RewardedAdService.isAdReady) {
-      RewardedAdService.showAd(
-        onAdDismissed: () {
-          // Ad dismissed (or failed to show) -> continue to next question.
-          // RewardedAdService.loadAd() is already called inside showAd's
-          // onAdDismissed / onAdFailedToShow callbacks, so the next ad
-          // will be preloaded automatically.
-          controller.next();
-        },
-      );
+    if (_shouldShowAd()) {
+      _showAdBreakDialog(context, isKo);
     } else {
-      // No ad to show (not at interval, or ad not ready yet) -> just advance.
       controller.next();
     }
+  }
+
+  void _showAdBreakDialog(BuildContext context, bool isKo) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black87,
+      builder: (ctx) => _AdBreakDialog(
+        isKo: isKo,
+        onContinue: () {
+          Navigator.of(ctx).pop();
+          controller.next();
+        },
+      ),
+    );
   }
 
   @override
@@ -230,6 +236,148 @@ class _TestScreenState extends State<TestScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+/// 15문항마다 표시되는 쉬어가기 다이얼로그 (보상형 광고 포함)
+class _AdBreakDialog extends StatefulWidget {
+  final bool isKo;
+  final VoidCallback onContinue;
+
+  const _AdBreakDialog({required this.isKo, required this.onContinue});
+
+  @override
+  State<_AdBreakDialog> createState() => _AdBreakDialogState();
+}
+
+class _AdBreakDialogState extends State<_AdBreakDialog> {
+  bool _canContinue = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // 광고를 보여주고, 3초 후 계속하기 버튼 활성화
+    _showAdThenEnable();
+  }
+
+  Future<void> _showAdThenEnable() async {
+    if (RewardedAdService.isAdReady) {
+      await RewardedAdService.showAd(
+        onAdDismissed: () {
+          if (!mounted) return;
+          setState(() => _canContinue = true);
+        },
+      );
+    } else {
+      // 광고 미로드시 3초 대기 후 활성화
+      await Future.delayed(const Duration(seconds: 3));
+      if (!mounted) return;
+      setState(() => _canContinue = true);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF1A1035), Color(0xFF2D1B4E)],
+          ),
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppColors.purple500.withAlpha(77)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // 커피 아이콘
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.purple500, Color(0xFF6366F1)],
+                ),
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.purple500.withAlpha(77),
+                    blurRadius: 20,
+                    spreadRadius: 2,
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.coffee_rounded, color: Colors.white, size: 28),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              widget.isKo ? '잠시 쉬어가세요' : 'Take a Short Break',
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              widget.isKo
+                  ? '잠시 눈을 쉬고, 다음 질문을 준비해보세요.'
+                  : 'Rest your eyes for a moment before continuing.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.white.withAlpha(102),
+              ),
+            ),
+            const SizedBox(height: 20),
+            if (_canContinue)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: widget.onContinue,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    backgroundColor: AppColors.purple500,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    widget.isKo ? '계속하기' : 'Continue',
+                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+                  ),
+                ),
+              )
+            else
+              Column(
+                children: [
+                  const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.purple400,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    widget.isKo ? '잠시만 기다려주세요...' : 'Please wait a moment...',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white.withAlpha(77),
+                    ),
+                  ),
+                ],
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

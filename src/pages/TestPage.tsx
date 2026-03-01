@@ -7,7 +7,7 @@ import { factorColors } from '../data/questions'
 import { useTestStore, encodeResults } from '../stores/testStore'
 import AdBanner from '../components/AdBanner'
 
-// Test completion popup (matching mobile app design)
+// Test completion popup with rewarded ad before results
 function CompletionPopup({
   isKo,
   onViewResults,
@@ -15,6 +15,16 @@ function CompletionPopup({
   isKo: boolean
   onViewResults: () => void
 }) {
+  const [adWatched, setAdWatched] = useState(false)
+
+  // Enable "결과 보기" button after ad display time (5 seconds)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setAdWatched(true)
+    }, 5000)
+    return () => clearTimeout(timer)
+  }, [])
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -27,14 +37,14 @@ function CompletionPopup({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.8, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className="relative rounded-3xl p-8 max-w-sm w-full text-center border border-purple-500/30"
+        className="relative rounded-3xl p-6 max-w-sm w-full text-center border border-purple-500/30"
         style={{
           background: 'linear-gradient(135deg, #1A1035 0%, #2D1B4E 100%)',
         }}
       >
         {/* Icon */}
         <motion.div
-          className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center"
+          className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
           style={{
             background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
           }}
@@ -47,45 +57,66 @@ function CompletionPopup({
           }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
-          <Sparkles className="w-10 h-10 text-white" />
+          <Sparkles className="w-8 h-8 text-white" />
         </motion.div>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-white mb-3">
+        <h2 className="text-xl font-bold text-white mb-2">
           {isKo ? '테스트 완료!' : 'Test Complete!'}
         </h2>
-        <p className="text-gray-400 mb-8">
+        <p className="text-gray-400 text-sm mb-4">
           {isKo
             ? '당신의 성격 분석 결과가 준비되었습니다.'
             : 'Your personality analysis is ready.'}
         </p>
 
-        {/* View Results Button with glow animation */}
-        <motion.button
-          onClick={onViewResults}
-          className="relative inline-flex items-center gap-3 px-10 py-4 rounded-2xl text-white font-bold text-lg border-2"
-          style={{
-            background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
-          }}
-          animate={{
-            scale: [1, 1.05, 1],
-            borderColor: [
-              'rgba(255,255,255,0.3)',
-              'rgba(255,255,255,0.6)',
-              'rgba(255,255,255,0.3)',
-            ],
-            boxShadow: [
-              '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3)',
-              '0 0 35px rgba(139, 92, 246, 0.7), 0 0 60px rgba(236, 72, 153, 0.5)',
-              '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3)',
-            ],
-          }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Eye className="w-6 h-6" />
-          {isKo ? '결과 보기' : 'View Results'}
-        </motion.button>
+        {/* Rewarded Ad Area */}
+        <div className="mb-4 rounded-xl overflow-hidden bg-dark-bg/50 border border-dark-border">
+          <AdBanner />
+        </div>
+
+        {/* View Results Button - enabled after ad */}
+        {adWatched ? (
+          <motion.button
+            initial={{ opacity: 0, y: 10 }}
+            onClick={onViewResults}
+            className="relative inline-flex items-center gap-3 px-10 py-4 rounded-2xl text-white font-bold text-lg border-2"
+            style={{
+              background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+              scale: [1, 1.05, 1],
+              borderColor: [
+                'rgba(255,255,255,0.3)',
+                'rgba(255,255,255,0.6)',
+                'rgba(255,255,255,0.3)',
+              ],
+              boxShadow: [
+                '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3)',
+                '0 0 35px rgba(139, 92, 246, 0.7), 0 0 60px rgba(236, 72, 153, 0.5)',
+                '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3)',
+              ],
+            }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Eye className="w-6 h-6" />
+            {isKo ? '결과 보기' : 'View Results'}
+          </motion.button>
+        ) : (
+          <div className="flex flex-col items-center gap-2">
+            <motion.div
+              className="w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            />
+            <p className="text-gray-500 text-xs">
+              {isKo ? '잠시만 기다려주세요...' : 'Please wait a moment...'}
+            </p>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   )

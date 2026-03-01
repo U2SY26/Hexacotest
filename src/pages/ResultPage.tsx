@@ -1095,7 +1095,7 @@ export default function ResultPage() {
           </motion.div>
 
           {/* ─── 3D Personality Card ─── */}
-          {!isSharedView && (
+          {scores && personalityTitle && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
