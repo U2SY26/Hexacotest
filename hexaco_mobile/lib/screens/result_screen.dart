@@ -29,6 +29,7 @@ import '../widgets/ad_banner.dart';
 import '../widgets/native_ad.dart';
 import '../config/admob_ids.dart';
 import '../services/rewarded_ad_service.dart';
+import '../services/card_draw_service.dart';
 import '../services/ai_analysis_service.dart';
 import '../widgets/pin_dialog.dart';
 import '../widgets/save_prompt_dialog.dart';
@@ -3054,11 +3055,19 @@ class _CardDrawSection extends StatefulWidget {
 
 class _CardDrawSectionState extends State<_CardDrawSection> {
   bool _hasDrawn = false;
+  CardDrawStatus? _status;
+  bool _isSharing = false;
 
   @override
   void initState() {
     super.initState();
     RewardedAdService.loadAd();
+    _loadStatus();
+  }
+
+  Future<void> _loadStatus() async {
+    final status = await CardDrawService.getStatus();
+    if (mounted) setState(() => _status = status);
   }
 
   void _openCardReveal() {
@@ -3091,25 +3100,68 @@ class _CardDrawSectionState extends State<_CardDrawSection> {
 
   void _onDrawTap() {
     if (!_hasDrawn) {
-      // 첫 번째 뽑기는 무료
+      // 첫 번째 뽑기는 무료 (카운트 안 함)
       _openCardReveal();
-    } else {
-      // 재뽑기: 보상형 광고 시청 필요
-      RewardedAdService.showAd(
-        onAdDismissed: () {
-          if (mounted) {
-            _openCardReveal();
-            RewardedAdService.loadAd(); // 다음 광고 미리 로드
-          }
-        },
-        onUserEarnedReward: () {},
-      );
+      return;
+    }
+
+    // 재뽑기: 광고 + 일일 횟수 차감
+    final status = _status;
+    if (status == null || !status.canDraw) return;
+
+    RewardedAdService.showAd(
+      onAdDismissed: () async {
+        if (!mounted) return;
+        final ok = await CardDrawService.useAdDraw();
+        if (ok && mounted) {
+          _openCardReveal();
+          RewardedAdService.loadAd();
+          _loadStatus();
+        }
+      },
+      onUserEarnedReward: () {},
+    );
+  }
+
+  Future<void> _onShareForDraw() async {
+    if (_isSharing) return;
+    setState(() => _isSharing = true);
+
+    final isKo = widget.isKo;
+    final title = MemeContentService.getPersonalityTitle(widget.scores);
+    final text = isKo
+        ? '나의 성격 유형은 "${title.emoji} ${title.titleKo}"!\n6가지 심리 유형 테스트로 알아보세요 🎴\nhttps://hexaco.pages.dev'
+        : 'My personality type is "${title.emoji} ${title.titleEn}"!\nDiscover yours with the 6 Psychology Types Test 🎴\nhttps://hexaco.pages.dev';
+
+    try {
+      final result = await Share.share(text);
+      if (result.status == ShareResultStatus.success ||
+          result.status == ShareResultStatus.dismissed) {
+        // 공유 시도만 하면 보너스 지급
+        final added = await CardDrawService.addShareBonus();
+        if (added && mounted) {
+          await _loadStatus();
+          if (!mounted) return;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(isKo ? '🎴 추가 뽑기 1회 획득!' : '🎴 +1 bonus draw earned!'),
+              backgroundColor: AppColors.purple600,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } finally {
+      if (mounted) setState(() => _isSharing = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final isKo = widget.isKo;
+    final status = _status;
+    final canDraw = !_hasDrawn || (status?.canDraw ?? false);
+    final canShare = status?.canShare ?? false;
 
     return Container(
       width: double.infinity,
@@ -3142,23 +3194,52 @@ class _CardDrawSectionState extends State<_CardDrawSection> {
           ),
           const SizedBox(height: 6),
           Text(
-            isKo
-                ? 'R 55% · SR 35% · SSR 8.5% · LEGEND 1.5%'
-                : 'R 55% · SR 35% · SSR 8.5% · LEGEND 1.5%',
+            'R 55% · SR 35% · SSR 8.5% · LEGEND 1.5%',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.gray500,
                   fontSize: 11,
                 ),
           ),
+
+          // 남은 횟수 표시
+          if (_hasDrawn && status != null) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white.withValues(alpha: 0.06),
+              ),
+              child: Text(
+                isKo
+                    ? '오늘 남은 뽑기: ${status.remainingDraws}회'
+                    : 'Draws left today: ${status.remainingDraws}',
+                style: TextStyle(
+                  color: status.canDraw ? AppColors.purple400 : AppColors.gray500,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+
           const SizedBox(height: 16),
+
+          // 카드 뽑기 버튼
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _onDrawTap,
+              onPressed: canDraw ? _onDrawTap : null,
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 14),
-                backgroundColor: _hasDrawn ? AppColors.amber500 : AppColors.purple600,
+                backgroundColor: !_hasDrawn
+                    ? AppColors.purple600
+                    : canDraw
+                        ? AppColors.amber500
+                        : AppColors.gray600,
                 foregroundColor: Colors.white,
+                disabledBackgroundColor: AppColors.gray600.withValues(alpha: 0.5),
+                disabledForegroundColor: AppColors.gray500,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -3167,12 +3248,21 @@ class _CardDrawSectionState extends State<_CardDrawSection> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(_hasDrawn ? Icons.play_circle_outline : Icons.auto_awesome, size: 20),
+                  Icon(
+                    !_hasDrawn
+                        ? Icons.auto_awesome
+                        : canDraw
+                            ? Icons.play_circle_outline
+                            : Icons.block,
+                    size: 20,
+                  ),
                   const SizedBox(width: 8),
                   Text(
-                    _hasDrawn
-                        ? (isKo ? '광고 보고 다시 뽑기' : 'Watch Ad & Redraw')
-                        : (isKo ? '카드 뽑기' : 'Draw Card'),
+                    !_hasDrawn
+                        ? (isKo ? '카드 뽑기' : 'Draw Card')
+                        : canDraw
+                            ? (isKo ? '광고 보고 다시 뽑기' : 'Watch Ad & Redraw')
+                            : (isKo ? '오늘 뽑기 완료' : 'No draws left today'),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
@@ -3182,10 +3272,48 @@ class _CardDrawSectionState extends State<_CardDrawSection> {
               ),
             ),
           ),
+
+          // 공유로 추가 뽑기 버튼
+          if (_hasDrawn && canShare) ...[
+            const SizedBox(height: 10),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _isSharing ? null : _onShareForDraw,
+                icon: _isSharing
+                    ? const SizedBox(
+                        width: 16, height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.purple400),
+                      )
+                    : const Icon(Icons.share, size: 18),
+                label: Text(
+                  isKo
+                      ? '공유하고 +1 뽑기 (${status?.remainingShares ?? 0}회 남음)'
+                      : 'Share & get +1 draw (${status?.remainingShares ?? 0} left)',
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  foregroundColor: AppColors.purple400,
+                  side: BorderSide(color: AppColors.purple500.withValues(alpha: 0.4)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ],
+
           if (_hasDrawn) ...[
             const SizedBox(height: 8),
             Text(
-              isKo ? '짧은 광고 시청 후 다시 뽑을 수 있습니다' : 'Watch a short ad to draw again',
+              isKo
+                  ? (canDraw
+                      ? '짧은 광고 시청 후 다시 뽑을 수 있습니다'
+                      : '내일 다시 3회 뽑기가 리셋됩니다')
+                  : (canDraw
+                      ? 'Watch a short ad to draw again'
+                      : 'Draws reset daily — come back tomorrow!'),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.gray500,
                     fontSize: 10,

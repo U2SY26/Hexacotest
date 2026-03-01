@@ -43,6 +43,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _checkVersion() async {
+    // 인트로 영상 → 홈 전환 후 충분히 로드된 다음 팝업 표시
+    await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
     final isKo = widget.controller.language == 'ko';
     await VersionCheckService.checkForUpdate(context, isKo: isKo);

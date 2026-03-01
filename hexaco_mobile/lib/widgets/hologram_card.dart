@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 
 import '../models/personality_card.dart';
@@ -32,7 +33,7 @@ const _factorLabelsEn = <String, String>{
   'O': 'Openness',
 };
 
-/// SSR-스타일 3D 홀로그램 카드
+/// SSR-스타일 3D 홀로그램 카드 — 진짜 소장하고 싶은 프리미엄 디자인
 class HologramCard extends StatefulWidget {
   final PersonalityCard card;
   final bool isKo;
@@ -59,26 +60,16 @@ class _HologramCardState extends State<HologramCard> with TickerProviderStateMix
   late AnimationController _shimmerController;
   late AnimationController _pulseController;
   late AnimationController _particleController;
+  late AnimationController _holoController;
 
   @override
   void initState() {
     super.initState();
-    _flipController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 600),
-    );
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2500),
-    )..repeat();
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 2000),
-    )..repeat(reverse: true);
-    _particleController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 4000),
-    )..repeat();
+    _flipController = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
+    _shimmerController = AnimationController(vsync: this, duration: const Duration(milliseconds: 3000))..repeat();
+    _pulseController = AnimationController(vsync: this, duration: const Duration(milliseconds: 2000))..repeat(reverse: true);
+    _particleController = AnimationController(vsync: this, duration: const Duration(milliseconds: 5000))..repeat();
+    _holoController = AnimationController(vsync: this, duration: const Duration(milliseconds: 8000))..repeat();
   }
 
   @override
@@ -87,45 +78,40 @@ class _HologramCardState extends State<HologramCard> with TickerProviderStateMix
     _shimmerController.dispose();
     _pulseController.dispose();
     _particleController.dispose();
+    _holoController.dispose();
     super.dispose();
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
     setState(() {
-      _rotateY += details.delta.dx * 0.4;
-      _rotateX -= details.delta.dy * 0.4;
-      _rotateX = _rotateX.clamp(-30.0, 30.0);
-      _rotateY = _rotateY.clamp(-30.0, 30.0);
+      _rotateY += details.delta.dx * 0.5;
+      _rotateX -= details.delta.dy * 0.5;
+      _rotateX = _rotateX.clamp(-25.0, 25.0);
+      _rotateY = _rotateY.clamp(-25.0, 25.0);
     });
   }
 
   void _onPanEnd(DragEndDetails details) {
-    setState(() {
-      _rotateX = 0;
-      _rotateY = 0;
-    });
+    setState(() { _rotateX = 0; _rotateY = 0; });
   }
 
   void _onTap() {
     setState(() => _isFlipped = !_isFlipped);
-    if (_isFlipped) {
-      _flipController.forward();
-    } else {
-      _flipController.reverse();
-    }
+    if (_isFlipped) { _flipController.forward(); } else { _flipController.reverse(); }
   }
 
   @override
   Widget build(BuildContext context) {
     final config = rarityConfigs[widget.card.rarity]!;
     final isHighRarity = widget.card.rarity == CardRarity.ssr || widget.card.rarity == CardRarity.legend;
+    final isLegend = widget.card.rarity == CardRarity.legend;
 
     return GestureDetector(
       onPanUpdate: _onPanUpdate,
       onPanEnd: _onPanEnd,
       onTap: _onTap,
       child: AnimatedBuilder(
-        animation: Listenable.merge([_flipController, _shimmerController, _pulseController, _particleController]),
+        animation: Listenable.merge([_flipController, _shimmerController, _pulseController, _particleController, _holoController]),
         builder: (context, child) {
           final flipAngle = _flipController.value * pi;
           final isFront = _flipController.value < 0.5;
@@ -134,38 +120,49 @@ class _HologramCardState extends State<HologramCard> with TickerProviderStateMix
           return Transform(
             alignment: Alignment.center,
             transform: Matrix4.identity()
-              ..setEntry(3, 2, 0.0008)
+              ..setEntry(3, 2, 0.001)
               ..rotateX(_rotateX * pi / 180)
               ..rotateY((_rotateY * pi / 180) + flipAngle),
             child: Container(
               width: widget.width,
               height: widget.height,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
                 boxShadow: [
+                  // Primary glow
                   BoxShadow(
                     color: Color(config.glowColor).withValues(alpha: pulseGlow * config.glowIntensity),
-                    blurRadius: isHighRarity ? 40 : 20,
-                    spreadRadius: isHighRarity ? 8 : 3,
+                    blurRadius: isLegend ? 50 : isHighRarity ? 35 : 20,
+                    spreadRadius: isLegend ? 12 : isHighRarity ? 6 : 3,
                   ),
+                  // Secondary color glow for SSR+
                   if (isHighRarity)
                     BoxShadow(
-                      color: Color(widget.card.theme.secondaryAccent).withValues(alpha: pulseGlow * 0.2),
-                      blurRadius: 60,
+                      color: Color(widget.card.theme.secondaryAccent).withValues(alpha: pulseGlow * 0.25),
+                      blurRadius: 70,
+                      spreadRadius: 4,
+                    ),
+                  // LEGEND: additional warm glow
+                  if (isLegend)
+                    BoxShadow(
+                      color: const Color(0xFFEF4444).withValues(alpha: pulseGlow * 0.12),
+                      blurRadius: 80,
                       spreadRadius: 2,
                     ),
                 ],
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(18),
                 child: Stack(
                   children: [
+                    // Card face
                     if (isFront)
-                      _SSRCardFront(
+                      _PremiumCardFront(
                         card: widget.card,
                         isKo: widget.isKo,
                         shimmerValue: _shimmerController.value,
                         pulseValue: _pulseController.value,
+                        holoValue: _holoController.value,
                       )
                     else
                       Transform(
@@ -174,39 +171,53 @@ class _HologramCardState extends State<HologramCard> with TickerProviderStateMix
                         child: _CardBack(card: widget.card, isKo: widget.isKo),
                       ),
 
-                    // Hologram film overlay
-                    _HologramFilmOverlay(
+                    // Hologram sticker film (multi-layer)
+                    _HologramStickerOverlay(
                       shimmerValue: _shimmerController.value,
+                      holoValue: _holoController.value,
                       rotateX: _rotateX,
                       rotateY: _rotateY,
                       rarity: widget.card.rarity,
                     ),
 
-                    // Sparkle particles (SR+)
+                    // Diamond grid texture (like real hologram stickers)
                     if (widget.card.rarity != CardRarity.r)
-                      _SparkleParticles(
+                      _DiamondGridOverlay(
+                        shimmerValue: _shimmerController.value,
+                        rotateY: _rotateY,
+                        rarity: widget.card.rarity,
+                      ),
+
+                    // Sparkle particles
+                    if (widget.card.rarity != CardRarity.r)
+                      _PremiumSparkles(
                         controller: _particleController,
                         rarity: widget.card.rarity,
                         accentColor: Color(widget.card.theme.accentColor),
                       ),
 
-                    // Rainbow edge (SSR/LEGEND)
+                    // Rainbow edge border (SSR/LEGEND)
                     if (isHighRarity)
-                      _RainbowEdge(
+                      _AnimatedRainbowBorder(
                         shimmerValue: _shimmerController.value,
+                        pulseValue: _pulseController.value,
                         rarity: widget.card.rarity,
                       ),
 
-                    // Border
+                    // Gold foil trim (LEGEND)
+                    if (isLegend)
+                      _GoldFoilTrim(shimmerValue: _shimmerController.value),
+
+                    // Inner border
                     Positioned.fill(
                       child: Container(
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(18),
                           border: Border.all(
                             color: Color(config.borderColor).withValues(
-                              alpha: 0.5 + _pulseController.value * 0.3,
+                              alpha: 0.4 + _pulseController.value * 0.4,
                             ),
-                            width: widget.card.rarity == CardRarity.legend ? 2.5 : 1.5,
+                            width: isLegend ? 2.5 : isHighRarity ? 2.0 : 1.5,
                           ),
                         ),
                       ),
@@ -222,18 +233,18 @@ class _HologramCardState extends State<HologramCard> with TickerProviderStateMix
   }
 }
 
-/// SSR 스타일 카드 앞면
-class _SSRCardFront extends StatelessWidget {
+// ─── Premium Card Front ──────────────────────────────────────────────────────
+
+class _PremiumCardFront extends StatelessWidget {
   final PersonalityCard card;
   final bool isKo;
   final double shimmerValue;
   final double pulseValue;
+  final double holoValue;
 
-  const _SSRCardFront({
-    required this.card,
-    required this.isKo,
-    required this.shimmerValue,
-    required this.pulseValue,
+  const _PremiumCardFront({
+    required this.card, required this.isKo,
+    required this.shimmerValue, required this.pulseValue, required this.holoValue,
   });
 
   @override
@@ -242,6 +253,7 @@ class _SSRCardFront extends StatelessWidget {
     final accent = Color(card.theme.accentColor);
     final secondary = Color(card.theme.secondaryAccent);
     final isHighRarity = card.rarity == CardRarity.ssr || card.rarity == CardRarity.legend;
+    final isLegend = card.rarity == CardRarity.legend;
 
     return Container(
       decoration: BoxDecoration(
@@ -253,44 +265,46 @@ class _SSRCardFront extends StatelessWidget {
       ),
       child: Stack(
         children: [
-          // Top-right accent glow
-          Positioned(
-            top: -60, right: -60,
-            child: Container(
-              width: 200, height: 200,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(colors: [
-                  accent.withValues(alpha: 0.15 + pulseValue * 0.1),
-                  Colors.transparent,
-                ]),
+          // Nebula/galaxy background texture
+          Positioned.fill(
+            child: CustomPaint(
+              painter: _NebulaBackgroundPainter(
+                accent: accent,
+                secondary: secondary,
+                progress: holoValue,
+                intensity: isLegend ? 0.20 : isHighRarity ? 0.12 : 0.06,
               ),
             ),
           ),
-          // Bottom-left accent glow
-          Positioned(
-            bottom: -40, left: -40,
-            child: Container(
-              width: 180, height: 180,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(colors: [
-                  secondary.withValues(alpha: 0.1 + pulseValue * 0.08),
-                  Colors.transparent,
-                ]),
+
+          // Constellation pattern (SR+)
+          if (card.rarity != CardRarity.r)
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _ConstellationPainter(
+                  color: accent,
+                  progress: holoValue,
+                  density: isLegend ? 18 : isHighRarity ? 12 : 7,
+                ),
               ),
             ),
-          ),
-          // Geometric pattern for SSR+
+
+          // Geometric frame for SSR+
           if (isHighRarity)
             Positioned.fill(
               child: CustomPaint(
-                painter: _GeometricPatternPainter(color: accent, progress: shimmerValue),
+                painter: _LuxuryFramePainter(
+                  color: accent,
+                  secondary: secondary,
+                  progress: shimmerValue,
+                  isLegend: isLegend,
+                ),
               ),
             ),
+
           // Content
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(18),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -298,36 +312,11 @@ class _SSRCardFront extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        gradient: _getRarityBadgeGradient(card.rarity, accent),
-                        borderRadius: BorderRadius.circular(999),
-                        border: Border.all(
-                          color: Color(config.borderColor).withValues(alpha: 0.6),
-                        ),
-                        boxShadow: isHighRarity
-                            ? [BoxShadow(color: accent.withValues(alpha: 0.4), blurRadius: 8)]
-                            : null,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(config.icon, style: const TextStyle(fontSize: 12)),
-                          const SizedBox(width: 4),
-                          Text(
-                            config.label,
-                            style: TextStyle(
-                              fontSize: card.rarity == CardRarity.legend ? 12 : 11,
-                              fontWeight: FontWeight.w900,
-                              color: card.rarity == CardRarity.legend
-                                  ? const Color(0xFFFDE68A)
-                                  : Colors.white.withValues(alpha: 0.9),
-                              letterSpacing: 2,
-                            ),
-                          ),
-                        ],
-                      ),
+                    _RarityBadge(
+                      rarity: card.rarity,
+                      config: config,
+                      accent: accent,
+                      shimmerValue: shimmerValue,
                     ),
                     Text(
                       card.cardNumber,
@@ -343,37 +332,93 @@ class _SSRCardFront extends StatelessWidget {
                 ),
                 const Spacer(flex: 2),
 
-                // Central emoji
+                // Central emoji with glow aura
                 Center(
-                  child: Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: RadialGradient(
-                        colors: [accent.withValues(alpha: 0.2), Colors.transparent],
-                        radius: 1.5,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // Outer glow rings
+                      if (isHighRarity) ...[
+                        Container(
+                          width: 130, height: 130,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            gradient: RadialGradient(
+                              colors: [
+                                accent.withValues(alpha: 0.08 + pulseValue * 0.06),
+                                secondary.withValues(alpha: 0.03),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                      // Inner emoji container
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: RadialGradient(
+                            colors: [
+                              accent.withValues(alpha: 0.15 + pulseValue * 0.1),
+                              Colors.transparent,
+                            ],
+                            radius: 1.2,
+                          ),
+                        ),
+                        child: Text(
+                          card.emoji,
+                          style: TextStyle(
+                            fontSize: 58,
+                            shadows: isHighRarity
+                                ? [Shadow(color: accent.withValues(alpha: 0.6), blurRadius: 20)]
+                                : null,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(card.emoji, style: const TextStyle(fontSize: 56)),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
 
-                // Title
+                // Title with emboss effect
                 Center(
-                  child: Text(
-                    isKo ? card.titleKo : card.titleEn,
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      height: 1.3,
-                      shadows: isHighRarity
-                          ? [Shadow(color: accent.withValues(alpha: 0.5), blurRadius: 10)]
-                          : null,
+                  child: ShaderMask(
+                    shaderCallback: isLegend
+                        ? (bounds) => LinearGradient(
+                              colors: [
+                                const Color(0xFFFDE68A),
+                                Colors.white,
+                                const Color(0xFFFBBF24),
+                                Colors.white,
+                              ],
+                              stops: [
+                                (shimmerValue - 0.3).clamp(0.0, 1.0),
+                                shimmerValue.clamp(0.0, 1.0),
+                                (shimmerValue + 0.15).clamp(0.0, 1.0),
+                                (shimmerValue + 0.3).clamp(0.0, 1.0),
+                              ],
+                            ).createShader(bounds)
+                        : (bounds) => const LinearGradient(
+                              colors: [Colors.white, Colors.white],
+                            ).createShader(bounds),
+                    child: Text(
+                      isKo ? card.titleKo : card.titleEn,
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        height: 1.3,
+                        letterSpacing: isLegend ? 1 : 0,
+                        shadows: [
+                          if (isHighRarity)
+                            Shadow(color: accent.withValues(alpha: 0.5), blurRadius: 12),
+                          Shadow(color: Colors.black.withValues(alpha: 0.5), blurRadius: 4, offset: const Offset(0, 2)),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -391,21 +436,31 @@ class _SSRCardFront extends StatelessWidget {
                 ),
                 const Spacer(flex: 3),
 
-                // Top match
+                // Top match — premium design
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.white.withValues(alpha: 0.06),
+                        accent.withValues(alpha: 0.04),
+                      ],
+                    ),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: accent.withValues(alpha: 0.15)),
                   ),
                   child: Row(
                     children: [
                       Container(
-                        width: 28, height: 28,
+                        width: 30, height: 30,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: LinearGradient(colors: [accent, secondary]),
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [accent, secondary],
+                          ),
+                          boxShadow: [BoxShadow(color: accent.withValues(alpha: 0.3), blurRadius: 6)],
                         ),
                         child: const Icon(Icons.person, size: 16, color: Colors.white),
                       ),
@@ -419,12 +474,13 @@ class _SSRCardFront extends StatelessWidget {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [accent.withValues(alpha: 0.3), secondary.withValues(alpha: 0.2)],
+                            colors: [accent.withValues(alpha: 0.35), secondary.withValues(alpha: 0.2)],
                           ),
                           borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: accent.withValues(alpha: 0.2)),
                         ),
                         child: Text(
                           '${card.topMatchSimilarity}%',
@@ -445,6 +501,7 @@ class _SSRCardFront extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.06),
                         borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
                       ),
                       child: Text(
                         card.mbti,
@@ -469,14 +526,84 @@ class _SSRCardFront extends StatelessWidget {
       ),
     );
   }
+}
 
-  LinearGradient _getRarityBadgeGradient(CardRarity rarity, Color accent) {
+// ─── Rarity Badge ─────────────────────────────────────────────────────────────
+
+class _RarityBadge extends StatelessWidget {
+  final CardRarity rarity;
+  final RarityConfig config;
+  final Color accent;
+  final double shimmerValue;
+
+  const _RarityBadge({
+    required this.rarity, required this.config,
+    required this.accent, required this.shimmerValue,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final isLegend = rarity == CardRarity.legend;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+      decoration: BoxDecoration(
+        gradient: _getBadgeGradient(),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(
+          color: Color(config.borderColor).withValues(alpha: isLegend ? 0.8 : 0.5),
+          width: isLegend ? 1.5 : 1.0,
+        ),
+        boxShadow: [
+          if (rarity == CardRarity.ssr || isLegend)
+            BoxShadow(color: accent.withValues(alpha: 0.4), blurRadius: 10),
+          if (isLegend)
+            BoxShadow(color: const Color(0xFFFBBF24).withValues(alpha: 0.3), blurRadius: 15, spreadRadius: 1),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(config.icon, style: const TextStyle(fontSize: 12)),
+          const SizedBox(width: 4),
+          // Legend text with gold shimmer
+          isLegend
+              ? ShaderMask(
+                  shaderCallback: (bounds) => LinearGradient(
+                    colors: const [Color(0xFFFDE68A), Color(0xFFFFFFFF), Color(0xFFFBBF24)],
+                    stops: [
+                      (shimmerValue - 0.2).clamp(0.0, 1.0),
+                      shimmerValue.clamp(0.0, 1.0),
+                      (shimmerValue + 0.2).clamp(0.0, 1.0),
+                    ],
+                  ).createShader(bounds),
+                  child: Text(
+                    config.label,
+                    style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w900,
+                      color: Colors.white, letterSpacing: 3,
+                    ),
+                  ),
+                )
+              : Text(
+                  config.label,
+                  style: TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.w900,
+                    color: Colors.white.withValues(alpha: 0.9), letterSpacing: 2,
+                  ),
+                ),
+        ],
+      ),
+    );
+  }
+
+  LinearGradient _getBadgeGradient() {
     return switch (rarity) {
       CardRarity.legend => const LinearGradient(
-        colors: [Color(0x66FBBF24), Color(0x66F59E0B), Color(0x44EF4444)],
+        colors: [Color(0x88FBBF24), Color(0x66F59E0B), Color(0x55EF4444)],
       ),
       CardRarity.ssr => LinearGradient(
-        colors: [accent.withValues(alpha: 0.4), accent.withValues(alpha: 0.25)],
+        colors: [accent.withValues(alpha: 0.45), accent.withValues(alpha: 0.25)],
       ),
       CardRarity.sr => LinearGradient(
         colors: [accent.withValues(alpha: 0.25), accent.withValues(alpha: 0.15)],
@@ -488,78 +615,238 @@ class _SSRCardFront extends StatelessWidget {
   }
 }
 
-/// 홀로그램 필름 오버레이
-class _HologramFilmOverlay extends StatelessWidget {
+// ─── Hologram Sticker Overlay (multi-layer like real holographic stickers) ────
+
+class _HologramStickerOverlay extends StatelessWidget {
   final double shimmerValue;
+  final double holoValue;
   final double rotateX;
   final double rotateY;
   final CardRarity rarity;
 
-  const _HologramFilmOverlay({
-    required this.shimmerValue,
-    required this.rotateX,
-    required this.rotateY,
-    required this.rarity,
+  const _HologramStickerOverlay({
+    required this.shimmerValue, required this.holoValue,
+    required this.rotateX, required this.rotateY, required this.rarity,
   });
 
   @override
   Widget build(BuildContext context) {
     final intensity = switch (rarity) {
-      CardRarity.legend => 0.18,
-      CardRarity.ssr => 0.12,
-      CardRarity.sr => 0.07,
+      CardRarity.legend => 0.22,
+      CardRarity.ssr => 0.15,
+      CardRarity.sr => 0.08,
       CardRarity.r => 0.03,
     };
 
-    final offsetX = 0.5 + rotateY / 60;
-    final offsetY = 0.5 - rotateX / 60;
+    // Light source position based on tilt
+    final lightX = 0.5 + rotateY / 50;
+    final lightY = 0.5 - rotateX / 50;
 
     return Positioned.fill(
-      child: ShaderMask(
-        shaderCallback: (bounds) {
-          return LinearGradient(
-            begin: Alignment(offsetX * 2 - 1, offsetY * 2 - 1),
-            end: Alignment(-offsetX * 2 + 1, -offsetY * 2 + 1),
-            colors: [
-              Colors.transparent,
-              const Color(0xFFFF0000).withValues(alpha: intensity * 0.4),
-              const Color(0xFFFF8800).withValues(alpha: intensity * 0.6),
-              const Color(0xFFFFFF00).withValues(alpha: intensity * 0.7),
-              const Color(0xFF00FF00).withValues(alpha: intensity * 0.6),
-              const Color(0xFF0088FF).withValues(alpha: intensity * 0.5),
-              const Color(0xFF8800FF).withValues(alpha: intensity * 0.4),
-              Colors.transparent,
-            ],
-            stops: [
-              0.0,
-              (shimmerValue * 0.8).clamp(0.0, 0.15),
-              (shimmerValue * 0.8 + 0.08).clamp(0.0, 0.3),
-              (shimmerValue * 0.8 + 0.15).clamp(0.0, 0.5),
-              (shimmerValue * 0.8 + 0.22).clamp(0.0, 0.7),
-              (shimmerValue * 0.8 + 0.30).clamp(0.0, 0.85),
-              (shimmerValue * 0.8 + 0.38).clamp(0.0, 0.95),
-              1.0,
-            ],
-          ).createShader(bounds);
-        },
-        blendMode: BlendMode.srcATop,
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            color: Colors.white,
+      child: Stack(
+        children: [
+          // Layer 1: Primary rainbow sweep
+          ShaderMask(
+            shaderCallback: (bounds) {
+              return LinearGradient(
+                begin: Alignment(lightX * 2 - 1, lightY * 2 - 1),
+                end: Alignment(-lightX * 2 + 1, -lightY * 2 + 1),
+                colors: [
+                  Colors.transparent,
+                  const Color(0xFFFF1493).withValues(alpha: intensity * 0.5),
+                  const Color(0xFFFF6B00).withValues(alpha: intensity * 0.7),
+                  const Color(0xFFFFD700).withValues(alpha: intensity * 0.8),
+                  const Color(0xFF00FF88).withValues(alpha: intensity * 0.7),
+                  const Color(0xFF00BFFF).withValues(alpha: intensity * 0.6),
+                  const Color(0xFF8A2BE2).withValues(alpha: intensity * 0.5),
+                  Colors.transparent,
+                ],
+                stops: [
+                  0.0,
+                  (shimmerValue * 0.7).clamp(0.0, 0.12),
+                  (shimmerValue * 0.7 + 0.06).clamp(0.0, 0.25),
+                  (shimmerValue * 0.7 + 0.12).clamp(0.0, 0.42),
+                  (shimmerValue * 0.7 + 0.18).clamp(0.0, 0.60),
+                  (shimmerValue * 0.7 + 0.24).clamp(0.0, 0.78),
+                  (shimmerValue * 0.7 + 0.30).clamp(0.0, 0.90),
+                  1.0,
+                ],
+              ).createShader(bounds);
+            },
+            blendMode: BlendMode.srcATop,
+            child: Container(color: Colors.white),
           ),
+
+          // Layer 2: Secondary prismatic refraction (offset and time-shifted)
+          if (rarity != CardRarity.r)
+            Opacity(
+              opacity: intensity * 2,
+              child: ShaderMask(
+                shaderCallback: (bounds) {
+                  return LinearGradient(
+                    begin: Alignment(-lightY * 2 + 1, lightX * 2 - 1),
+                    end: Alignment(lightY * 2 - 1, -lightX * 2 + 1),
+                    colors: [
+                      Colors.transparent,
+                      const Color(0xFF00FFFF).withValues(alpha: 0.3),
+                      const Color(0xFFFF00FF).withValues(alpha: 0.4),
+                      const Color(0xFFFFFF00).withValues(alpha: 0.3),
+                      Colors.transparent,
+                    ],
+                    stops: [
+                      0.0,
+                      (holoValue * 0.5).clamp(0.0, 0.3),
+                      (holoValue * 0.5 + 0.15).clamp(0.0, 0.55),
+                      (holoValue * 0.5 + 0.3).clamp(0.0, 0.8),
+                      1.0,
+                    ],
+                  ).createShader(bounds);
+                },
+                blendMode: BlendMode.srcATop,
+                child: Container(color: Colors.white),
+              ),
+            ),
+
+          // Layer 3: Concentrated light spot (follows tilt — "hot spot")
+          if (rarity == CardRarity.ssr || rarity == CardRarity.legend)
+            Positioned.fill(
+              child: CustomPaint(
+                painter: _HotSpotPainter(
+                  lightX: lightX,
+                  lightY: lightY,
+                  intensity: rarity == CardRarity.legend ? 0.35 : 0.2,
+                  shimmerValue: shimmerValue,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Diamond Grid Overlay (like real hologram stickers) ──────────────────────
+
+class _DiamondGridOverlay extends StatelessWidget {
+  final double shimmerValue;
+  final double rotateY;
+  final CardRarity rarity;
+
+  const _DiamondGridOverlay({
+    required this.shimmerValue, required this.rotateY, required this.rarity,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final opacity = switch (rarity) {
+      CardRarity.legend => 0.06,
+      CardRarity.ssr => 0.04,
+      CardRarity.sr => 0.025,
+      CardRarity.r => 0.0,
+    };
+
+    return Positioned.fill(
+      child: CustomPaint(
+        painter: _DiamondGridPainter(
+          progress: shimmerValue,
+          tilt: rotateY,
+          opacity: opacity,
         ),
       ),
     );
   }
 }
 
-/// 무지개 테두리 (SSR/LEGEND)
-class _RainbowEdge extends StatelessWidget {
+class _DiamondGridPainter extends CustomPainter {
+  final double progress;
+  final double tilt;
+  final double opacity;
+
+  _DiamondGridPainter({required this.progress, required this.tilt, required this.opacity});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (opacity <= 0) return;
+
+    final paint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.3;
+
+    const spacing = 14.0;
+    final offset = tilt * 0.3;
+
+    // Diagonal lines (two directions)
+    for (var i = -size.height; i < size.width + size.height; i += spacing) {
+      final shimmerOffset = (progress * size.width * 2) - size.width;
+      final dist = (i - shimmerOffset).abs();
+      final localOpacity = dist < 80 ? opacity * (1.0 + (80 - dist) / 80 * 3) : opacity;
+
+      paint.color = Colors.white.withValues(alpha: localOpacity.clamp(0.0, 0.2));
+      canvas.drawLine(
+        Offset(i + offset, 0),
+        Offset(i - size.height + offset, size.height),
+        paint,
+      );
+      canvas.drawLine(
+        Offset(i - offset, 0),
+        Offset(i + size.height - offset, size.height),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _DiamondGridPainter old) =>
+      old.progress != progress || old.tilt != tilt;
+}
+
+// ─── Hot Spot (concentrated light) ───────────────────────────────────────────
+
+class _HotSpotPainter extends CustomPainter {
+  final double lightX;
+  final double lightY;
+  final double intensity;
   final double shimmerValue;
+
+  _HotSpotPainter({
+    required this.lightX, required this.lightY,
+    required this.intensity, required this.shimmerValue,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(lightX * size.width, lightY * size.height);
+    final radius = size.width * 0.6;
+
+    final paint = Paint()
+      ..shader = ui.Gradient.radial(
+        center, radius,
+        [
+          Colors.white.withValues(alpha: intensity),
+          Colors.white.withValues(alpha: intensity * 0.3),
+          Colors.transparent,
+        ],
+        [0.0, 0.3, 1.0],
+      );
+
+    canvas.drawCircle(center, radius, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant _HotSpotPainter old) =>
+      old.lightX != lightX || old.lightY != lightY;
+}
+
+// ─── Animated Rainbow Border ─────────────────────────────────────────────────
+
+class _AnimatedRainbowBorder extends StatelessWidget {
+  final double shimmerValue;
+  final double pulseValue;
   final CardRarity rarity;
 
-  const _RainbowEdge({required this.shimmerValue, required this.rarity});
+  const _AnimatedRainbowBorder({
+    required this.shimmerValue, required this.pulseValue, required this.rarity,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -567,6 +854,7 @@ class _RainbowEdge extends StatelessWidget {
       child: CustomPaint(
         painter: _RainbowBorderPainter(
           progress: shimmerValue,
+          pulseValue: pulseValue,
           isLegend: rarity == CardRarity.legend,
         ),
       ),
@@ -576,23 +864,32 @@ class _RainbowEdge extends StatelessWidget {
 
 class _RainbowBorderPainter extends CustomPainter {
   final double progress;
+  final double pulseValue;
   final bool isLegend;
 
-  _RainbowBorderPainter({required this.progress, required this.isLegend});
+  _RainbowBorderPainter({required this.progress, required this.pulseValue, required this.isLegend});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final rect = RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(16));
+    final rect = RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(18));
+    final width = isLegend ? 2.5 + pulseValue * 0.5 : 1.8;
+    final alpha = isLegend ? 0.7 + pulseValue * 0.3 : 0.4 + pulseValue * 0.2;
+
     final colors = isLegend
         ? [
-            const Color(0x55FBBF24), const Color(0x55EF4444),
-            const Color(0x55A855F7), const Color(0x553B82F6),
-            const Color(0x5510B981), const Color(0x55FBBF24),
+            Color.fromRGBO(251, 191, 36, alpha),
+            Color.fromRGBO(239, 68, 68, alpha),
+            Color.fromRGBO(168, 85, 247, alpha),
+            Color.fromRGBO(59, 130, 246, alpha),
+            Color.fromRGBO(16, 185, 129, alpha),
+            Color.fromRGBO(251, 191, 36, alpha),
           ]
         : [
-            const Color(0x33A855F7), const Color(0x33EC4899),
-            const Color(0x333B82F6), const Color(0x3310B981),
-            const Color(0x33A855F7),
+            Color.fromRGBO(168, 85, 247, alpha),
+            Color.fromRGBO(236, 72, 153, alpha),
+            Color.fromRGBO(59, 130, 246, alpha),
+            Color.fromRGBO(16, 185, 129, alpha),
+            Color.fromRGBO(168, 85, 247, alpha),
           ];
 
     final paint = Paint()
@@ -603,23 +900,116 @@ class _RainbowBorderPainter extends CustomPainter {
         tileMode: TileMode.repeated,
       ).createShader(Offset.zero & size)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = isLegend ? 2.0 : 1.5;
+      ..strokeWidth = width;
 
     canvas.drawRRect(rect, paint);
+
+    // LEGEND: inner glow edge
+    if (isLegend) {
+      final innerRect = RRect.fromRectAndRadius(
+        const Offset(3, 3) & Size(size.width - 6, size.height - 6),
+        const Radius.circular(16),
+      );
+      final glowPaint = Paint()
+        ..shader = SweepGradient(
+          startAngle: progress * 2 * pi + pi,
+          endAngle: progress * 2 * pi + 3 * pi,
+          colors: [
+            const Color(0x00FBBF24),
+            Color.fromRGBO(251, 191, 36, 0.15 + pulseValue * 0.1),
+            const Color(0x00FBBF24),
+            Color.fromRGBO(239, 68, 68, 0.1 + pulseValue * 0.08),
+            const Color(0x00FBBF24),
+          ],
+          tileMode: TileMode.repeated,
+        ).createShader(Offset.zero & size)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 6
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
+
+      canvas.drawRRect(innerRect, glowPaint);
+    }
   }
 
   @override
-  bool shouldRepaint(covariant _RainbowBorderPainter oldDelegate) =>
-      oldDelegate.progress != progress;
+  bool shouldRepaint(covariant _RainbowBorderPainter old) =>
+      old.progress != progress || old.pulseValue != pulseValue;
 }
 
-/// 반짝이 파티클 (SR+)
-class _SparkleParticles extends StatelessWidget {
+// ─── Gold Foil Trim (LEGEND only) ────────────────────────────────────────────
+
+class _GoldFoilTrim extends StatelessWidget {
+  final double shimmerValue;
+  const _GoldFoilTrim({required this.shimmerValue});
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned.fill(
+      child: CustomPaint(
+        painter: _GoldFoilPainter(progress: shimmerValue),
+      ),
+    );
+  }
+}
+
+class _GoldFoilPainter extends CustomPainter {
+  final double progress;
+  _GoldFoilPainter({required this.progress});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // Corner flourishes
+    final goldPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.0
+      ..strokeCap = StrokeCap.round;
+
+    final corners = [
+      Offset(14, 14),
+      Offset(size.width - 14, 14),
+      Offset(14, size.height - 14),
+      Offset(size.width - 14, size.height - 14),
+    ];
+
+    for (var i = 0; i < corners.length; i++) {
+      final c = corners[i];
+      final dx = (i % 2 == 0) ? 1.0 : -1.0;
+      final dy = (i < 2) ? 1.0 : -1.0;
+      final len = 18.0;
+
+      // Gold shimmer gradient on corner lines
+      final shimmerPos = (progress + i * 0.25) % 1.0;
+      goldPaint.shader = ui.Gradient.linear(
+        c, Offset(c.dx + dx * len, c.dy + dy * len),
+        [
+          const Color(0x88FBBF24),
+          const Color(0xCCFDE68A),
+          const Color(0x88FBBF24),
+        ],
+        [
+          (shimmerPos - 0.2).clamp(0.0, 1.0),
+          shimmerPos.clamp(0.0, 1.0),
+          (shimmerPos + 0.2).clamp(0.0, 1.0),
+        ],
+      );
+
+      canvas.drawLine(c, Offset(c.dx + dx * len, c.dy), goldPaint);
+      canvas.drawLine(c, Offset(c.dx, c.dy + dy * len), goldPaint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _GoldFoilPainter old) => old.progress != progress;
+}
+
+// ─── Premium Sparkle Particles ───────────────────────────────────────────────
+
+class _PremiumSparkles extends StatelessWidget {
   final AnimationController controller;
   final CardRarity rarity;
   final Color accentColor;
 
-  const _SparkleParticles({required this.controller, required this.rarity, required this.accentColor});
+  const _PremiumSparkles({required this.controller, required this.rarity, required this.accentColor});
 
   @override
   Widget build(BuildContext context) {
@@ -628,11 +1018,11 @@ class _SparkleParticles extends StatelessWidget {
         animation: controller,
         builder: (context, child) {
           return CustomPaint(
-            painter: _SparklesPainter(
+            painter: _PremiumSparklesPainter(
               progress: controller.value,
               count: rarityConfigs[rarity]!.particleCount,
               color: accentColor,
-              isLegend: rarity == CardRarity.legend,
+              rarity: rarity,
             ),
           );
         },
@@ -641,78 +1031,233 @@ class _SparkleParticles extends StatelessWidget {
   }
 }
 
-class _SparklesPainter extends CustomPainter {
+class _PremiumSparklesPainter extends CustomPainter {
   final double progress;
   final int count;
   final Color color;
-  final bool isLegend;
+  final CardRarity rarity;
 
-  _SparklesPainter({required this.progress, required this.count, required this.color, required this.isLegend});
+  _PremiumSparklesPainter({required this.progress, required this.count, required this.color, required this.rarity});
 
   @override
   void paint(Canvas canvas, Size size) {
     final rand = Random(42);
+    final isLegend = rarity == CardRarity.legend;
+    final isSSR = rarity == CardRarity.ssr;
+
     for (var i = 0; i < count; i++) {
       final x = rand.nextDouble() * size.width;
       final baseY = rand.nextDouble() * size.height;
       final phase = (progress + i * (1.0 / count)) % 1.0;
-      final y = baseY - sin(phase * pi) * 20;
-      final opacity = sin(phase * pi) * 0.8;
-      final s = rand.nextDouble() * 2.5 + 0.5;
+      final y = baseY - sin(phase * pi) * 25;
+      final opacity = sin(phase * pi) * (isLegend ? 0.95 : 0.75);
+      final baseSize = rand.nextDouble() * 3 + 0.8;
 
-      if (opacity > 0.05) {
-        final sparkleColor = isLegend && i % 3 == 0 ? const Color(0xFFFDE68A) : color;
-        if (isLegend && i % 4 == 0) {
-          _drawStar(canvas, Offset(x, y), s * 2, sparkleColor.withValues(alpha: opacity.clamp(0.0, 1.0)));
+      if (opacity <= 0.05) continue;
+
+      final clampedOpacity = opacity.clamp(0.0, 1.0);
+
+      if (isLegend) {
+        // LEGEND: multi-color sparkles with stars
+        final sparkleColor = switch (i % 5) {
+          0 => const Color(0xFFFDE68A), // gold
+          1 => const Color(0xFFFBBF24), // amber
+          2 => const Color(0xFFEF4444), // red
+          3 => const Color(0xFFA855F7), // purple
+          _ => color,
+        };
+
+        if (i % 3 == 0) {
+          _drawCrossStar(canvas, Offset(x, y), baseSize * 2.5, sparkleColor.withValues(alpha: clampedOpacity));
+        } else if (i % 5 == 0) {
+          _drawDiamond(canvas, Offset(x, y), baseSize * 2, sparkleColor.withValues(alpha: clampedOpacity));
         } else {
           canvas.drawCircle(
-            Offset(x, y), s,
+            Offset(x, y), baseSize,
             Paint()
-              ..color = sparkleColor.withValues(alpha: opacity.clamp(0.0, 1.0))
-              ..maskFilter = MaskFilter.blur(BlurStyle.normal, s * 0.8),
+              ..color = sparkleColor.withValues(alpha: clampedOpacity)
+              ..maskFilter = MaskFilter.blur(BlurStyle.normal, baseSize),
           );
+        }
+      } else if (isSSR) {
+        // SSR: cross-star sparkles
+        final sparkleColor = i % 3 == 0 ? color : Colors.white;
+        if (i % 4 == 0) {
+          _drawCrossStar(canvas, Offset(x, y), baseSize * 2, sparkleColor.withValues(alpha: clampedOpacity));
+        } else {
+          canvas.drawCircle(
+            Offset(x, y), baseSize,
+            Paint()
+              ..color = sparkleColor.withValues(alpha: clampedOpacity * 0.7)
+              ..maskFilter = MaskFilter.blur(BlurStyle.normal, baseSize * 0.8),
+          );
+        }
+      } else {
+        // SR: simple glowing dots
+        canvas.drawCircle(
+          Offset(x, y), baseSize * 0.8,
+          Paint()
+            ..color = color.withValues(alpha: clampedOpacity * 0.5)
+            ..maskFilter = MaskFilter.blur(BlurStyle.normal, baseSize * 0.6),
+        );
+      }
+    }
+  }
+
+  void _drawCrossStar(Canvas canvas, Offset center, double size, Color color) {
+    final path = Path();
+    // 4-pointed star
+    for (var i = 0; i < 4; i++) {
+      final angle = pi / 2 * i;
+      path.moveTo(center.dx, center.dy);
+      path.lineTo(center.dx + cos(angle) * size, center.dy + sin(angle) * size);
+    }
+    canvas.drawPath(path, Paint()
+      ..color = color
+      ..strokeWidth = 1.0
+      ..style = PaintingStyle.stroke
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, size * 0.4));
+    // Center glow
+    canvas.drawCircle(center, size * 0.3, Paint()
+      ..color = color
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, size * 0.5));
+  }
+
+  void _drawDiamond(Canvas canvas, Offset center, double size, Color color) {
+    final path = Path()
+      ..moveTo(center.dx, center.dy - size)
+      ..lineTo(center.dx + size * 0.5, center.dy)
+      ..lineTo(center.dx, center.dy + size)
+      ..lineTo(center.dx - size * 0.5, center.dy)
+      ..close();
+    canvas.drawPath(path, Paint()
+      ..color = color
+      ..style = PaintingStyle.fill
+      ..maskFilter = MaskFilter.blur(BlurStyle.normal, size * 0.3));
+  }
+
+  @override
+  bool shouldRepaint(covariant _PremiumSparklesPainter old) => old.progress != progress;
+}
+
+// ─── Nebula Background ───────────────────────────────────────────────────────
+
+class _NebulaBackgroundPainter extends CustomPainter {
+  final Color accent;
+  final Color secondary;
+  final double progress;
+  final double intensity;
+
+  _NebulaBackgroundPainter({
+    required this.accent, required this.secondary,
+    required this.progress, required this.intensity,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rand = Random(17);
+
+    // Multiple overlapping nebula blobs
+    for (var i = 0; i < 5; i++) {
+      final cx = rand.nextDouble() * size.width;
+      final cy = rand.nextDouble() * size.height;
+      final r = 60 + rand.nextDouble() * 80;
+      final phase = (progress + i * 0.2) % 1.0;
+      final breathe = 0.7 + sin(phase * 2 * pi) * 0.3;
+
+      final color = i % 2 == 0 ? accent : secondary;
+      canvas.drawCircle(
+        Offset(cx, cy), r * breathe,
+        Paint()
+          ..shader = ui.Gradient.radial(
+            Offset(cx, cy), r * breathe,
+            [color.withValues(alpha: intensity * breathe), Colors.transparent],
+          )
+          ..maskFilter = MaskFilter.blur(BlurStyle.normal, r * 0.5),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _NebulaBackgroundPainter old) => old.progress != progress;
+}
+
+// ─── Constellation Pattern ───────────────────────────────────────────────────
+
+class _ConstellationPainter extends CustomPainter {
+  final Color color;
+  final double progress;
+  final int density;
+
+  _ConstellationPainter({required this.color, required this.progress, required this.density});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final rand = Random(31);
+    final stars = <Offset>[];
+
+    for (var i = 0; i < density; i++) {
+      final x = rand.nextDouble() * size.width;
+      final y = rand.nextDouble() * size.height;
+      stars.add(Offset(x, y));
+
+      // Twinkling star
+      final phase = (progress + i * (1.0 / density)) % 1.0;
+      final twinkle = (sin(phase * 2 * pi) * 0.5 + 0.5).clamp(0.2, 1.0);
+      final starSize = rand.nextDouble() * 1.5 + 0.5;
+
+      canvas.drawCircle(
+        Offset(x, y), starSize,
+        Paint()..color = color.withValues(alpha: 0.15 * twinkle),
+      );
+    }
+
+    // Connect nearby stars with faint lines
+    final linePaint = Paint()
+      ..color = color.withValues(alpha: 0.03)
+      ..strokeWidth = 0.3;
+
+    for (var i = 0; i < stars.length; i++) {
+      for (var j = i + 1; j < stars.length; j++) {
+        final dist = (stars[i] - stars[j]).distance;
+        if (dist < 100) {
+          canvas.drawLine(stars[i], stars[j], linePaint);
         }
       }
     }
   }
 
-  void _drawStar(Canvas canvas, Offset center, double size, Color color) {
-    final path = Path();
-    for (var i = 0; i < 4; i++) {
-      final angle = pi / 4 * i;
-      path.moveTo(center.dx + cos(angle) * size, center.dy + sin(angle) * size);
-      path.lineTo(center.dx - cos(angle) * size, center.dy - sin(angle) * size);
-    }
-    canvas.drawPath(path, Paint()
-      ..color = color
-      ..strokeWidth = 0.8
-      ..style = PaintingStyle.stroke
-      ..maskFilter = MaskFilter.blur(BlurStyle.normal, size * 0.5));
-  }
-
   @override
-  bool shouldRepaint(covariant _SparklesPainter oldDelegate) => oldDelegate.progress != progress;
+  bool shouldRepaint(covariant _ConstellationPainter old) => old.progress != progress;
 }
 
-/// 기하학 패턴 (SSR/LEGEND)
-class _GeometricPatternPainter extends CustomPainter {
-  final Color color;
-  final double progress;
+// ─── Luxury Frame (SSR/LEGEND) ───────────────────────────────────────────────
 
-  _GeometricPatternPainter({required this.color, required this.progress});
+class _LuxuryFramePainter extends CustomPainter {
+  final Color color;
+  final Color secondary;
+  final double progress;
+  final bool isLegend;
+
+  _LuxuryFramePainter({
+    required this.color, required this.secondary,
+    required this.progress, required this.isLegend,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = color.withValues(alpha: 0.04)
+      ..color = color.withValues(alpha: isLegend ? 0.06 : 0.04)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.5;
+      ..strokeWidth = 0.6;
 
     canvas.save();
     canvas.translate(size.width / 2, size.height / 2);
-    canvas.rotate(progress * pi * 0.1);
-    for (var ring = 1; ring <= 4; ring++) {
-      final r = ring * 40.0;
+    canvas.rotate(progress * pi * 0.05);
+
+    // Concentric hexagons
+    for (var ring = 1; ring <= 5; ring++) {
+      final r = ring * 35.0;
       final path = Path();
       for (var i = 0; i < 6; i++) {
         final angle = pi / 3 * i - pi / 2;
@@ -723,15 +1268,28 @@ class _GeometricPatternPainter extends CustomPainter {
       path.close();
       canvas.drawPath(path, paint);
     }
+
+    // Inner decorative circle
+    if (isLegend) {
+      canvas.drawCircle(Offset.zero, 45, Paint()
+        ..color = const Color(0xFFFBBF24).withValues(alpha: 0.04)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.5);
+      canvas.drawCircle(Offset.zero, 90, Paint()
+        ..color = secondary.withValues(alpha: 0.03)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 0.3);
+    }
+
     canvas.restore();
   }
 
   @override
-  bool shouldRepaint(covariant _GeometricPatternPainter oldDelegate) =>
-      oldDelegate.progress != progress;
+  bool shouldRepaint(covariant _LuxuryFramePainter old) => old.progress != progress;
 }
 
-/// 카드 뒷면 (6가지 유형 점수 + 설명)
+// ─── Card Back ───────────────────────────────────────────────────────────────
+
 class _CardBack extends StatelessWidget {
   final PersonalityCard card;
   final bool isKo;
@@ -806,15 +1364,15 @@ class _CardBack extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: ['H', 'E', 'X', 'A', 'C', 'O'].map((f) {
                 final value = card.scores[f] ?? 50;
-                final color = _factorColors[f]!;
+                final fColor = _factorColors[f]!;
                 final label = isKo ? _factorLabelsKo[f]! : _factorLabelsEn[f]!;
                 final desc = _getDesc(f, value, isKo);
                 return Row(
                   children: [
                     Container(
                       width: 22, height: 22,
-                      decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
-                      child: Center(child: Text(f, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: color))),
+                      decoration: BoxDecoration(color: fColor.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(6)),
+                      child: Center(child: Text(f, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: fColor))),
                     ),
                     const SizedBox(width: 6),
                     Expanded(
@@ -830,7 +1388,7 @@ class _CardBack extends StatelessWidget {
                       width: 50,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(3),
-                        child: LinearProgressIndicator(value: value / 100, minHeight: 4, color: color, backgroundColor: color.withValues(alpha: 0.1)),
+                        child: LinearProgressIndicator(value: value / 100, minHeight: 4, color: fColor, backgroundColor: fColor.withValues(alpha: 0.1)),
                       ),
                     ),
                   ],
@@ -875,7 +1433,8 @@ class _CardBack extends StatelessWidget {
   }
 }
 
-/// 미니 레이더 차트
+// ─── Mini Radar Chart ────────────────────────────────────────────────────────
+
 class _MiniRadarPainter extends CustomPainter {
   final Map<String, double> scores;
   final Color accentColor;

@@ -11,6 +11,7 @@ import 'screens/test_screen.dart';
 import 'screens/result_screen.dart';
 import 'screens/settings_screen.dart';
 import 'services/analytics_service.dart';
+import 'services/version_check_service.dart';
 import 'ui/app_tokens.dart';
 
 Future<void> main() async {
@@ -20,6 +21,9 @@ Future<void> main() async {
     // Firebase 초기화
     await Firebase.initializeApp();
     AnalyticsService.init();
+
+    // Remote Config 초기화 (버전 체크용)
+    await VersionCheckService.init();
 
     await MobileAds.instance.initialize();
     await MobileAds.instance.updateRequestConfiguration(

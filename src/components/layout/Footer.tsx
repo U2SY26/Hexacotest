@@ -34,17 +34,24 @@ export default function Footer() {
           {/* Links */}
           <div className="flex flex-wrap justify-center gap-4 text-sm">
             <Link
-              to="/privacy"
+              to="/about"
               className="text-gray-400 hover:text-white transition-colors"
             >
-              Privacy Policy
+              About HEXACO
+            </Link>
+            <span className="text-gray-600">|</span>
+            <Link
+              to="/faq"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
+              FAQ
             </Link>
             <span className="text-gray-600">|</span>
             <Link
               to="/privacy"
               className="text-gray-400 hover:text-white transition-colors"
             >
-              개인정보처리방침
+              Privacy Policy / 개인정보처리방침
             </Link>
             <span className="text-gray-600">|</span>
             <a

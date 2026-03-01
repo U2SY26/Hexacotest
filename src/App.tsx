@@ -8,6 +8,8 @@ const LandingPage = lazy(() => import('./pages/LandingPage'))
 const TestPage = lazy(() => import('./pages/TestPage'))
 const ResultPage = lazy(() => import('./pages/ResultPage'))
 const PrivacyPage = lazy(() => import('./pages/PrivacyPage'))
+const AboutPage = lazy(() => import('./pages/AboutPage'))
+const FaqPage = lazy(() => import('./pages/FaqPage'))
 
 function App() {
   const [showIntro, setShowIntro] = useState(true)
@@ -30,6 +32,8 @@ function App() {
             <Route path="/test" element={<TestPage />} />
             <Route path="/result" element={<ResultPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/faq" element={<FaqPage />} />
           </Routes>
         </Suspense>
       </Layout>

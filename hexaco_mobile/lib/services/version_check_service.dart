@@ -1,82 +1,96 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-class VersionInfo {
-  final String minVersion; // 최소 지원 버전 (강제 업데이트)
-  final String latestVersion; // 최신 버전 (선택 업데이트)
-  final String? updateMessage; // 업데이트 메시지
-  final String? updateMessageEn;
-  final bool forceUpdate; // 강제 업데이트 여부
-
-  VersionInfo({
-    required this.minVersion,
-    required this.latestVersion,
-    this.updateMessage,
-    this.updateMessageEn,
-    this.forceUpdate = false,
-  });
-
-  factory VersionInfo.fromJson(Map<String, dynamic> json) {
-    return VersionInfo(
-      minVersion: json['minVersion'] ?? '1.0.0',
-      latestVersion: json['latestVersion'] ?? '1.0.0',
-      updateMessage: json['updateMessage'],
-      updateMessageEn: json['updateMessageEn'],
-      forceUpdate: json['forceUpdate'] ?? false,
-    );
-  }
-}
-
 class VersionCheckService {
-  // 버전 정보를 가져올 URL (vercel 또는 GitHub에 호스팅)
-  static const String _versionUrl = 'https://hexacotest.vercel.app/version.json';
   static const String _playStoreUrl = 'https://play.google.com/store/apps/details?id=com.hexaco.mobile';
+
+  // Remote Config 키
+  static const String _keyLatestVersion = 'latest_version';
+  static const String _keyForceUpdate = 'force_update';
+  static const String _keyUpdateMessage = 'update_message';
+  static const String _keyUpdateMessageEn = 'update_message_en';
+
+  /// 허용 버전 차이 (latest 기준 patch 2까지 허용, 그 이하 강제 업데이트)
+  static const int _allowedVersionsBehind = 2;
+
+  /// Remote Config 초기화 (앱 시작 시 1회 호출)
+  static Future<void> init() async {
+    try {
+      final rc = FirebaseRemoteConfig.instance;
+      await rc.setConfigSettings(RemoteConfigSettings(
+        fetchTimeout: const Duration(seconds: 10),
+        minimumFetchInterval: const Duration(hours: 1),
+      ));
+      await rc.setDefaults({
+        _keyLatestVersion: '1.0.0',
+        _keyForceUpdate: false,
+        _keyUpdateMessage: '',
+        _keyUpdateMessageEn: '',
+      });
+      await rc.fetchAndActivate();
+    } catch (e) {
+      debugPrint('Remote Config init failed: $e');
+    }
+  }
 
   /// 버전 체크 및 업데이트 다이얼로그 표시
   static Future<void> checkForUpdate(BuildContext context, {bool isKo = true}) async {
     try {
-      final versionInfo = await _fetchVersionInfo();
-      if (versionInfo == null) return;
+      final rc = FirebaseRemoteConfig.instance;
+
+      // 백그라운드에서 최신 값 fetch (이미 activate된 값 사용)
+      try {
+        await rc.fetchAndActivate();
+      } catch (_) {
+        // fetch 실패해도 캐시된 값 사용
+      }
+
+      final latestVersion = rc.getString(_keyLatestVersion);
+      final forceUpdate = rc.getBool(_keyForceUpdate);
+      final updateMessage = rc.getString(_keyUpdateMessage);
+      final updateMessageEn = rc.getString(_keyUpdateMessageEn);
 
       final packageInfo = await PackageInfo.fromPlatform();
       final currentVersion = packageInfo.version;
 
-      final needsForceUpdate = _compareVersions(currentVersion, versionInfo.minVersion) < 0;
-      final hasNewVersion = _compareVersions(currentVersion, versionInfo.latestVersion) < 0;
+      // latest_version에서 자동으로 min_version 계산 (patch를 2만큼 뺌)
+      final minVersion = _subtractPatch(latestVersion, _allowedVersionsBehind);
+      final needsForceUpdate = _compareVersions(currentVersion, minVersion) < 0;
+      final hasNewVersion = _compareVersions(currentVersion, latestVersion) < 0;
 
       if (!context.mounted) return;
 
-      if (needsForceUpdate || versionInfo.forceUpdate) {
-        // 강제 업데이트 다이얼로그
-        _showForceUpdateDialog(context, versionInfo, isKo);
+      if (needsForceUpdate || forceUpdate) {
+        _showForceUpdateDialog(
+          context,
+          latestVersion: latestVersion,
+          message: isKo ? updateMessage : updateMessageEn,
+          isKo: isKo,
+        );
       } else if (hasNewVersion) {
-        // 선택적 업데이트 다이얼로그
-        _showOptionalUpdateDialog(context, versionInfo, isKo);
+        _showOptionalUpdateDialog(
+          context,
+          latestVersion: latestVersion,
+          message: isKo ? updateMessage : updateMessageEn,
+          isKo: isKo,
+        );
       }
     } catch (e) {
-      // 버전 체크 실패 시 조용히 넘어감
       debugPrint('Version check failed: $e');
     }
   }
 
-  /// 서버에서 버전 정보 가져오기
-  static Future<VersionInfo?> _fetchVersionInfo() async {
-    try {
-      final response = await http.get(Uri.parse(_versionUrl)).timeout(
-        const Duration(seconds: 5),
-      );
-
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        return VersionInfo.fromJson(json);
-      }
-    } catch (e) {
-      debugPrint('Failed to fetch version info: $e');
+  /// latest 버전에서 patch를 n만큼 빼서 최소 허용 버전 계산
+  /// 예: _subtractPatch('1.0.33', 2) → '1.0.31'
+  static String _subtractPatch(String version, int n) {
+    final parts = version.split('.').map((e) => int.tryParse(e) ?? 0).toList();
+    while (parts.length < 3) {
+      parts.add(0);
     }
-    return null;
+    parts[2] = (parts[2] - n).clamp(0, parts[2]);
+    return parts.join('.');
   }
 
   /// 버전 비교 (-1: a < b, 0: a == b, 1: a > b)
@@ -97,60 +111,104 @@ class VersionCheckService {
   }
 
   /// 강제 업데이트 다이얼로그 (닫기 불가)
-  static void _showForceUpdateDialog(BuildContext context, VersionInfo info, bool isKo) {
+  static void _showForceUpdateDialog(
+    BuildContext context, {
+    required String latestVersion,
+    String? message,
+    required bool isKo,
+  }) {
     showDialog(
       context: context,
       barrierDismissible: false,
+      barrierColor: Colors.black87,
       builder: (context) => PopScope(
         canPop: false,
         child: AlertDialog(
           backgroundColor: const Color(0xFF1A1A2E),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Row(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(color: Color(0xFFA855F7), width: 1.5),
+          ),
+          elevation: 24,
+          shadowColor: const Color(0xFFA855F7),
+          title: Column(
             children: [
-              const Icon(Icons.system_update, color: Color(0xFFA855F7)),
-              const SizedBox(width: 12),
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFFA855F7), Color(0xFFEC4899)],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFA855F7).withValues(alpha: 0.4),
+                      blurRadius: 20,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.system_update, color: Colors.white, size: 28),
+              ),
+              const SizedBox(height: 16),
               Text(
                 isKo ? '업데이트 필요' : 'Update Required',
-                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
               ),
             ],
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 isKo
-                    ? '새로운 버전이 출시되었습니다.\n앱을 계속 사용하려면 업데이트가 필요합니다.'
-                    : 'A new version is available.\nPlease update to continue using the app.',
+                    ? '새로운 버전($latestVersion)이 출시되었습니다.\n앱을 계속 사용하려면 업데이트가 필요합니다.'
+                    : 'A new version ($latestVersion) is available.\nPlease update to continue using the app.',
                 style: const TextStyle(color: Colors.white70, height: 1.5),
+                textAlign: TextAlign.center,
               ),
-              if (info.updateMessage != null || info.updateMessageEn != null) ...[
+              if (message != null && message.isNotEmpty) ...[
                 const SizedBox(height: 12),
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
-                    borderRadius: BorderRadius.circular(8),
+                    color: const Color(0xFFA855F7).withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: const Color(0xFFA855F7).withValues(alpha: 0.3)),
                   ),
                   child: Text(
-                    isKo ? (info.updateMessage ?? '') : (info.updateMessageEn ?? ''),
+                    message,
                     style: const TextStyle(color: Colors.white60, fontSize: 13),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ],
             ],
           ),
+          actionsAlignment: MainAxisAlignment.center,
           actions: [
-            ElevatedButton(
-              onPressed: () => _openStore(),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFA855F7),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => _openStore(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFA855F7),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  elevation: 8,
+                  shadowColor: const Color(0xFFA855F7).withValues(alpha: 0.5),
+                ),
+                child: Text(
+                  isKo ? '업데이트하기' : 'Update Now',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
-              child: Text(isKo ? '업데이트하기' : 'Update Now'),
             ),
           ],
         ),
@@ -159,54 +217,92 @@ class VersionCheckService {
   }
 
   /// 선택적 업데이트 다이얼로그
-  static void _showOptionalUpdateDialog(BuildContext context, VersionInfo info, bool isKo) {
+  static void _showOptionalUpdateDialog(
+    BuildContext context, {
+    required String latestVersion,
+    String? message,
+    required bool isKo,
+  }) {
     showDialog(
       context: context,
+      barrierColor: Colors.black87,
       builder: (context) => AlertDialog(
         backgroundColor: const Color(0xFF1A1A2E),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(color: const Color(0xFFA855F7).withValues(alpha: 0.5), width: 1),
+        ),
+        elevation: 24,
+        shadowColor: const Color(0xFFA855F7),
+        title: Column(
           children: [
-            const Icon(Icons.new_releases, color: Color(0xFFA855F7)),
-            const SizedBox(width: 12),
+            Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFFA855F7), Color(0xFF6366F1)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFFA855F7).withValues(alpha: 0.3),
+                    blurRadius: 16,
+                    spreadRadius: 1,
+                  ),
+                ],
+              ),
+              child: const Icon(Icons.new_releases, color: Colors.white, size: 28),
+            ),
+            const SizedBox(height: 16),
             Text(
               isKo ? '새 버전 안내' : 'New Version Available',
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
             ),
           ],
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               isKo
-                  ? '새로운 버전(${info.latestVersion})이 출시되었습니다.\n더 나은 경험을 위해 업데이트해주세요.'
-                  : 'A new version (${info.latestVersion}) is available.\nUpdate for a better experience.',
+                  ? '새로운 버전($latestVersion)이 출시되었습니다.\n더 나은 경험을 위해 업데이트해주세요.'
+                  : 'A new version ($latestVersion) is available.\nUpdate for a better experience.',
               style: const TextStyle(color: Colors.white70, height: 1.5),
+              textAlign: TextAlign.center,
             ),
-            if (info.updateMessage != null || info.updateMessageEn != null) ...[
+            if (message != null && message.isNotEmpty) ...[
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(8),
+                  color: const Color(0xFFA855F7).withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFA855F7).withValues(alpha: 0.3)),
                 ),
                 child: Text(
-                  isKo ? (info.updateMessage ?? '') : (info.updateMessageEn ?? ''),
+                  message,
                   style: const TextStyle(color: Colors.white60, fontSize: 13),
+                  textAlign: TextAlign.center,
                 ),
               ),
             ],
           ],
         ),
+        actionsAlignment: MainAxisAlignment.center,
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
+            style: TextButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
             child: Text(
               isKo ? '나중에' : 'Later',
-              style: const TextStyle(color: Colors.white54),
+              style: const TextStyle(color: Colors.white54, fontSize: 15),
             ),
           ),
           ElevatedButton(
@@ -217,9 +313,15 @@ class VersionCheckService {
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFFA855F7),
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              elevation: 8,
+              shadowColor: const Color(0xFFA855F7).withValues(alpha: 0.5),
             ),
-            child: Text(isKo ? '업데이트' : 'Update'),
+            child: Text(
+              isKo ? '업데이트' : 'Update',
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       ),
@@ -228,7 +330,6 @@ class VersionCheckService {
 
   /// 스토어 열기
   static Future<void> _openStore() async {
-    // Android는 Play Store, iOS는 App Store
     final url = Uri.parse(_playStoreUrl);
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);

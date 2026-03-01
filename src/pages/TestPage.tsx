@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Lightbulb, Circle, Sparkles, Eye, Coffee } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Lightbulb, Circle, Sparkles, Eye } from 'lucide-react'
 import { factorColors } from '../data/questions'
 import { useTestStore, encodeResults } from '../stores/testStore'
 import AdBanner from '../components/AdBanner'
@@ -122,7 +122,31 @@ function CompletionPopup({
   )
 }
 
-// Ad break overlay shown every 15 questions (native banner + 3s loading bar)
+// Personality insight tips shown during ad breaks — educational publisher content
+const personalityTips = {
+  ko: [
+    { title: '정직-겸손(H) 요인이란?', body: '정직-겸손 요인은 HEXACO 모델에서 가장 독특한 차원입니다. 이 요인이 높으면 공정하고 검소하며, 특권의식이 낮습니다. 직장 윤리, 리더십 스타일, 대인관계 신뢰도를 예측하는 데 핵심적인 역할을 합니다.' },
+    { title: '정서성(E)과 스트레스 반응', body: '정서성이 높은 사람은 감정 표현이 풍부하고 공감 능력이 뛰어납니다. 반면 낮은 점수는 감정적 안정성과 독립적인 문제 해결 능력을 나타냅니다. 두 특성 모두 상황에 따라 강점이 될 수 있습니다.' },
+    { title: '외향성(X)의 다양한 측면', body: '외향성은 단순히 "사교적"인 것만이 아닙니다. 사회적 자신감, 활력, 리더십 발휘, 긍정적 감정 경험 등 여러 하위 요인으로 구성됩니다. 내향적인 사람도 특정 상황에서는 외향적 행동을 보일 수 있습니다.' },
+    { title: '원만성(A)과 인간관계', body: '원만성이 높으면 타인의 잘못을 쉽게 용서하고 타협을 잘합니다. 낮으면 자기 주장이 강하고 비판적 사고가 뛰어납니다. 연구에 따르면 원만성은 나이가 들면서 서서히 높아지는 경향이 있습니다.' },
+    { title: '성실성(C)과 성공의 관계', body: '성실성은 학업 성취, 직업 성과, 건강 행동과 가장 강한 상관관계를 보이는 성격 요인입니다. 계획성, 근면성, 신중함, 완벽주의 등을 포함하며, 목표 달성의 핵심 예측 변수입니다.' },
+    { title: '개방성(O)과 창의력', body: '개방성이 높은 사람은 예술, 철학, 새로운 아이디어에 끌리며, 상상력이 풍부합니다. 이 요인은 창의적 직업 성과와 강한 상관관계를 보이며, 비전통적 사고와 지적 호기심을 반영합니다.' },
+    { title: 'HEXACO vs Big Five 모델', body: 'HEXACO 모델은 기존 Big Five(5요인 모델)에 정직-겸손(H) 요인을 추가한 6요인 모델입니다. 연구에 따르면 이 추가 요인이 직장 내 비윤리적 행동, 나르시시즘, 마키아벨리즘을 예측하는 데 핵심적입니다.' },
+    { title: '성격은 유전일까, 환경일까?', body: '쌍둥이 연구에 따르면 성격 특성의 약 40~60%가 유전적 요인에 의해 결정됩니다. 나머지는 개인적 경험, 문화, 교육 등 환경적 요인이 영향을 미칩니다. 성인기에도 의식적 노력으로 성격을 발전시킬 수 있습니다.' },
+  ],
+  en: [
+    { title: 'What is Honesty-Humility (H)?', body: 'The Honesty-Humility factor is the most distinctive dimension of the HEXACO model. High scores indicate fairness, modesty, and low entitlement. It plays a crucial role in predicting workplace ethics, leadership style, and interpersonal trustworthiness.' },
+    { title: 'Emotionality (E) & Stress Response', body: 'People high in Emotionality are emotionally expressive and highly empathetic. Lower scores indicate emotional stability and independent problem-solving. Both traits can be strengths depending on the situation.' },
+    { title: 'The Many Facets of Extraversion (X)', body: 'Extraversion isn\'t just about being "social." It encompasses social confidence, vitality, leadership, and positive emotional experiences. Even introverts can display extraverted behaviors in specific contexts.' },
+    { title: 'Agreeableness (A) & Relationships', body: 'High Agreeableness means you forgive easily and compromise well. Low scores indicate strong assertiveness and critical thinking. Research shows Agreeableness tends to gradually increase with age.' },
+    { title: 'Conscientiousness (C) & Success', body: 'Conscientiousness shows the strongest correlation with academic achievement, job performance, and healthy behaviors. It includes planning, diligence, prudence, and perfectionism — key predictors of goal attainment.' },
+    { title: 'Openness (O) & Creativity', body: 'People high in Openness are drawn to art, philosophy, and novel ideas with rich imagination. This factor strongly correlates with creative job performance and reflects unconventional thinking and intellectual curiosity.' },
+    { title: 'HEXACO vs Big Five Model', body: 'The HEXACO model adds Honesty-Humility (H) to the traditional Big Five personality model. Research shows this additional factor is crucial for predicting unethical workplace behavior, narcissism, and Machiavellianism.' },
+    { title: 'Nature vs Nurture in Personality', body: 'Twin studies show approximately 40–60% of personality traits are determined by genetics. The rest is influenced by personal experiences, culture, and education. Personality can still be consciously developed throughout adulthood.' },
+  ],
+}
+
+// Ad break overlay shown every 20 questions with educational content
 function AdBreakOverlay({
   isKo,
   onContinue,
@@ -133,9 +157,15 @@ function AdBreakOverlay({
   const [canContinue, setCanContinue] = useState(false)
   const [progress, setProgress] = useState(0)
 
+  // Pick a random personality tip
+  const [tip] = useState(() => {
+    const tips = isKo ? personalityTips.ko : personalityTips.en
+    return tips[Math.floor(Math.random() * tips.length)]
+  })
+
   useEffect(() => {
     const startTime = Date.now()
-    const duration = 3000
+    const duration = 5000
     let raf: number
     const tick = () => {
       const elapsed = Date.now() - startTime
@@ -156,14 +186,14 @@ function AdBreakOverlay({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4 overflow-y-auto py-8"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className="relative rounded-3xl p-6 max-w-md w-full text-center border border-purple-500/30"
+        className="relative rounded-3xl p-6 max-w-md w-full border border-purple-500/30"
         style={{
           background: 'linear-gradient(135deg, #1A1035 0%, #2D1B4E 100%)',
         }}
@@ -172,39 +202,42 @@ function AdBreakOverlay({
         <div className="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
           style={{ background: 'linear-gradient(135deg, #8B5CF6, #6366F1)' }}
         >
-          <Coffee className="w-6 h-6 text-white" />
+          <Lightbulb className="w-6 h-6 text-white" />
         </div>
 
-        {/* Title */}
-        <h2 className="text-lg font-bold text-white mb-1">
-          {isKo ? '잠시 쉬어가세요' : 'Take a Short Break'}
+        {/* Educational Content — Personality Insight */}
+        <h2 className="text-lg font-bold text-white mb-1 text-center">
+          {tip.title}
         </h2>
-        <p className="text-gray-400 text-xs mb-4">
-          {isKo
-            ? '잠시 눈을 쉬고, 다음 질문을 준비해보세요.'
-            : 'Rest your eyes for a moment before continuing.'}
+        <p className="text-gray-300 text-sm mb-4 leading-relaxed text-left">
+          {tip.body}
         </p>
 
-        {/* Native Ad Banner */}
+        {/* Divider */}
+        <div className="border-t border-purple-500/20 my-4" />
+
+        {/* Ad Banner — supplementary, not primary content */}
         <div className="mb-4 rounded-xl overflow-hidden bg-dark-bg/50 border border-dark-border">
           <AdBanner />
         </div>
 
-        {/* 3-second progress bar + continue button */}
+        {/* Progress bar + continue button */}
         {canContinue ? (
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            onClick={onContinue}
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-white font-bold border border-purple-500/50"
-            style={{
-              background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {isKo ? '계속하기' : 'Continue'}
-          </motion.button>
+          <div className="text-center">
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={onContinue}
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-white font-bold border border-purple-500/50"
+              style={{
+                background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isKo ? '계속하기' : 'Continue'}
+            </motion.button>
+          </div>
         ) : (
           <div className="flex flex-col items-center gap-2">
             <div className="w-full h-1.5 bg-dark-card rounded-full overflow-hidden">
@@ -217,7 +250,7 @@ function AdBreakOverlay({
               />
             </div>
             <p className="text-gray-500 text-xs">
-              {isKo ? '잠시만 기다려주세요...' : 'Please wait...'}
+              {isKo ? '성격 심리학 팁을 읽어보세요!' : 'Read this personality psychology tip!'}
             </p>
           </div>
         )}
@@ -633,8 +666,8 @@ export default function TestPage() {
     if (isLastQuestion && allAnswered) {
       setShowPopup(true)
     } else if (currentAnswer !== undefined) {
-      // Show ad break every 15 questions (after question 15, 30, 45, etc.)
-      if ((currentIndex + 1) % 15 === 0 && !isLastQuestion) {
+      // Show ad break every 20 questions (after question 20, 40, 60, etc.)
+      if ((currentIndex + 1) % 20 === 0 && !isLastQuestion) {
         setShowAdBreak(true)
       } else {
         nextQuestion()
