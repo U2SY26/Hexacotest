@@ -30,3 +30,15 @@ dist-ssr
 
 .vercel
 .env*.local
+
+# Claude Code local config
+.claude/
+
+# Build output
+out/
+
+# Generated promo videos (large files)
+grok-video-*.mp4
+
+# Misplaced Firebase config (root level)
+/google-services.json

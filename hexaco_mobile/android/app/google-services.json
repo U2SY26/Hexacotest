@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "207286859673",
+    "project_id": "hexa-9ff7e",
+    "storage_bucket": "hexa-9ff7e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:207286859673:android:90956f1804af437fa6c508",
+        "android_client_info": {
+          "package_name": "com.hexaco.hexaco_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAH2MqAOunAH5G2SGXmUY1UwByIUl147Fk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
