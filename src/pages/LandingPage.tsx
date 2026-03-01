@@ -12,6 +12,7 @@ import DecryptedText from '../components/DecryptedText'
 import DisclaimerSection from '../components/common/DisclaimerSection'
 import PinDialog from '../components/common/PinDialog'
 import { useHistoryStore, type SavedResult } from '../stores/historyStore'
+import { useCardStore, getCardStats, rarityLabels, type SavedCard, type CardRarity } from '../stores/cardStore'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -273,6 +274,113 @@ function SavedResultsSection() {
         />
       </div>
     </section>
+  )
+}
+
+// Card Collection section
+function CardCollectionSection() {
+  const { i18n } = useTranslation()
+  const cards = useCardStore(state => state.cards)
+  const isKo = i18n.language === 'ko'
+
+  if (cards.length === 0) return null
+
+  const stats = getCardStats(cards)
+  const rarityOrder: CardRarity[] = ['legendary', 'epic', 'rare', 'common']
+
+  return (
+    <section className="py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🃏</span>
+            <h2 className="text-lg font-bold text-white">
+              {isKo ? '보유 카드' : 'My Cards'}
+            </h2>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium">
+              {stats.total}
+            </span>
+          </div>
+          {/* Rarity stats */}
+          <div className="flex items-center gap-2">
+            {rarityOrder.map(r => stats[r] > 0 && (
+              <span
+                key={r}
+                className="text-xs px-2 py-0.5 rounded-full font-medium"
+                style={{
+                  background: `${rarityLabels[r].color}20`,
+                  color: rarityLabels[r].color,
+                  border: `1px solid ${rarityLabels[r].color}40`,
+                }}
+              >
+                {isKo ? rarityLabels[r].ko : rarityLabels[r].en} {stats[r]}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* Card grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+          {cards.slice(0, 8).map(card => (
+            <CardMiniPreview key={card.id} card={card} isKo={isKo} />
+          ))}
+        </div>
+
+        {cards.length > 8 && (
+          <p className="text-center text-xs text-gray-500 mt-3">
+            +{cards.length - 8} {isKo ? '더 보기' : 'more'}
+          </p>
+        )}
+      </div>
+    </section>
+  )
+}
+
+function CardMiniPreview({ card, isKo }: { card: SavedCard; isKo: boolean }) {
+  const borderColor = rarityLabels[card.rarity].color
+
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05, y: -4 }}
+      className="rounded-xl overflow-hidden cursor-pointer"
+      style={{
+        background: 'linear-gradient(160deg, #1A1035 0%, #2D1B4E 100%)',
+        border: `1.5px solid ${borderColor}40`,
+        boxShadow: `0 0 12px ${borderColor}15`,
+        aspectRatio: '300/420',
+      }}
+    >
+      <div className="p-3 h-full flex flex-col items-center justify-between">
+        {/* Rarity + Number */}
+        <div className="flex justify-between w-full">
+          <span
+            className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
+            style={{ background: `${borderColor}25`, color: borderColor }}
+          >
+            {isKo ? rarityLabels[card.rarity].ko : rarityLabels[card.rarity].en}
+          </span>
+          <span className="text-[9px] text-gray-500 font-mono">{card.cardNumber}</span>
+        </div>
+
+        {/* Emoji */}
+        <div className="text-3xl my-2">{card.personalityTitle.emoji}</div>
+
+        {/* Title */}
+        <p className="text-[10px] font-bold text-white text-center leading-tight">
+          {isKo ? card.personalityTitle.titleKo : card.personalityTitle.titleEn}
+        </p>
+
+        {/* Match */}
+        <p className="text-[8px] text-gray-400 mt-1">
+          {card.topMatch.name} {card.topMatch.similarity}%
+        </p>
+
+        {/* Date */}
+        <p className="text-[7px] text-gray-600 mt-auto">
+          {new Date(card.createdAt).toLocaleDateString()}
+        </p>
+      </div>
+    </motion.div>
   )
 }
 
@@ -674,6 +782,9 @@ export default function LandingPage() {
 
       {/* Saved Results Section */}
       <SavedResultsSection />
+
+      {/* Card Collection Section */}
+      <CardCollectionSection />
 
       {/* Stats Section */}
       <StatsSection />

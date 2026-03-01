@@ -22,11 +22,23 @@ interface CelebrityMatch {
   reason: string
 }
 
+interface RecommendationItem {
+  title: string
+  reason: string
+}
+
+interface Recommendations {
+  books: RecommendationItem[]
+  movies: RecommendationItem[]
+  activities: RecommendationItem[]
+}
+
 interface AnalysisResponse {
   summary: string
   factors: AnalysisFactor[]
   compatibleMBTIs: CompatibleMBTI[]
   celebrityMatches?: CelebrityMatch[]
+  recommendations?: Recommendations
 }
 
 const sanitizeScores = (scores: Record<string, unknown>): Scores => {
@@ -43,10 +55,11 @@ const buildPrompt = (scores: Scores, language: 'ko' | 'en', country?: string) =>
   const isKo = language === 'ko'
   const includeCelebrities = !isKo && !!country
 
+  const recommendationsSchema = ', "recommendations":{"books":[{"title":"<book title>","reason":"<1 sentence why>"},{"title":"<book title>","reason":"<1 sentence why>"},{"title":"<book title>","reason":"<1 sentence why>"}],"movies":[{"title":"<movie/drama title>","reason":"<1 sentence why>"},{"title":"<movie/drama title>","reason":"<1 sentence why>"},{"title":"<movie/drama title>","reason":"<1 sentence why>"}],"activities":[{"title":"<sport/hobby>","reason":"<1 sentence why>"},{"title":"<sport/hobby>","reason":"<1 sentence why>"},{"title":"<sport/hobby>","reason":"<1 sentence why>"}]}'
   const schemaBase = '{"summary":"<warm 3-4 sentence personality portrait>", "factors":[{"factor":"H","overview":"<warm 4-5 sentence analysis>","strengths":["<encouraging phrase>","<encouraging phrase>","<encouraging phrase>"],"risks":["<gently framed challenge>","<gently framed challenge>"],"growth":"<2 kind, actionable suggestions>"}], "compatibleMBTIs":[{"mbti":"XXXX","reason":"<1 sentence why this type is compatible>"},{"mbti":"XXXX","reason":"<1 sentence why>"},{"mbti":"XXXX","reason":"<1 sentence why>"}]'
   const schema = includeCelebrities
-    ? schemaBase + ', "celebrityMatches":[{"name":"<full name>","description":"<brief role/title>","similarity":<70-95>,"reason":"<1 sentence why personality matches>"}]}'
-    : schemaBase + '}'
+    ? schemaBase + ', "celebrityMatches":[{"name":"<full name>","description":"<brief role/title>","similarity":<70-95>,"reason":"<1 sentence why personality matches>"}]' + recommendationsSchema
+    : schemaBase + recommendationsSchema
 
   const lines = [
     isKo
@@ -71,6 +84,9 @@ const buildPrompt = (scores: Scores, language: 'ko' | 'en', country?: string) =>
     '- risks: 2 challenges per factor, framed gently as areas for growth',
     '- growth: 2 kind, specific suggestions that feel like a friend\'s advice',
     '- compatibleMBTIs: Based on 6-factor scores, suggest exactly 3 MBTI types that would be most compatible. Estimate the user\'s own MBTI from scores (X→E/I, O→N/S, A→F/T, C→J/P) and pick 3 complementary types. Each reason should be warm and insightful.',
+    isKo
+      ? '- recommendations: 이 성격 프로필에 맞는 추천을 제공하세요. books: 이 성격에 어울리는 실제 유명한 책 3권 (한국어 제목 사용). movies: 이 성격에 어울리는 실제 유명한 영화/드라마/TV 프로그램 3편 (한국어 제목 사용). activities: 이 성격에 적합한 스포츠/취미/운동 3가지. 각각 성격과 맞는 이유를 따뜻한 한 문장으로 설명하세요.'
+      : '- recommendations: Provide personality-based recommendations. books: 3 real, well-known books that match this personality profile. movies: 3 real, well-known movies/dramas/TV shows that match this personality. activities: 3 sports, hobbies, or exercises suited to this personality. Each with a brief, warm reason why it fits their personality.',
   ]
 
   if (includeCelebrities) {
@@ -144,7 +160,7 @@ export default async function handler(req: any, res: any) {
           generationConfig: {
             temperature: 0.7,
             topP: 0.9,
-            maxOutputTokens: 3500,
+            maxOutputTokens: 4500,
             responseMimeType: 'application/json',
           },
         }),

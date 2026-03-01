@@ -251,20 +251,6 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     );
   }
 
-  Future<void> _ilchoClipboardFallback(String jsonStr, bool isKo) async {
-    if (!mounted) return;
-    await Clipboard.setData(ClipboardData(text: jsonStr));
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(isKo
-            ? '일초 앱에서 성격 프로필 > 가져오기에서 붙여넣기 하세요\n(일초 앱 최신 버전 필요)'
-            : 'Paste in Ilcho app: Personality > Import\n(Latest Ilcho version required)'),
-        duration: const Duration(seconds: 5),
-      ),
-    );
-  }
-
   Future<void> _exportToIlcho(bool isKo) async {
     final topMatch = matches.isNotEmpty ? matches.first : null;
     final exportData = {
@@ -283,16 +269,38 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     };
 
     final jsonStr = jsonEncode(exportData);
+
+    // 항상 클립보드에 먼저 복사 (딥링크 성공 여부와 무관하게)
+    await Clipboard.setData(ClipboardData(text: jsonStr));
+
+    // 딥링크로 일초 앱 직접 열기 시도
     final base64Data = base64Url.encode(utf8.encode(jsonStr));
     final uri = Uri.parse('ilcho://import?data=$base64Data');
 
+    bool launched = false;
     try {
-      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!launched) {
-        await _ilchoClipboardFallback(jsonStr, isKo);
-      }
-    } catch (e) {
-      await _ilchoClipboardFallback(jsonStr, isKo);
+      launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {}
+
+    if (!mounted) return;
+    if (!launched) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isKo
+              ? 'JSON이 복사되었습니다.\n일초 앱 > 성격 프로필 > 가져오기에서 붙여넣기 하세요.'
+              : 'JSON copied.\nPaste in Ilcho app: Personality > Import.'),
+          duration: const Duration(seconds: 5),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(isKo
+              ? 'JSON이 복사되었습니다. 일초 앱으로 이동합니다.'
+              : 'JSON copied. Opening Ilcho app.'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
     }
   }
 

@@ -6,7 +6,7 @@ import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis,
   PolarRadiusAxis, ResponsiveContainer
 } from 'recharts'
-import { Download, Link2, RotateCcw, Home, Check, Twitter, AlertTriangle, Info, Brain, Sparkles, Copy, Coffee, ExternalLink, Image, X, Share2, CheckCircle, Circle, Hexagon } from 'lucide-react'
+import { Download, Link2, RotateCcw, Home, Check, AlertTriangle, Info, Brain, Sparkles, Copy, Coffee, ExternalLink, Image, X, Share2, CheckCircle, Circle, Hexagon } from 'lucide-react'
 import html2canvas from 'html2canvas'
 import { decodeResults, useTestStore } from '../stores/testStore'
 import { factorColors, factors, Factor } from '../data/questions'
@@ -18,6 +18,10 @@ import SavePromptDialog from '../components/common/SavePromptDialog'
 import { useHistoryStore } from '../stores/historyStore'
 import { getPersonalityTitle, getMemeQuotes, getMainMemeQuote, getCharacterMatch, getMBTIMatch } from '../utils/memeContent'
 import { getFactorAnalyses, getOverallAnalysis, type FactorAnalysis as LocalFactorAnalysis } from '../utils/personalityAnalysis'
+import Card3D from '../components/Card3D'
+import { useCardStore, type SavedCard } from '../stores/cardStore'
+import { getMBTICompatibility } from '../utils/mbtiCompatibility'
+import { sharePlatforms, shareKakao, shareFacebook, shareInstagram, shareTikTok, type ShareContent } from '../utils/shareTargets'
 
 interface AIAnalysisFactor {
   factor: string
@@ -39,11 +43,21 @@ interface AICelebrityMatch {
   reason: string
 }
 
+interface AIRecommendationItem {
+  title: string
+  reason: string
+}
+
 interface AIAnalysisResponse {
   summary: string
   factors: AIAnalysisFactor[]
   compatibleMBTIs?: AICompatibleMBTI[]
   celebrityMatches?: AICelebrityMatch[]
+  recommendations?: {
+    books: AIRecommendationItem[]
+    movies: AIRecommendationItem[]
+    activities: AIRecommendationItem[]
+  }
 }
 
 const factorNamesKo: Record<Factor, string> = {
@@ -310,6 +324,37 @@ export default function ResultPage() {
   const overallText = scores ? getOverallAnalysis(scores, i18n.language === 'ko') : ''
   const isKo = i18n.language === 'ko'
   const isSharedView = !!encodedResult
+
+  // Card collection
+  const addCard = useCardStore(state => state.addCard)
+  const [currentCard, setCurrentCard] = useState<SavedCard | null>(null)
+
+  // MBTI compatibility
+  const mbtiCompat = mbtiMatch ? (() => { try { return getMBTICompatibility(mbtiMatch.mbti) } catch { return null } })() : null
+
+  // Auto-generate card on first result display (not shared view)
+  useEffect(() => {
+    if (!scores || !personalityTitle || !mainMeme || !match || isSharedView || currentCard) return
+    const card = addCard({
+      scores,
+      personalityTitle: {
+        emoji: personalityTitle.emoji,
+        titleKo: personalityTitle.titleKo,
+        titleEn: personalityTitle.titleEn,
+      },
+      mainQuote: {
+        emoji: mainMeme.emoji,
+        quoteKo: mainMeme.quoteKo,
+        quoteEn: mainMeme.quoteEn,
+      },
+      topMatch: {
+        name: match.persona.name[isKo ? 'ko' : 'en'],
+        similarity: match.similarity,
+      },
+      mbti: mbtiMatch?.mbti || 'XXXX',
+    })
+    setCurrentCard(card)
+  }, [scores, personalityTitle, mainMeme, match, isSharedView])
 
   const handleExit = (target: string) => {
     if (isSharedView) {
@@ -1039,6 +1084,126 @@ export default function ResultPage() {
               </li>
             </ul>
           </motion.div>
+
+          {/* ─── 3D Personality Card ─── */}
+          {currentCard && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, type: 'spring', stiffness: 100 }}
+              className="mt-8"
+            >
+              <h3 className="text-lg font-bold text-center mb-2" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                {isKo ? '🃏 나만의 성격 카드' : '🃏 My Personality Card'}
+              </h3>
+              <p className="text-xs text-center mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                {isKo ? '카드를 터치하면 뒤집어집니다 · 움직이면 홀로그램 효과' : 'Tap to flip · Move for hologram effect'}
+              </p>
+              <div className="flex justify-center">
+                <Card3D
+                  personalityTitle={currentCard.personalityTitle}
+                  mainQuote={currentCard.mainQuote}
+                  topMatch={currentCard.topMatch}
+                  scores={currentCard.scores}
+                  rarity={currentCard.rarity}
+                  cardNumber={currentCard.cardNumber}
+                  isKo={isKo}
+                />
+              </div>
+            </motion.div>
+          )}
+
+          {/* ─── MBTI Best/Worst Compatibility ─── */}
+          {mbtiCompat && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="mt-6"
+            >
+              <h3 className="text-lg font-bold mb-3" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                {isKo ? '💕 MBTI 궁합' : '💕 MBTI Compatibility'}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Best */}
+                <div className="rounded-xl p-4" style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}>
+                  <p className="text-sm font-semibold text-emerald-400 mb-2">
+                    {isKo ? '✨ 베스트 궁합' : '✨ Best Match'}
+                  </p>
+                  {mbtiCompat.best.map((m, i) => (
+                    <div key={i} className="flex items-center gap-2 mb-1.5">
+                      <span className="text-sm">{m.emoji}</span>
+                      <span className="text-sm font-bold" style={{ color: 'rgba(255,255,255,0.85)' }}>{m.mbti}</span>
+                      <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                        {isKo ? m.reason.ko : m.reason.en}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                {/* Worst */}
+                <div className="rounded-xl p-4" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
+                  <p className="text-sm font-semibold text-red-400 mb-2">
+                    {isKo ? '⚡ 주의할 궁합' : '⚡ Challenging Match'}
+                  </p>
+                  {mbtiCompat.worst.map((m, i) => (
+                    <div key={i} className="flex items-center gap-2 mb-1.5">
+                      <span className="text-sm">{m.emoji}</span>
+                      <span className="text-sm font-bold" style={{ color: 'rgba(255,255,255,0.85)' }}>{m.mbti}</span>
+                      <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                        {isKo ? m.reason.ko : m.reason.en}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* ─── AI Recommendations ─── */}
+          {aiAnalysis?.recommendations && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              className="mt-6"
+            >
+              <h3 className="text-lg font-bold mb-3" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                {isKo ? '🎯 나에게 맞는 추천' : '🎯 Personalized Recommendations'}
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {/* Books */}
+                <div className="rounded-xl p-4" style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}>
+                  <p className="text-sm font-semibold mb-2" style={{ color: '#A78BFA' }}>📚 {isKo ? '추천 도서' : 'Books'}</p>
+                  {aiAnalysis.recommendations.books.map((item, i) => (
+                    <div key={i} className="mb-2">
+                      <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.85)' }}>{item.title}</p>
+                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>{item.reason}</p>
+                    </div>
+                  ))}
+                </div>
+                {/* Movies */}
+                <div className="rounded-xl p-4" style={{ background: 'rgba(236,72,153,0.08)', border: '1px solid rgba(236,72,153,0.2)' }}>
+                  <p className="text-sm font-semibold mb-2" style={{ color: '#F472B6' }}>🎬 {isKo ? '추천 영화/드라마' : 'Movies/Drama'}</p>
+                  {aiAnalysis.recommendations.movies.map((item, i) => (
+                    <div key={i} className="mb-2">
+                      <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.85)' }}>{item.title}</p>
+                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>{item.reason}</p>
+                    </div>
+                  ))}
+                </div>
+                {/* Activities */}
+                <div className="rounded-xl p-4" style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)' }}>
+                  <p className="text-sm font-semibold mb-2" style={{ color: '#60A5FA' }}>🏃 {isKo ? '추천 활동' : 'Activities'}</p>
+                  {aiAnalysis.recommendations.activities.map((item, i) => (
+                    <div key={i} className="mb-2">
+                      <p className="text-sm font-medium" style={{ color: 'rgba(255,255,255,0.85)' }}>{item.title}</p>
+                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>{item.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
 
         {/* Share & Action Buttons */}
@@ -1051,17 +1216,11 @@ export default function ResultPage() {
           <div className="flex flex-wrap justify-center gap-3">
             <button onClick={copySummary} className="btn-secondary flex items-center gap-2">
               {summaryCopied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-              {summaryCopied
-                ? (isKo ? '복사됨!' : 'Copied!')
-                : (isKo ? '결과 복사' : 'Copy Result')}
+              {summaryCopied ? (isKo ? '복사됨!' : 'Copied!') : (isKo ? '결과 복사' : 'Copy Result')}
             </button>
             <button onClick={copyLink} className="btn-secondary flex items-center gap-2">
               {copied ? <Check className="w-4 h-4 text-green-500" /> : <Link2 className="w-4 h-4" />}
               {copied ? t('common.copied') : t('common.copyLink')}
-            </button>
-            <button onClick={shareTwitter} className="btn-secondary flex items-center gap-2">
-              <Twitter className="w-4 h-4" />
-              Twitter
             </button>
             <button onClick={() => openShareModal('download')} className="btn-secondary flex items-center gap-2">
               <Download className="w-4 h-4" />
@@ -1072,6 +1231,62 @@ export default function ResultPage() {
               {isKo ? '이미지 공유' : 'Share Image'}
             </button>
           </div>
+
+          {/* SNS Share Buttons */}
+          <div className="flex flex-wrap justify-center gap-2 mt-3">
+            {sharePlatforms.map(platform => (
+              <button
+                key={platform.id}
+                onClick={() => {
+                  const content: ShareContent = {
+                    emoji: personalityTitle?.emoji || '⬡',
+                    title: isKo ? (personalityTitle?.titleKo || '') : (personalityTitle?.titleEn || ''),
+                    quote: isKo ? (mainMeme?.quoteKo || '') : (mainMeme?.quoteEn || ''),
+                    mbti: mbtiMatch?.mbti || '',
+                    matchName: match?.persona.name[isKo ? 'ko' : 'en'] || '',
+                    matchSimilarity: match?.similarity || 0,
+                    url: window.location.href,
+                  }
+                  if (platform.id === 'kakao') shareKakao(content)
+                  else if (platform.id === 'facebook') shareFacebook(content.url)
+                  else if (platform.id === 'twitter') shareTwitter()
+                  else if (platform.id === 'instagram') shareInstagram(content.url)
+                  else if (platform.id === 'tiktok') shareTikTok(content.url)
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105"
+                style={{
+                  background: `${platform.color}15`,
+                  border: `1px solid ${platform.color}30`,
+                  color: 'rgba(255,255,255,0.8)',
+                }}
+              >
+                <span>{platform.icon}</span>
+                <span>{isKo ? platform.label : platform.labelEn}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Couple Compatibility CTA */}
+          {!isSharedView && scores && (
+            <div className="flex justify-center mt-3">
+              <button
+                onClick={() => {
+                  const encoded = btoa(JSON.stringify(scores))
+                  const url = `${window.location.origin}/result?partner=${encoded}`
+                  navigator.clipboard.writeText(url)
+                  alert(isKo ? '궁합 링크가 복사되었습니다!\n상대방에게 이 링크를 보내세요.' : 'Compatibility link copied!\nSend this link to your partner.')
+                }}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all hover:scale-105"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(236,72,153,0.15), rgba(139,92,246,0.15))',
+                  border: '1px solid rgba(236,72,153,0.3)',
+                  color: '#F9A8D4',
+                }}
+              >
+                💕 {isKo ? '연인 궁합 보기 (링크 복사)' : 'Check Couple Compatibility (Copy Link)'}
+              </button>
+            </div>
+          )}
 
           {/* Coffee / Donate Button */}
           <div className="flex justify-center">
