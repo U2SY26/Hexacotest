@@ -28,7 +28,7 @@ void main() {
       scores: {'H': 50, 'E': 50, 'X': 50, 'A': 50, 'C': 50, 'O': 50},
     );
 
-    final data = AppData(questions: [question], types: [profile]);
+    final data = AppData(questions: [question], types: [profile], insights: []);
     final controller = TestController(data);
 
     await tester.pumpWidget(

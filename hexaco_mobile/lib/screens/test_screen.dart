@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../constants.dart';
 import '../controllers/test_controller.dart';
 import '../models/question.dart';
+import '../services/rewarded_ad_service.dart';
 import '../ui/app_tokens.dart';
 import '../widgets/app_scaffold.dart';
 import '../widgets/buttons.dart';
@@ -11,10 +12,27 @@ import '../widgets/dark_card.dart';
 import '../widgets/ad_banner.dart';
 import '../config/admob_ids.dart';
 
-class TestScreen extends StatelessWidget {
+class TestScreen extends StatefulWidget {
   final TestController controller;
 
   const TestScreen({super.key, required this.controller});
+
+  @override
+  State<TestScreen> createState() => _TestScreenState();
+}
+
+class _TestScreenState extends State<TestScreen> {
+  /// How often (in questions) to show an interstitial ad.
+  static const int _adInterval = 15;
+
+  TestController get controller => widget.controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // Preload the first interstitial ad so it is ready by question 15.
+    RewardedAdService.loadAd();
+  }
 
   void _showResultPopup(BuildContext context, bool isKo) {
     showDialog(
@@ -22,6 +40,41 @@ class TestScreen extends StatelessWidget {
       barrierDismissible: false,
       builder: (context) => _ResultPopupDialog(isKo: isKo),
     );
+  }
+
+  /// Returns true when an interstitial ad should be shown before advancing.
+  /// Fires at questions 15, 30, 45, ... (1-based) and never on the last question.
+  bool _shouldShowAd() {
+    final nextIndex = controller.currentIndex + 1; // 1-based question number
+    final isLast = controller.currentIndex == controller.questions.length - 1;
+    return !isLast && nextIndex % _adInterval == 0;
+  }
+
+  /// Advance to the next question, optionally showing an interstitial ad first.
+  void _handleNext(BuildContext context, bool isKo, int? currentAnswer) {
+    final isLast = controller.currentIndex == controller.questions.length - 1;
+
+    if (isLast && controller.isComplete) {
+      _showResultPopup(context, isKo);
+      return;
+    }
+
+    if (currentAnswer == null) return;
+
+    if (_shouldShowAd() && RewardedAdService.isAdReady) {
+      RewardedAdService.showAd(
+        onAdDismissed: () {
+          // Ad dismissed (or failed to show) -> continue to next question.
+          // RewardedAdService.loadAd() is already called inside showAd's
+          // onAdDismissed / onAdFailedToShow callbacks, so the next ad
+          // will be preloaded automatically.
+          controller.next();
+        },
+      );
+    } else {
+      // No ad to show (not at interval, or ad not ready yet) -> just advance.
+      controller.next();
+    }
   }
 
   @override
@@ -36,11 +89,7 @@ class TestScreen extends StatelessWidget {
         final isLast = controller.currentIndex == questions.length - 1;
 
         void handleNext() {
-          if (isLast && controller.isComplete) {
-            _showResultPopup(context, isKo);
-          } else if (currentAnswer != null) {
-            controller.next();
-          }
+          _handleNext(context, isKo, currentAnswer);
         }
 
         return AppScaffold(

@@ -18,10 +18,11 @@ import SavePromptDialog from '../components/common/SavePromptDialog'
 import { useHistoryStore } from '../stores/historyStore'
 import { getPersonalityTitle, getMemeQuotes, getMainMemeQuote, getCharacterMatch, getMBTIMatch } from '../utils/memeContent'
 import { getFactorAnalyses, getOverallAnalysis, type FactorAnalysis as LocalFactorAnalysis } from '../utils/personalityAnalysis'
-import Card3D from '../components/Card3D'
 import { useCardStore, type SavedCard } from '../stores/cardStore'
+import CardRevealModal from '../components/CardRevealModal'
 import { getMBTICompatibility } from '../utils/mbtiCompatibility'
-import { sharePlatforms, shareKakao, shareFacebook, shareInstagram, shareTikTok, type ShareContent } from '../utils/shareTargets'
+import { shareFacebook, shareNative, buildShareText, type ShareContent } from '../utils/shareTargets'
+import AdBanner from '../components/AdBanner'
 
 interface AIAnalysisFactor {
   factor: string
@@ -145,6 +146,11 @@ function LoadingScreen({ language }: { language: string }) {
       <p className="text-gray-400 text-sm mt-4">
         {Math.round(progress)}%
       </p>
+
+      {/* Ad Banner during loading */}
+      <div className="w-full max-w-md mt-8 px-4 rounded-xl overflow-hidden">
+        <AdBanner />
+      </div>
     </div>
   )
 }
@@ -323,18 +329,20 @@ export default function ResultPage() {
   const localAnalyses = scores ? getFactorAnalyses(scores) : []
   const overallText = scores ? getOverallAnalysis(scores, i18n.language === 'ko') : ''
   const isKo = i18n.language === 'ko'
-  const isSharedView = !!encodedResult
+  // 공유된 링크로 들어온 경우: URL에 r= 파라미터가 있지만 스토어에 점수가 없음
+  const isSharedView = !!encodedResult && !storeScores
 
   // Card collection
   const addCard = useCardStore(state => state.addCard)
   const [currentCard, setCurrentCard] = useState<SavedCard | null>(null)
+  const [showCardReveal, setShowCardReveal] = useState(false)
 
   // MBTI compatibility
   const mbtiCompat = mbtiMatch ? (() => { try { return getMBTICompatibility(mbtiMatch.mbti) } catch { return null } })() : null
 
-  // Auto-generate card on first result display (not shared view)
-  useEffect(() => {
-    if (!scores || !personalityTitle || !mainMeme || !match || isSharedView || currentCard) return
+  // Generate card on button click (gacha-style)
+  const handleGenerateCard = useCallback(() => {
+    if (!scores || !personalityTitle || !mainMeme || !match) return
     const card = addCard({
       scores,
       personalityTitle: {
@@ -354,7 +362,8 @@ export default function ResultPage() {
       mbti: mbtiMatch?.mbti || 'XXXX',
     })
     setCurrentCard(card)
-  }, [scores, personalityTitle, mainMeme, match, isSharedView])
+    setShowCardReveal(true)
+  }, [scores, personalityTitle, mainMeme, match, isKo, mbtiMatch, addCard])
 
   const handleExit = (target: string) => {
     if (isSharedView) {
@@ -1086,31 +1095,95 @@ export default function ResultPage() {
           </motion.div>
 
           {/* ─── 3D Personality Card ─── */}
-          {currentCard && (
+          {!isSharedView && (
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3, type: 'spring', stiffness: 100 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
               className="mt-8"
             >
-              <h3 className="text-lg font-bold text-center mb-2" style={{ color: 'rgba(255,255,255,0.9)' }}>
-                {isKo ? '🃏 나만의 성격 카드' : '🃏 My Personality Card'}
-              </h3>
-              <p className="text-xs text-center mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                {isKo ? '카드를 터치하면 뒤집어집니다 · 움직이면 홀로그램 효과' : 'Tap to flip · Move for hologram effect'}
-              </p>
-              <div className="flex justify-center">
-                <Card3D
-                  personalityTitle={currentCard.personalityTitle}
-                  mainQuote={currentCard.mainQuote}
-                  topMatch={currentCard.topMatch}
-                  scores={currentCard.scores}
-                  rarity={currentCard.rarity}
-                  cardNumber={currentCard.cardNumber}
-                  isKo={isKo}
-                />
-              </div>
+              {!currentCard ? (
+                /* Card generation button (gacha-style) */
+                <div className="flex flex-col items-center gap-3">
+                  <h3 className="text-lg font-bold text-center" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                    {isKo ? '🃏 나만의 성격 카드' : '🃏 My Personality Card'}
+                  </h3>
+                  <p className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    {isKo ? '당신만의 홀로그램 성격 카드를 뽑아보세요!' : 'Draw your own holographic personality card!'}
+                  </p>
+                  <motion.button
+                    onClick={handleGenerateCard}
+                    className="relative overflow-hidden"
+                    style={{
+                      padding: '14px 36px',
+                      borderRadius: 16,
+                      background: 'linear-gradient(135deg, #7C3AED, #A855F7, #EC4899)',
+                      border: 'none',
+                      color: 'white',
+                      fontSize: 16,
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      fontFamily: 'Pretendard, system-ui, sans-serif',
+                      boxShadow: '0 0 30px rgba(168,85,247,0.4), 0 4px 20px rgba(0,0,0,0.3)',
+                      letterSpacing: 1,
+                    }}
+                    whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(168,85,247,0.6), 0 4px 30px rgba(0,0,0,0.4)' }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <motion.span
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.2) 45%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.2) 55%, transparent 60%)',
+                      }}
+                      animate={{ x: ['-200%', '200%'] }}
+                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                    />
+                    <span style={{ position: 'relative', zIndex: 1 }}>
+                      {isKo ? '✨ 카드 뽑기' : '✨ Draw Card'}
+                    </span>
+                  </motion.button>
+                </div>
+              ) : (
+                /* Card already generated - show mini preview + view button */
+                <div className="flex flex-col items-center gap-3">
+                  <h3 className="text-lg font-bold text-center" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                    {isKo ? '🃏 나만의 성격 카드' : '🃏 My Personality Card'}
+                  </h3>
+                  <motion.button
+                    onClick={() => setShowCardReveal(true)}
+                    style={{
+                      padding: '12px 28px',
+                      borderRadius: 12,
+                      background: 'rgba(139,92,246,0.15)',
+                      border: '1px solid rgba(139,92,246,0.3)',
+                      color: '#A855F7',
+                      fontSize: 14,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      fontFamily: 'Pretendard, system-ui, sans-serif',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                    }}
+                    whileHover={{ scale: 1.03, background: 'rgba(139,92,246,0.25)' }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <Sparkles size={16} />
+                    {isKo ? '카드 다시 보기' : 'View Card Again'}
+                  </motion.button>
+                </div>
+              )}
             </motion.div>
+          )}
+
+          {/* Card Reveal Modal */}
+          {showCardReveal && currentCard && (
+            <CardRevealModal
+              card={currentCard}
+              isKo={isKo}
+              onClose={() => setShowCardReveal(false)}
+            />
           )}
 
           {/* ─── MBTI Best/Worst Compatibility ─── */}
@@ -1232,38 +1305,69 @@ export default function ResultPage() {
             </button>
           </div>
 
-          {/* SNS Share Buttons */}
+          {/* 네이티브 공유 (인스타그램, 카카오톡, 메신저 등 앱 직접 선택) */}
           <div className="flex flex-wrap justify-center gap-2 mt-3">
-            {sharePlatforms.map(platform => (
-              <button
-                key={platform.id}
-                onClick={() => {
-                  const content: ShareContent = {
-                    emoji: personalityTitle?.emoji || '⬡',
-                    title: isKo ? (personalityTitle?.titleKo || '') : (personalityTitle?.titleEn || ''),
-                    quote: isKo ? (mainMeme?.quoteKo || '') : (mainMeme?.quoteEn || ''),
-                    mbti: mbtiMatch?.mbti || '',
-                    matchName: match?.persona.name[isKo ? 'ko' : 'en'] || '',
-                    matchSimilarity: match?.similarity || 0,
-                    url: window.location.href,
+            <button
+              onClick={async () => {
+                const content: ShareContent = {
+                  emoji: personalityTitle?.emoji || '⬡',
+                  title: isKo ? (personalityTitle?.titleKo || '') : (personalityTitle?.titleEn || ''),
+                  quote: isKo ? (mainMeme?.quoteKo || '') : (mainMeme?.quoteEn || ''),
+                  mbti: mbtiMatch?.mbti || '',
+                  matchName: match?.persona.name[isKo ? 'ko' : 'en'] || '',
+                  matchSimilarity: match?.similarity || 0,
+                  url: window.location.href,
+                }
+                // navigator.share 지원 시 이미지+텍스트 함께 공유
+                if (typeof navigator.share === 'function') {
+                  try {
+                    const el = resultRef.current
+                    if (el) {
+                      const canvas = await html2canvas(el, { backgroundColor: '#0A0A1A', scale: 2 })
+                      const blob = await new Promise<Blob | null>(r => canvas.toBlob(r, 'image/png'))
+                      if (blob) {
+                        await shareNative(content, blob)
+                        return
+                      }
+                    }
+                    await shareNative(content)
+                  } catch {
+                    await shareNative(content)
                   }
-                  if (platform.id === 'kakao') shareKakao(content)
-                  else if (platform.id === 'facebook') shareFacebook(content.url)
-                  else if (platform.id === 'twitter') shareTwitter()
-                  else if (platform.id === 'instagram') shareInstagram(content.url)
-                  else if (platform.id === 'tiktok') shareTikTok(content.url)
-                }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105"
-                style={{
-                  background: `${platform.color}15`,
-                  border: `1px solid ${platform.color}30`,
-                  color: 'rgba(255,255,255,0.8)',
-                }}
-              >
-                <span>{platform.icon}</span>
-                <span>{isKo ? platform.label : platform.labelEn}</span>
-              </button>
-            ))}
+                } else {
+                  // 데스크톱 fallback: 텍스트 복사
+                  const text = buildShareText(content)
+                  await navigator.clipboard.writeText(text)
+                  alert(isKo ? '공유 텍스트가 복사되었습니다!' : 'Share text copied!')
+                }
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all hover:scale-105"
+              style={{
+                background: 'linear-gradient(135deg, rgba(139,92,246,0.2), rgba(236,72,153,0.2))',
+                border: '1px solid rgba(139,92,246,0.4)',
+                color: 'rgba(255,255,255,0.9)',
+              }}
+            >
+              <Share2 className="w-4 h-4" />
+              {isKo ? '인스타·카톡·메신저로 공유' : 'Share to Apps'}
+            </button>
+            <button
+              onClick={() => {
+                const url = window.location.href
+                shareFacebook(url)
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105"
+              style={{ background: '#1877F215', border: '1px solid #1877F230', color: 'rgba(255,255,255,0.8)' }}
+            >
+              <span>👤</span> Facebook
+            </button>
+            <button
+              onClick={shareTwitter}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all hover:scale-105"
+              style={{ background: '#00000015', border: '1px solid #00000030', color: 'rgba(255,255,255,0.8)' }}
+            >
+              <span>🐦</span> X
+            </button>
           </div>
 
           {/* Couple Compatibility CTA */}

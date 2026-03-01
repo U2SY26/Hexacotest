@@ -228,17 +228,19 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
     final mainMeme = MemeContentService.getMainMemeQuote(scores);
     final mbti = MemeContentService.getMBTIMatch(scores);
 
+    const playStoreUrl = 'https://play.google.com/store/apps/details?id=com.hexaco.hexaco_mobile';
+
     return isKo
         ? '${title.emoji} ${title.titleKo}\n'
             '${mainMeme.emoji} ${mainMeme.quoteKo}\n\n'
             '🔮 MBTI 추정: ${mbti.mbti}\n'
             '👤 닮은 유명인: ${topMatch.profile.nameKo} (${topMatch.similarity}%)\n\n'
-            '나도 테스트하기 👉 hexacotest.vercel.app'
+            '📱 5분 심리유형 테스트 👉\n$playStoreUrl'
         : '${title.emoji} ${title.titleEn}\n'
             '${mainMeme.emoji} ${mainMeme.quoteEn}\n\n'
             '🔮 MBTI guess: ${mbti.mbti}\n'
             '👤 Similar to: ${topMatch.profile.nameEn} (${topMatch.similarity}%)\n\n'
-            'Try the test 👉 hexacotest.vercel.app';
+            '📱 5-min Personality Test 👉\n$playStoreUrl';
   }
 
   Future<void> _copySummary(bool isKo) async {
@@ -755,6 +757,20 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
                     const Icon(Icons.image, size: 18),
                     const SizedBox(width: 8),
                     Text(isKo ? '이미지 공유' : 'Share Image'),
+                  ],
+                ),
+              ),
+              SecondaryButton(
+                onPressed: () async {
+                  await Share.share(_summaryText(isKo));
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.share, size: 18),
+                    const SizedBox(width: 8),
+                    Text(isKo ? '친구에게 공유' : 'Share with Friends'),
                   ],
                 ),
               ),

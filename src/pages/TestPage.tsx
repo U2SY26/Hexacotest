@@ -2,9 +2,10 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft, ChevronRight, Lightbulb, Circle, Sparkles, Eye } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Lightbulb, Circle, Sparkles, Eye, Coffee } from 'lucide-react'
 import { factorColors } from '../data/questions'
 import { useTestStore, encodeResults } from '../stores/testStore'
+import AdBanner from '../components/AdBanner'
 
 // Test completion popup (matching mobile app design)
 function CompletionPopup({
@@ -85,6 +86,105 @@ function CompletionPopup({
           <Eye className="w-6 h-6" />
           {isKo ? '결과 보기' : 'View Results'}
         </motion.button>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+// Ad break overlay shown every 15 questions
+function AdBreakOverlay({
+  isKo,
+  onContinue,
+}: {
+  isKo: boolean
+  onContinue: () => void
+}) {
+  const [canContinue, setCanContinue] = useState(false)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCanContinue(true)
+    }, 3000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className="relative rounded-3xl p-6 max-w-md w-full text-center border border-purple-500/30"
+        style={{
+          background: 'linear-gradient(135deg, #1A1035 0%, #2D1B4E 100%)',
+        }}
+      >
+        {/* Icon */}
+        <motion.div
+          className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center"
+          style={{
+            background: 'linear-gradient(135deg, #8B5CF6, #6366F1)',
+          }}
+          animate={{
+            boxShadow: [
+              '0 0 20px rgba(139, 92, 246, 0.3)',
+              '0 0 40px rgba(139, 92, 246, 0.5)',
+              '0 0 20px rgba(139, 92, 246, 0.3)',
+            ],
+          }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <Coffee className="w-8 h-8 text-white" />
+        </motion.div>
+
+        {/* Title */}
+        <h2 className="text-xl font-bold text-white mb-2">
+          {isKo ? '잠시 쉬어가세요' : 'Take a Short Break'}
+        </h2>
+        <p className="text-gray-400 text-sm mb-5">
+          {isKo
+            ? '잠시 눈을 쉬고, 다음 질문을 준비해보세요.'
+            : 'Rest your eyes for a moment before continuing.'}
+        </p>
+
+        {/* Ad Banner */}
+        <div className="mb-5 rounded-xl overflow-hidden bg-dark-bg/50 border border-dark-border">
+          <AdBanner />
+        </div>
+
+        {/* Continue button */}
+        <AnimatePresence>
+          {canContinue ? (
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              onClick={onContinue}
+              className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-white font-bold border border-purple-500/50"
+              style={{
+                background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+              }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isKo ? '계속하기' : 'Continue'}
+            </motion.button>
+          ) : (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="text-gray-500 text-sm"
+            >
+              {isKo ? '잠시만 기다려주세요...' : 'Please wait a moment...'}
+            </motion.p>
+          )}
+        </AnimatePresence>
       </motion.div>
     </motion.div>
   )
@@ -469,6 +569,7 @@ export default function TestPage() {
   const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const [showPopup, setShowPopup] = useState(false)
+  const [showAdBreak, setShowAdBreak] = useState(false)
   const {
     currentIndex,
     answers,
@@ -496,8 +597,18 @@ export default function TestPage() {
     if (isLastQuestion && allAnswered) {
       setShowPopup(true)
     } else if (currentAnswer !== undefined) {
-      nextQuestion()
+      // Show ad break every 15 questions (after question 15, 30, 45, etc.)
+      if ((currentIndex + 1) % 15 === 0 && !isLastQuestion) {
+        setShowAdBreak(true)
+      } else {
+        nextQuestion()
+      }
     }
+  }
+
+  const handleAdBreakContinue = () => {
+    setShowAdBreak(false)
+    nextQuestion()
   }
 
   const handleViewResults = () => {
@@ -533,6 +644,16 @@ export default function TestPage() {
           <CompletionPopup
             isKo={isKo}
             onViewResults={handleViewResults}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Ad Break Overlay */}
+      <AnimatePresence>
+        {showAdBreak && (
+          <AdBreakOverlay
+            isKo={isKo}
+            onContinue={handleAdBreakContinue}
           />
         )}
       </AnimatePresence>
