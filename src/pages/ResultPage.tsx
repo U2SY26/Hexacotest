@@ -716,6 +716,96 @@ export default function ResultPage() {
             </div>
           </motion.div>
 
+          {/* ─── 3D Personality Card (right after radar chart) ─── */}
+          {scores && personalityTitle && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="card flex flex-col items-center py-6"
+            >
+              {!currentCard ? (
+                <>
+                  <h3 className="text-lg font-bold text-center mb-1" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                    {isKo ? '🃏 나만의 성격 카드' : '🃏 My Personality Card'}
+                  </h3>
+                  <p className="text-xs text-center mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    {isKo ? '당신만의 홀로그램 성격 카드를 뽑아보세요!' : 'Draw your own holographic personality card!'}
+                  </p>
+                  <motion.button
+                    onClick={handleGenerateCard}
+                    className="relative overflow-hidden"
+                    style={{
+                      padding: '14px 36px',
+                      borderRadius: 16,
+                      background: 'linear-gradient(135deg, #7C3AED, #A855F7, #EC4899)',
+                      border: 'none',
+                      color: 'white',
+                      fontSize: 16,
+                      fontWeight: 800,
+                      cursor: 'pointer',
+                      fontFamily: 'Pretendard, system-ui, sans-serif',
+                      boxShadow: '0 0 30px rgba(168,85,247,0.4), 0 4px 20px rgba(0,0,0,0.3)',
+                      letterSpacing: 1,
+                    }}
+                    whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(168,85,247,0.6), 0 4px 30px rgba(0,0,0,0.4)' }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <motion.span
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.2) 45%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.2) 55%, transparent 60%)',
+                      }}
+                      animate={{ x: ['-200%', '200%'] }}
+                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
+                    />
+                    <span style={{ position: 'relative', zIndex: 1 }}>
+                      {isKo ? '✨ 카드 뽑기' : '✨ Draw Card'}
+                    </span>
+                  </motion.button>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-lg font-bold text-center mb-3" style={{ color: 'rgba(255,255,255,0.9)' }}>
+                    {isKo ? '🃏 나만의 성격 카드' : '🃏 My Personality Card'}
+                  </h3>
+                  <motion.button
+                    onClick={() => setShowCardReveal(true)}
+                    style={{
+                      padding: '12px 28px',
+                      borderRadius: 12,
+                      background: 'rgba(139,92,246,0.15)',
+                      border: '1px solid rgba(139,92,246,0.3)',
+                      color: '#A855F7',
+                      fontSize: 14,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      fontFamily: 'Pretendard, system-ui, sans-serif',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 8,
+                    }}
+                    whileHover={{ scale: 1.03, background: 'rgba(139,92,246,0.25)' }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <Sparkles size={16} />
+                    {isKo ? '카드 다시 보기' : 'View Card Again'}
+                  </motion.button>
+                </>
+              )}
+            </motion.div>
+          )}
+
+          {/* Card Reveal Modal */}
+          {showCardReveal && currentCard && (
+            <CardRevealModal
+              card={currentCard}
+              isKo={isKo}
+              onClose={() => setShowCardReveal(false)}
+            />
+          )}
+
           {/* Factor Scores Grid (matching mobile) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -1093,98 +1183,6 @@ export default function ResultPage() {
               </li>
             </ul>
           </motion.div>
-
-          {/* ─── 3D Personality Card ─── */}
-          {scores && personalityTitle && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mt-8"
-            >
-              {!currentCard ? (
-                /* Card generation button (gacha-style) */
-                <div className="flex flex-col items-center gap-3">
-                  <h3 className="text-lg font-bold text-center" style={{ color: 'rgba(255,255,255,0.9)' }}>
-                    {isKo ? '🃏 나만의 성격 카드' : '🃏 My Personality Card'}
-                  </h3>
-                  <p className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                    {isKo ? '당신만의 홀로그램 성격 카드를 뽑아보세요!' : 'Draw your own holographic personality card!'}
-                  </p>
-                  <motion.button
-                    onClick={handleGenerateCard}
-                    className="relative overflow-hidden"
-                    style={{
-                      padding: '14px 36px',
-                      borderRadius: 16,
-                      background: 'linear-gradient(135deg, #7C3AED, #A855F7, #EC4899)',
-                      border: 'none',
-                      color: 'white',
-                      fontSize: 16,
-                      fontWeight: 800,
-                      cursor: 'pointer',
-                      fontFamily: 'Pretendard, system-ui, sans-serif',
-                      boxShadow: '0 0 30px rgba(168,85,247,0.4), 0 4px 20px rgba(0,0,0,0.3)',
-                      letterSpacing: 1,
-                    }}
-                    whileHover={{ scale: 1.05, boxShadow: '0 0 50px rgba(168,85,247,0.6), 0 4px 30px rgba(0,0,0,0.4)' }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <motion.span
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.2) 45%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.2) 55%, transparent 60%)',
-                      }}
-                      animate={{ x: ['-200%', '200%'] }}
-                      transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                    />
-                    <span style={{ position: 'relative', zIndex: 1 }}>
-                      {isKo ? '✨ 카드 뽑기' : '✨ Draw Card'}
-                    </span>
-                  </motion.button>
-                </div>
-              ) : (
-                /* Card already generated - show mini preview + view button */
-                <div className="flex flex-col items-center gap-3">
-                  <h3 className="text-lg font-bold text-center" style={{ color: 'rgba(255,255,255,0.9)' }}>
-                    {isKo ? '🃏 나만의 성격 카드' : '🃏 My Personality Card'}
-                  </h3>
-                  <motion.button
-                    onClick={() => setShowCardReveal(true)}
-                    style={{
-                      padding: '12px 28px',
-                      borderRadius: 12,
-                      background: 'rgba(139,92,246,0.15)',
-                      border: '1px solid rgba(139,92,246,0.3)',
-                      color: '#A855F7',
-                      fontSize: 14,
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      fontFamily: 'Pretendard, system-ui, sans-serif',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                    }}
-                    whileHover={{ scale: 1.03, background: 'rgba(139,92,246,0.25)' }}
-                    whileTap={{ scale: 0.97 }}
-                  >
-                    <Sparkles size={16} />
-                    {isKo ? '카드 다시 보기' : 'View Card Again'}
-                  </motion.button>
-                </div>
-              )}
-            </motion.div>
-          )}
-
-          {/* Card Reveal Modal */}
-          {showCardReveal && currentCard && (
-            <CardRevealModal
-              card={currentCard}
-              isKo={isKo}
-              onClose={() => setShowCardReveal(false)}
-            />
-          )}
 
           {/* ─── MBTI Best/Worst Compatibility ─── */}
           {mbtiCompat && (
