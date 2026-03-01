@@ -55,6 +55,8 @@ class HologramCard extends StatefulWidget {
 class _HologramCardState extends State<HologramCard> with TickerProviderStateMixin {
   double _rotateX = 0;
   double _rotateY = 0;
+  double _scale = 1.0;
+  double _baseScale = 1.0;
   bool _isFlipped = false;
   late AnimationController _flipController;
   late AnimationController _shimmerController;
@@ -82,17 +84,18 @@ class _HologramCardState extends State<HologramCard> with TickerProviderStateMix
     super.dispose();
   }
 
-  void _onPanUpdate(DragUpdateDetails details) {
-    setState(() {
-      _rotateY += details.delta.dx * 0.5;
-      _rotateX -= details.delta.dy * 0.5;
-      _rotateX = _rotateX.clamp(-25.0, 25.0);
-      _rotateY = _rotateY.clamp(-25.0, 25.0);
-    });
+  void _onScaleStart(ScaleStartDetails details) {
+    _baseScale = _scale;
   }
 
-  void _onPanEnd(DragEndDetails details) {
-    setState(() { _rotateX = 0; _rotateY = 0; });
+  void _onScaleUpdate(ScaleUpdateDetails details) {
+    setState(() {
+      // 360도 무제한 회전
+      _rotateY += details.focalPointDelta.dx * 0.5;
+      _rotateX -= details.focalPointDelta.dy * 0.5;
+      // 핀치 줌
+      _scale = (_baseScale * details.scale).clamp(0.5, 3.0);
+    });
   }
 
   void _onTap() {
@@ -107,8 +110,8 @@ class _HologramCardState extends State<HologramCard> with TickerProviderStateMix
     final isLegend = widget.card.rarity == CardRarity.legend;
 
     return GestureDetector(
-      onPanUpdate: _onPanUpdate,
-      onPanEnd: _onPanEnd,
+      onScaleStart: _onScaleStart,
+      onScaleUpdate: _onScaleUpdate,
       onTap: _onTap,
       child: AnimatedBuilder(
         animation: Listenable.merge([_flipController, _shimmerController, _pulseController, _particleController, _holoController]),
@@ -121,6 +124,7 @@ class _HologramCardState extends State<HologramCard> with TickerProviderStateMix
             alignment: Alignment.center,
             transform: Matrix4.identity()
               ..setEntry(3, 2, 0.001)
+              ..scale(_scale, _scale, _scale)
               ..rotateX(_rotateX * pi / 180)
               ..rotateY((_rotateY * pi / 180) + flipAngle),
             child: Container(
@@ -157,18 +161,22 @@ class _HologramCardState extends State<HologramCard> with TickerProviderStateMix
                   children: [
                     // Card face
                     if (isFront)
-                      _PremiumCardFront(
-                        card: widget.card,
-                        isKo: widget.isKo,
-                        shimmerValue: _shimmerController.value,
-                        pulseValue: _pulseController.value,
-                        holoValue: _holoController.value,
+                      Positioned.fill(
+                        child: _PremiumCardFront(
+                          card: widget.card,
+                          isKo: widget.isKo,
+                          shimmerValue: _shimmerController.value,
+                          pulseValue: _pulseController.value,
+                          holoValue: _holoController.value,
+                        ),
                       )
                     else
-                      Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.identity()..rotateY(pi),
-                        child: _CardBack(card: widget.card, isKo: widget.isKo),
+                      Positioned.fill(
+                        child: Transform(
+                          alignment: Alignment.center,
+                          transform: Matrix4.identity()..rotateY(pi),
+                          child: _CardBack(card: widget.card, isKo: widget.isKo),
+                        ),
                       ),
 
                     // Hologram sticker film (multi-layer)
@@ -638,72 +646,76 @@ class _HologramStickerOverlay extends StatelessWidget {
       CardRarity.r => 0.03,
     };
 
-    // Light source position based on tilt
-    final lightX = 0.5 + rotateY / 50;
-    final lightY = 0.5 - rotateX / 50;
+    // Light source position based on tilt (offset from diagonal to avoid degenerate gradient)
+    final lightX = 0.3 + rotateY / 50;
+    final lightY = 0.2 - rotateX / 50;
 
     return Positioned.fill(
       child: Stack(
         children: [
-          // Layer 1: Primary rainbow sweep
-          ShaderMask(
-            shaderCallback: (bounds) {
-              return LinearGradient(
-                begin: Alignment(lightX * 2 - 1, lightY * 2 - 1),
-                end: Alignment(-lightX * 2 + 1, -lightY * 2 + 1),
-                colors: [
-                  Colors.transparent,
-                  const Color(0xFFFF1493).withValues(alpha: intensity * 0.5),
-                  const Color(0xFFFF6B00).withValues(alpha: intensity * 0.7),
-                  const Color(0xFFFFD700).withValues(alpha: intensity * 0.8),
-                  const Color(0xFF00FF88).withValues(alpha: intensity * 0.7),
-                  const Color(0xFF00BFFF).withValues(alpha: intensity * 0.6),
-                  const Color(0xFF8A2BE2).withValues(alpha: intensity * 0.5),
-                  Colors.transparent,
-                ],
-                stops: [
-                  0.0,
-                  (shimmerValue * 0.7).clamp(0.0, 0.12),
-                  (shimmerValue * 0.7 + 0.06).clamp(0.0, 0.25),
-                  (shimmerValue * 0.7 + 0.12).clamp(0.0, 0.42),
-                  (shimmerValue * 0.7 + 0.18).clamp(0.0, 0.60),
-                  (shimmerValue * 0.7 + 0.24).clamp(0.0, 0.78),
-                  (shimmerValue * 0.7 + 0.30).clamp(0.0, 0.90),
-                  1.0,
-                ],
-              ).createShader(bounds);
-            },
-            blendMode: BlendMode.srcATop,
-            child: Container(color: Colors.white),
-          ),
-
-          // Layer 2: Secondary prismatic refraction (offset and time-shifted)
-          if (rarity != CardRarity.r)
-            Opacity(
-              opacity: intensity * 2,
-              child: ShaderMask(
-                shaderCallback: (bounds) {
-                  return LinearGradient(
-                    begin: Alignment(-lightY * 2 + 1, lightX * 2 - 1),
-                    end: Alignment(lightY * 2 - 1, -lightX * 2 + 1),
+          // Layer 1: Primary rainbow sweep (Container gradient — no ShaderMask white issue)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment(lightX * 2 - 1, lightY * 2 - 1),
+                    end: Alignment(-lightX * 2 + 1, -lightY * 2 + 1),
                     colors: [
                       Colors.transparent,
-                      const Color(0xFF00FFFF).withValues(alpha: 0.3),
-                      const Color(0xFFFF00FF).withValues(alpha: 0.4),
-                      const Color(0xFFFFFF00).withValues(alpha: 0.3),
+                      Color(0xFFFF1493).withValues(alpha: intensity * 0.5),
+                      Color(0xFFFF6B00).withValues(alpha: intensity * 0.7),
+                      Color(0xFFFFD700).withValues(alpha: intensity * 0.8),
+                      Color(0xFF00FF88).withValues(alpha: intensity * 0.7),
+                      Color(0xFF00BFFF).withValues(alpha: intensity * 0.6),
+                      Color(0xFF8A2BE2).withValues(alpha: intensity * 0.5),
                       Colors.transparent,
                     ],
                     stops: [
                       0.0,
-                      (holoValue * 0.5).clamp(0.0, 0.3),
-                      (holoValue * 0.5 + 0.15).clamp(0.0, 0.55),
-                      (holoValue * 0.5 + 0.3).clamp(0.0, 0.8),
+                      (shimmerValue * 0.7).clamp(0.0, 0.12),
+                      (shimmerValue * 0.7 + 0.06).clamp(0.0, 0.25),
+                      (shimmerValue * 0.7 + 0.12).clamp(0.0, 0.42),
+                      (shimmerValue * 0.7 + 0.18).clamp(0.0, 0.60),
+                      (shimmerValue * 0.7 + 0.24).clamp(0.0, 0.78),
+                      (shimmerValue * 0.7 + 0.30).clamp(0.0, 0.90),
                       1.0,
                     ],
-                  ).createShader(bounds);
-                },
-                blendMode: BlendMode.srcATop,
-                child: Container(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Layer 2: Secondary prismatic refraction (offset and time-shifted)
+          if (rarity != CardRarity.r)
+            Positioned.fill(
+              child: IgnorePointer(
+                child: Opacity(
+                  opacity: intensity * 2,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(-lightY * 2 + 1, lightX * 2 - 1),
+                        end: Alignment(lightY * 2 - 1, -lightX * 2 + 1),
+                        colors: [
+                          Colors.transparent,
+                          const Color(0xFF00FFFF).withValues(alpha: 0.3),
+                          const Color(0xFFFF00FF).withValues(alpha: 0.4),
+                          const Color(0xFFFFFF00).withValues(alpha: 0.3),
+                          Colors.transparent,
+                        ],
+                        stops: [
+                          0.0,
+                          (holoValue * 0.5).clamp(0.0, 0.3),
+                          (holoValue * 0.5 + 0.15).clamp(0.0, 0.55),
+                          (holoValue * 0.5 + 0.3).clamp(0.0, 0.8),
+                          1.0,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
 

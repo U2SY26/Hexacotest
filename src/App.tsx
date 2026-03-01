@@ -12,13 +12,15 @@ const AboutPage = lazy(() => import('./pages/AboutPage'))
 const FaqPage = lazy(() => import('./pages/FaqPage'))
 
 function App() {
-  const [showIntro, setShowIntro] = useState(true)
+  // Show intro video only on first visit (never block returning users)
+  const hasSeenIntro = localStorage.getItem('hexaco_intro_seen') === 'true'
+  const [showIntro, setShowIntro] = useState(!hasSeenIntro)
 
   const handleIntroComplete = () => {
+    localStorage.setItem('hexaco_intro_seen', 'true')
     setShowIntro(false)
   }
 
-  // Show intro video on every visit
   if (showIntro) {
     return <IntroVideo onComplete={handleIntroComplete} />
   }

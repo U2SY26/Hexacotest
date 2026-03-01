@@ -17,10 +17,15 @@ export default function Footer() {
             </div>
           </div>
           <div className="text-center md:text-left">
-            <h3 className="text-white font-semibold mb-3">소재지</h3>
-            <div className="text-gray-500 text-sm">
+            <h3 className="text-white font-semibold mb-3">소재지 / Contact</h3>
+            <div className="text-gray-500 text-sm space-y-1">
               <p>인천광역시 서구 완정로 179, 6층 601-792호</p>
               <p>(왕길동, 제이원검단메디컬프라자)</p>
+              <p><span className="text-gray-400">Email:</span>{' '}
+                <a href="mailto:contact@u2dia.com" className="text-gray-400 hover:text-white transition-colors">
+                  contact@u2dia.com
+                </a>
+              </p>
             </div>
           </div>
         </div>

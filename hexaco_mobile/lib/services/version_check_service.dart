@@ -4,7 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class VersionCheckService {
-  static const String _playStoreUrl = 'https://play.google.com/store/apps/details?id=com.hexaco.mobile';
+  static const String _playStoreUrl = 'https://play.google.com/store/apps/details?id=com.hexaco.hexaco_mobile';
 
   // Remote Config 키
   static const String _keyLatestVersion = 'latest_version';

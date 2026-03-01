@@ -17,11 +17,11 @@ function CompletionPopup({
 }) {
   const [adWatched, setAdWatched] = useState(false)
 
-  // Enable "결과 보기" button after ad display time (5 seconds)
+  // Enable "결과 보기" button after ad display time (3 seconds)
   useEffect(() => {
     const timer = setTimeout(() => {
       setAdWatched(true)
-    }, 5000)
+    }, 3000)
     return () => clearTimeout(timer)
   }, [])
 
