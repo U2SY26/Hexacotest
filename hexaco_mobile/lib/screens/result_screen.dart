@@ -32,6 +32,8 @@ import '../services/rewarded_ad_service.dart';
 import '../services/ai_analysis_service.dart';
 import '../widgets/pin_dialog.dart';
 import '../widgets/save_prompt_dialog.dart';
+import '../models/personality_card.dart';
+import '../widgets/card_reveal_dialog.dart';
 
 class ResultScreen extends StatefulWidget {
   final TestController controller;
@@ -646,6 +648,13 @@ class _ResultScreenState extends State<ResultScreen> with TickerProviderStateMix
                 },
               );
             },
+          ),
+          const SizedBox(height: 20),
+          // 3D 카드 뽑기 버튼
+          _CardDrawSection(
+            scores: scores,
+            topMatch: matches.first,
+            isKo: isKo,
           ),
           const SizedBox(height: 16),
           // 밈 문구 & 캐릭터 매칭 섹션
@@ -3022,6 +3031,169 @@ class _MemeContentSection extends StatelessWidget {
           ],
         ),
       ],
+    );
+  }
+}
+
+// ─── 3D 카드 뽑기 섹션 ──────────────────────────────────────────────────────
+
+class _CardDrawSection extends StatefulWidget {
+  final Scores scores;
+  final TypeMatch topMatch;
+  final bool isKo;
+
+  const _CardDrawSection({
+    required this.scores,
+    required this.topMatch,
+    required this.isKo,
+  });
+
+  @override
+  State<_CardDrawSection> createState() => _CardDrawSectionState();
+}
+
+class _CardDrawSectionState extends State<_CardDrawSection> {
+  bool _hasDrawn = false;
+
+  @override
+  void initState() {
+    super.initState();
+    RewardedAdService.loadAd();
+  }
+
+  void _openCardReveal() {
+    final title = MemeContentService.getPersonalityTitle(widget.scores);
+    final mainMeme = MemeContentService.getMainMemeQuote(widget.scores);
+    final mbti = MemeContentService.getMBTIMatch(widget.scores);
+
+    final card = createCard(
+      scores: widget.scores.toMap(),
+      emoji: title.emoji,
+      titleKo: title.titleKo,
+      titleEn: title.titleEn,
+      quoteEmoji: mainMeme.emoji,
+      quoteKo: mainMeme.quoteKo,
+      quoteEn: mainMeme.quoteEn,
+      topMatchName: widget.isKo ? widget.topMatch.profile.nameKo : widget.topMatch.profile.nameEn,
+      topMatchSimilarity: widget.topMatch.similarity,
+      mbti: mbti.mbti,
+    );
+
+    setState(() => _hasDrawn = true);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      useSafeArea: false,
+      builder: (_) => CardRevealDialog(card: card, isKo: widget.isKo),
+    );
+  }
+
+  void _onDrawTap() {
+    if (!_hasDrawn) {
+      // 첫 번째 뽑기는 무료
+      _openCardReveal();
+    } else {
+      // 재뽑기: 보상형 광고 시청 필요
+      RewardedAdService.showAd(
+        onAdDismissed: () {
+          if (mounted) {
+            _openCardReveal();
+            RewardedAdService.loadAd(); // 다음 광고 미리 로드
+          }
+        },
+        onUserEarnedReward: () {},
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isKo = widget.isKo;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(AppRadii.xl),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFF1A1035), Color(0xFF2D1B4E), Color(0xFF1A1035)],
+        ),
+        border: Border.all(color: AppColors.purple500.withValues(alpha: 0.3)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.purple500.withValues(alpha: 0.15),
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          const Text('✨', style: TextStyle(fontSize: 32)),
+          const SizedBox(height: 8),
+          Text(
+            isKo ? '나만의 성격 카드 뽑기' : 'Draw Your Personality Card',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            isKo
+                ? 'R 55% · SR 35% · SSR 8.5% · LEGEND 1.5%'
+                : 'R 55% · SR 35% · SSR 8.5% · LEGEND 1.5%',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.gray500,
+                  fontSize: 11,
+                ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _onDrawTap,
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                backgroundColor: _hasDrawn ? AppColors.amber500 : AppColors.purple600,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(_hasDrawn ? Icons.play_circle_outline : Icons.auto_awesome, size: 20),
+                  const SizedBox(width: 8),
+                  Text(
+                    _hasDrawn
+                        ? (isKo ? '광고 보고 다시 뽑기' : 'Watch Ad & Redraw')
+                        : (isKo ? '카드 뽑기' : 'Draw Card'),
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          if (_hasDrawn) ...[
+            const SizedBox(height: 8),
+            Text(
+              isKo ? '짧은 광고 시청 후 다시 뽑을 수 있습니다' : 'Watch a short ad to draw again',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppColors.gray500,
+                    fontSize: 10,
+                  ),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

@@ -286,7 +286,7 @@ function CardCollectionSection() {
   if (cards.length === 0) return null
 
   const stats = getCardStats(cards)
-  const rarityOrder: CardRarity[] = ['legendary', 'epic', 'rare', 'common']
+  const rarityOrder: CardRarity[] = ['legend', 'ssr', 'sr', 'r']
 
   return (
     <section className="py-8">

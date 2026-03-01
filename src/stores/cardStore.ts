@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-export type CardRarity = 'common' | 'rare' | 'epic' | 'legendary'
+export type CardRarity = 'r' | 'sr' | 'ssr' | 'legend'
 
 // 랜덤 카드 배경 테마
 export const CARD_THEMES = [
@@ -55,42 +55,32 @@ interface CardState {
   getCard: (id: string) => SavedCard | undefined
 }
 
-/** 레어도 결정 - 점수 편차가 클수록 높은 등급 */
+/** 레어도 결정 — 원신 스타일 확률
+ * 기본: R 55%, SR 35%, SSR 8.5%, LEGEND 1.5%
+ * 점수 편차가 클수록 확률 보너스 */
 function determineRarity(scores: SavedCard['scores']): CardRarity {
   const values = Object.values(scores)
   const avg = values.reduce((a, b) => a + b, 0) / values.length
   const variance = values.reduce((sum, v) => sum + (v - avg) ** 2, 0) / values.length
   const stdDev = Math.sqrt(variance)
-
-  // 극단적 점수 체크 (90+ 또는 10- 가 있으면 보너스)
   const extremeCount = values.filter(v => v >= 90 || v <= 10).length
+
+  // 편차 보너스 (0~1.0)
+  let bonus = 0
+  if (stdDev > 25 || extremeCount >= 3) bonus = 1.0
+  else if (stdDev > 18 || extremeCount >= 2) bonus = 0.6
+  else if (stdDev > 12 || extremeCount >= 1) bonus = 0.3
+
+  const legendRate = 1.5 + bonus * 1.5   // 1.5% ~ 3%
+  const ssrRate = 8.5 + bonus * 5.5      // 8.5% ~ 14%
+  const srRate = 35.0 + bonus * 3.0      // 35% ~ 38%
 
   const rand = Math.random() * 100
 
-  // 표준편차 + 극단값에 따른 확률 조정
-  if (stdDev > 25 || extremeCount >= 3) {
-    // 매우 독특한 프로필
-    if (rand < 15) return 'legendary'
-    if (rand < 45) return 'epic'
-    if (rand < 75) return 'rare'
-    return 'common'
-  } else if (stdDev > 18 || extremeCount >= 2) {
-    if (rand < 8) return 'legendary'
-    if (rand < 30) return 'epic'
-    if (rand < 65) return 'rare'
-    return 'common'
-  } else if (stdDev > 12 || extremeCount >= 1) {
-    if (rand < 3) return 'legendary'
-    if (rand < 15) return 'epic'
-    if (rand < 50) return 'rare'
-    return 'common'
-  } else {
-    // 평범한 프로필
-    if (rand < 1) return 'legendary'
-    if (rand < 8) return 'epic'
-    if (rand < 30) return 'rare'
-    return 'common'
-  }
+  if (rand < legendRate) return 'legend'
+  if (rand < legendRate + ssrRate) return 'ssr'
+  if (rand < legendRate + ssrRate + srRate) return 'sr'
+  return 'r'
 }
 
 /** 랜덤 카드번호 생성 (예: #A3F7) */
@@ -141,7 +131,7 @@ export const useCardStore = create<CardState>()(
 
 /** 레어도별 통계 */
 export function getCardStats(cards: SavedCard[]) {
-  const stats = { common: 0, rare: 0, epic: 0, legendary: 0, total: cards.length }
+  const stats = { r: 0, sr: 0, ssr: 0, legend: 0, total: cards.length }
   for (const card of cards) {
     stats[card.rarity]++
   }
@@ -150,8 +140,8 @@ export function getCardStats(cards: SavedCard[]) {
 
 /** 레어도 라벨 */
 export const rarityLabels: Record<CardRarity, { ko: string; en: string; color: string }> = {
-  common: { ko: '커먼', en: 'Common', color: '#9CA3AF' },
-  rare: { ko: '레어', en: 'Rare', color: '#3B82F6' },
-  epic: { ko: '에픽', en: 'Epic', color: '#A855F7' },
-  legendary: { ko: '레전더리', en: 'Legendary', color: '#F59E0B' },
+  r: { ko: 'R', en: 'R', color: '#9CA3AF' },
+  sr: { ko: 'SR', en: 'SR', color: '#3B82F6' },
+  ssr: { ko: 'SSR', en: 'SSR', color: '#A855F7' },
+  legend: { ko: 'LEGEND', en: 'LEGEND', color: '#F59E0B' },
 }

@@ -22,33 +22,33 @@ const RARITY_FX: Record<SavedCard['rarity'], {
   borderGlow: string
   label: string
 }> = {
-  common: {
+  r: {
     burstColor: 'rgba(148, 163, 184, 0.6)',
     particleColors: ['#94A3B8', '#CBD5E1', '#E2E8F0'],
     glowColor: 'rgba(148, 163, 184, 0.3)',
     borderGlow: '0 0 30px rgba(148,163,184,0.3)',
-    label: '⚪ COMMON',
+    label: '🔷 R',
   },
-  rare: {
+  sr: {
     burstColor: 'rgba(59, 130, 246, 0.7)',
     particleColors: ['#3B82F6', '#60A5FA', '#93C5FD', '#2563EB'],
     glowColor: 'rgba(59, 130, 246, 0.4)',
     borderGlow: '0 0 40px rgba(59,130,246,0.4), 0 0 80px rgba(59,130,246,0.2)',
-    label: '🔵 RARE',
+    label: '💎 SR',
   },
-  epic: {
+  ssr: {
     burstColor: 'rgba(168, 85, 247, 0.8)',
     particleColors: ['#A855F7', '#C084FC', '#E879F9', '#7C3AED'],
     glowColor: 'rgba(168, 85, 247, 0.5)',
     borderGlow: '0 0 50px rgba(168,85,247,0.5), 0 0 100px rgba(168,85,247,0.25)',
-    label: '💜 EPIC',
+    label: '🌟 SSR',
   },
-  legendary: {
+  legend: {
     burstColor: 'rgba(251, 191, 36, 0.9)',
     particleColors: ['#FBBF24', '#F59E0B', '#FDE68A', '#EF4444', '#A855F7', '#3B82F6'],
     glowColor: 'rgba(251, 191, 36, 0.6)',
     borderGlow: '0 0 60px rgba(251,191,36,0.6), 0 0 120px rgba(251,191,36,0.3), 0 0 200px rgba(251,191,36,0.15)',
-    label: '✨ LEGENDARY ✨',
+    label: '👑 LEGEND 👑',
   },
 }
 
@@ -57,7 +57,7 @@ const RARITY_FX: Record<SavedCard['rarity'], {
 function BurstParticles({ rarity, active }: { rarity: SavedCard['rarity']; active: boolean }) {
   const fx = RARITY_FX[rarity]
   const particles = useMemo(() => {
-    const count = rarity === 'legendary' ? 60 : rarity === 'epic' ? 45 : rarity === 'rare' ? 30 : 20
+    const count = rarity === 'legend' ? 60 : rarity === 'ssr' ? 45 : rarity === 'sr' ? 30 : 20
     return Array.from({ length: count }, (_, i) => {
       const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5
       const distance = 150 + Math.random() * 250
@@ -112,11 +112,11 @@ function BurstParticles({ rarity, active }: { rarity: SavedCard['rarity']; activ
 function LightRays({ rarity, active }: { rarity: SavedCard['rarity']; active: boolean }) {
   const fx = RARITY_FX[rarity]
   const rays = useMemo(() => {
-    const count = rarity === 'legendary' ? 16 : rarity === 'epic' ? 12 : 8
+    const count = rarity === 'legend' ? 16 : rarity === 'ssr' ? 12 : 8
     return Array.from({ length: count }, (_, i) => ({
       id: i,
       rotation: (360 / count) * i,
-      width: rarity === 'legendary' ? 4 : 3,
+      width: rarity === 'legend' ? 4 : 3,
       color: fx.particleColors[i % fx.particleColors.length],
     }))
   }, [rarity, fx.particleColors])
@@ -371,7 +371,7 @@ function RarityAnnouncement({ rarity, isKo }: { rarity: SavedCard['rarity']; isK
           border: `1px solid ${fx.particleColors[0]}66`,
           backdropFilter: 'blur(12px)',
         }}
-        animate={rarity === 'legendary' ? {
+        animate={rarity === 'legend' ? {
           boxShadow: [
             `0 0 20px ${fx.glowColor}`,
             `0 0 40px ${fx.glowColor}`,
@@ -382,7 +382,7 @@ function RarityAnnouncement({ rarity, isKo }: { rarity: SavedCard['rarity']; isK
       >
         <span
           style={{
-            fontSize: rarity === 'legendary' ? 18 : 15,
+            fontSize: rarity === 'legend' ? 18 : 15,
             fontWeight: 800,
             color: fx.particleColors[0],
             letterSpacing: 3,
@@ -600,7 +600,7 @@ export default function CardRevealModal({ card, isKo, onClose }: CardRevealModal
         )}
 
         {/* Floating sparkles (interactive) */}
-        <FloatingSparkles active={phase === 'interactive' && (card.rarity === 'legendary' || card.rarity === 'epic')} />
+        <FloatingSparkles active={phase === 'interactive' && (card.rarity === 'legend' || card.rarity === 'ssr')} />
 
         {/* Rarity announcement */}
         {phase === 'interactive' && (

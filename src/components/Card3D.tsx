@@ -3,7 +3,7 @@ import { motion, useMotionValue, useSpring, useTransform, type MotionValue } fro
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
-type Rarity = 'common' | 'rare' | 'epic' | 'legendary'
+type Rarity = 'r' | 'sr' | 'ssr' | 'legend'
 
 interface Card3DProps {
   personalityTitle: { emoji: string; titleKo: string; titleEn: string }
@@ -53,33 +53,33 @@ const RARITY_CONFIG: Record<Rarity, {
   shadowColor: string
   badgeBg: string
 }> = {
-  common: {
-    label: 'Common',
-    icon: '\u26AA',
+  r: {
+    label: 'R',
+    icon: '🔷',
     borderColor: 'rgba(148, 163, 184, 0.3)',
     glowColor: 'rgba(148, 163, 184, 0.0)',
     shadowColor: 'rgba(148, 163, 184, 0.1)',
     badgeBg: 'rgba(148, 163, 184, 0.2)',
   },
-  rare: {
-    label: 'Rare',
-    icon: '\uD83D\uDD35',
+  sr: {
+    label: 'SR',
+    icon: '💎',
     borderColor: 'rgba(59, 130, 246, 0.6)',
     glowColor: 'rgba(59, 130, 246, 0.3)',
     shadowColor: 'rgba(59, 130, 246, 0.25)',
     badgeBg: 'rgba(59, 130, 246, 0.25)',
   },
-  epic: {
-    label: 'Epic',
-    icon: '\uD83D\uDC9C',
+  ssr: {
+    label: 'SSR',
+    icon: '🌟',
     borderColor: 'rgba(168, 85, 247, 0.7)',
     glowColor: 'rgba(168, 85, 247, 0.4)',
     shadowColor: 'rgba(168, 85, 247, 0.3)',
     badgeBg: 'rgba(168, 85, 247, 0.3)',
   },
-  legendary: {
-    label: 'Legendary',
-    icon: '\u2728',
+  legend: {
+    label: 'LEGEND',
+    icon: '👑',
     borderColor: 'rgba(251, 191, 36, 0.8)',
     glowColor: 'rgba(251, 191, 36, 0.5)',
     shadowColor: 'rgba(251, 191, 36, 0.35)',
@@ -597,7 +597,7 @@ const Card3D = ({
   // Animated border for epic/legendary
   const [borderAngle, setBorderAngle] = useState(0)
   useEffect(() => {
-    if (rarity !== 'epic' && rarity !== 'legendary') return
+    if (rarity !== 'ssr' && rarity !== 'legend') return
     let frame: number
     const animate = () => {
       setBorderAngle((prev) => (prev + 0.8) % 360)
@@ -609,10 +609,10 @@ const Card3D = ({
 
   // Build animated border gradient
   const borderGradient = useMemo(() => {
-    if (rarity === 'legendary') {
+    if (rarity === 'legend') {
       return `conic-gradient(from ${borderAngle}deg, #fbbf24, #f59e0b, #ec4899, #8b5cf6, #3b82f6, #10b981, #f59e0b, #fbbf24)`
     }
-    if (rarity === 'epic') {
+    if (rarity === 'ssr') {
       return `conic-gradient(from ${borderAngle}deg, #a855f7, #7c3aed, #ec4899, #8b5cf6, #a855f7)`
     }
     return 'none'
@@ -652,7 +652,7 @@ const Card3D = ({
         onClick={handleClick}
       >
         {/* ── Animated Border (Epic / Legendary) ── */}
-        {(rarity === 'epic' || rarity === 'legendary') && (
+        {(rarity === 'ssr' || rarity === 'legend') && (
           <div
             style={{
               position: 'absolute',
@@ -668,9 +668,9 @@ const Card3D = ({
         <div
           style={{
             position: 'absolute',
-            inset: rarity === 'epic' || rarity === 'legendary' ? 2 : 0,
+            inset: rarity === 'ssr' || rarity === 'legend' ? 2 : 0,
             borderRadius: 16,
-            border: rarity === 'epic' || rarity === 'legendary' ? 'none' : `1.5px solid ${config.borderColor}`,
+            border: rarity === 'ssr' || rarity === 'legend' ? 'none' : `1.5px solid ${config.borderColor}`,
             boxShadow: `
               0 0 20px ${config.shadowColor},
               0 0 60px ${config.glowColor},
@@ -700,10 +700,10 @@ const Card3D = ({
           <SweepLayer holoAngle={springHoloAngle} rarity={rarity} />
 
           {/* ── Legendary sparkles ── */}
-          {rarity === 'legendary' && <SparkleParticles />}
+          {rarity === 'legend' && <SparkleParticles />}
 
           {/* ── Legendary pulsing glow ── */}
-          {rarity === 'legendary' && (
+          {rarity === 'legend' && (
             <motion.div
               style={{
                 position: 'absolute',
@@ -745,7 +745,7 @@ function HologramLayer({
 }) {
   const ref = useRef<HTMLDivElement>(null)
 
-  const intensity = rarity === 'legendary' ? 0.35 : rarity === 'epic' ? 0.25 : rarity === 'rare' ? 0.18 : 0.1
+  const intensity = rarity === 'legend' ? 0.35 : rarity === 'ssr' ? 0.25 : rarity === 'sr' ? 0.18 : 0.1
 
   useEffect(() => {
     const el = ref.current
@@ -797,7 +797,7 @@ function SweepLayer({
 }) {
   const ref = useRef<HTMLDivElement>(null)
 
-  const intensity = rarity === 'legendary' ? 0.3 : rarity === 'epic' ? 0.2 : rarity === 'rare' ? 0.12 : 0.06
+  const intensity = rarity === 'legend' ? 0.3 : rarity === 'ssr' ? 0.2 : rarity === 'sr' ? 0.12 : 0.06
 
   useEffect(() => {
     const el = ref.current
