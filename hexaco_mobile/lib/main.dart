@@ -10,6 +10,7 @@ import 'screens/intro_video_screen.dart';
 import 'screens/test_screen.dart';
 import 'screens/result_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/card_collection_screen.dart';
 import 'services/analytics_service.dart';
 import 'services/version_check_service.dart';
 import 'ui/app_tokens.dart';
@@ -90,6 +91,12 @@ class HexacoApp extends StatelessWidget {
           case '/settings':
             return MaterialPageRoute(
               builder: (_) => SettingsScreen(controller: controller),
+            );
+          case '/collection':
+            return MaterialPageRoute(
+              builder: (_) => CardCollectionScreen(
+                isKo: controller.language == 'ko',
+              ),
             );
           default:
             return MaterialPageRoute(

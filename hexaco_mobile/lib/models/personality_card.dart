@@ -114,6 +114,51 @@ class PersonalityCard {
     required this.topMatchSimilarity,
     required this.mbti,
   });
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'createdAt': createdAt.toIso8601String(),
+    'rarity': rarity.index,
+    'themeId': theme.id,
+    'cardNumber': cardNumber,
+    'scores': scores,
+    'emoji': emoji,
+    'titleKo': titleKo,
+    'titleEn': titleEn,
+    'quoteEmoji': quoteEmoji,
+    'quoteKo': quoteKo,
+    'quoteEn': quoteEn,
+    'topMatchName': topMatchName,
+    'topMatchSimilarity': topMatchSimilarity,
+    'mbti': mbti,
+  };
+
+  factory PersonalityCard.fromJson(Map<String, dynamic> json) {
+    final themeId = json['themeId'] as String? ?? 'aurora';
+    final theme = cardThemes.firstWhere(
+      (t) => t.id == themeId,
+      orElse: () => cardThemes[0],
+    );
+    return PersonalityCard(
+      id: json['id'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      rarity: CardRarity.values[json['rarity'] as int],
+      theme: theme,
+      cardNumber: json['cardNumber'] as String,
+      scores: (json['scores'] as Map<String, dynamic>).map(
+        (k, v) => MapEntry(k, (v as num).toDouble()),
+      ),
+      emoji: json['emoji'] as String,
+      titleKo: json['titleKo'] as String,
+      titleEn: json['titleEn'] as String,
+      quoteEmoji: json['quoteEmoji'] as String,
+      quoteKo: json['quoteKo'] as String,
+      quoteEn: json['quoteEn'] as String,
+      topMatchName: json['topMatchName'] as String,
+      topMatchSimilarity: json['topMatchSimilarity'] as int,
+      mbti: json['mbti'] as String,
+    );
+  }
 }
 
 /// 레어도 결정 — 원신 스타일 확률

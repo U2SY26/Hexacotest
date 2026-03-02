@@ -7,6 +7,8 @@ import '../constants.dart';
 import '../controllers/test_controller.dart';
 import '../models/result_history.dart';
 import '../services/history_service.dart';
+import '../services/card_collection_service.dart';
+import '../models/personality_card.dart';
 import '../ui/app_tokens.dart';
 import '../widgets/app_header.dart';
 import '../widgets/app_scaffold.dart';
@@ -87,6 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 28),
               _SavedResultsSection(controller: widget.controller, isKo: isKo),
+              _CardCollectionShortcut(isKo: isKo),
               _StatsSection(isKo: isKo),
               const SizedBox(height: 28),
               _SampleQuestionSection(key: _learnMoreKey, isKo: isKo),
@@ -1806,6 +1809,116 @@ class _FooterSection extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
       ],
+    );
+  }
+}
+
+// ─── 카드 보관함 바로가기 ─────────────────────────────────────────────────────
+
+class _CardCollectionShortcut extends StatefulWidget {
+  final bool isKo;
+  const _CardCollectionShortcut({required this.isKo});
+
+  @override
+  State<_CardCollectionShortcut> createState() => _CardCollectionShortcutState();
+}
+
+class _CardCollectionShortcutState extends State<_CardCollectionShortcut> {
+  int _cardCount = 0;
+  CardRarity? _bestRarity;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStats();
+  }
+
+  Future<void> _loadStats() async {
+    final cards = await CardCollectionService.load();
+    if (!mounted) return;
+    CardRarity? best;
+    for (final card in cards) {
+      if (best == null || card.rarity.index > best.index) {
+        best = card.rarity;
+      }
+    }
+    setState(() {
+      _cardCount = cards.length;
+      _bestRarity = best;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_cardCount == 0) return const SizedBox.shrink();
+
+    final rarityLabel = _bestRarity != null
+        ? rarityConfigs[_bestRarity]!.label
+        : '';
+    final rarityIcon = _bestRarity != null
+        ? rarityConfigs[_bestRarity]!.icon
+        : '';
+    final rarityColor = _bestRarity != null
+        ? Color(rarityConfigs[_bestRarity]!.borderColor)
+        : Colors.white54;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: GestureDetector(
+        onTap: () => Navigator.pushNamed(context, '/collection'),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.darkCard,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: rarityColor.withValues(alpha: 0.3)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: rarityColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.collections_bookmark,
+                  color: Colors.white70,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.isKo ? '카드 보관함' : 'Card Collection',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      widget.isKo
+                          ? '$_cardCount장 보유 · 최고 $rarityIcon $rarityLabel'
+                          : '$_cardCount cards · Best: $rarityIcon $rarityLabel',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: rarityColor,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.chevron_right, color: Colors.white38, size: 20),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

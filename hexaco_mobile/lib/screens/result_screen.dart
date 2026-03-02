@@ -30,6 +30,7 @@ import '../widgets/native_ad.dart';
 import '../config/admob_ids.dart';
 import '../services/rewarded_ad_service.dart';
 import '../services/card_draw_service.dart';
+import '../services/card_collection_service.dart';
 import '../services/ai_analysis_service.dart';
 import '../widgets/pin_dialog.dart';
 import '../widgets/save_prompt_dialog.dart';
@@ -3070,7 +3071,7 @@ class _CardDrawSectionState extends State<_CardDrawSection> {
     if (mounted) setState(() => _status = status);
   }
 
-  void _openCardReveal() {
+  void _openCardReveal() async {
     final title = MemeContentService.getPersonalityTitle(widget.scores);
     final mainMeme = MemeContentService.getMainMemeQuote(widget.scores);
     final mbti = MemeContentService.getMBTIMatch(widget.scores);
@@ -3088,8 +3089,12 @@ class _CardDrawSectionState extends State<_CardDrawSection> {
       mbti: mbti.mbti,
     );
 
+    // 자동 저장 (보관함)
+    await CardCollectionService.save(card);
+
     setState(() => _hasDrawn = true);
 
+    if (!mounted) return;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -3320,6 +3325,28 @@ class _CardDrawSectionState extends State<_CardDrawSection> {
                   ),
             ),
           ],
+
+          // 보관함 바로가기
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => Navigator.pushNamed(context, '/collection'),
+              icon: const Icon(Icons.collections_bookmark, size: 18),
+              label: Text(
+                isKo ? '카드 보관함 보기' : 'View Card Collection',
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+              ),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                foregroundColor: Colors.white70,
+                side: BorderSide(color: AppColors.darkBorder),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
