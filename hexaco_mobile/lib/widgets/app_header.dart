@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/test_controller.dart';
+import '../services/community_notification_service.dart';
 import '../ui/app_tokens.dart';
 import 'glass_container.dart';
 import 'gradient_text.dart';
@@ -56,6 +57,59 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ],
               ),
+            ),
+            const SizedBox(width: 8),
+            // Notification bell
+            StreamBuilder<int>(
+              stream: CommunityNotificationService.unreadCountStream(),
+              builder: (context, snapshot) {
+                final count = snapshot.data ?? 0;
+                return Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () => Navigator.pushNamed(context, '/notifications'),
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.darkCard,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColors.darkBorder),
+                      ),
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          const Icon(
+                            Icons.notifications_outlined,
+                            size: 20,
+                            color: AppColors.gray300,
+                          ),
+                          if (count > 0)
+                            Positioned(
+                              right: -6,
+                              top: -6,
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Text(
+                                  count > 99 ? '99+' : '$count',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
             const SizedBox(width: 8),
             // Settings button

@@ -11,6 +11,16 @@ import 'screens/test_screen.dart';
 import 'screens/result_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/card_collection_screen.dart';
+import 'screens/counseling_disclaimer_screen.dart';
+import 'screens/counselor_select_screen.dart';
+import 'screens/counseling_chat_screen.dart';
+import 'screens/community_screen.dart';
+import 'screens/post_detail_screen.dart';
+import 'screens/post_write_screen.dart';
+import 'screens/notification_screen.dart';
+import 'screens/nickname_setup_screen.dart';
+import 'models/counselor_persona.dart';
+import 'models/community_post.dart';
 import 'services/analytics_service.dart';
 import 'services/version_check_service.dart';
 import 'ui/app_tokens.dart';
@@ -97,6 +107,48 @@ class HexacoApp extends StatelessWidget {
               builder: (_) => CardCollectionScreen(
                 isKo: controller.language == 'ko',
               ),
+            );
+          case '/counseling-disclaimer':
+            return MaterialPageRoute(
+              builder: (_) => CounselingDisclaimerScreen(
+                isKo: controller.language == 'ko',
+              ),
+            );
+          case '/counselor-select':
+            return MaterialPageRoute(
+              builder: (_) => CounselorSelectScreen(
+                isKo: controller.language == 'ko',
+              ),
+            );
+          case '/counseling-chat':
+            final persona = settings.arguments as CounselorPersona;
+            return MaterialPageRoute(
+              builder: (_) => CounselingChatScreen(
+                persona: persona,
+                isKo: controller.language == 'ko',
+              ),
+            );
+          case '/community':
+            return MaterialPageRoute(
+              builder: (_) => const CommunityScreen(),
+            );
+          case '/community/setup':
+            return MaterialPageRoute(
+              builder: (_) => const NicknameSetupScreen(),
+            );
+          case '/community/post':
+            final postId = settings.arguments as String;
+            return MaterialPageRoute(
+              builder: (_) => PostDetailScreen(postId: postId),
+            );
+          case '/community/write':
+            final editPost = settings.arguments as CommunityPost?;
+            return MaterialPageRoute(
+              builder: (_) => PostWriteScreen(editPost: editPost),
+            );
+          case '/notifications':
+            return MaterialPageRoute(
+              builder: (_) => const NotificationScreen(),
             );
           default:
             return MaterialPageRoute(

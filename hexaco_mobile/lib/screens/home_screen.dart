@@ -19,6 +19,7 @@ import '../widgets/pin_dialog.dart';
 import '../widgets/ad_banner.dart';
 import '../widgets/native_ad.dart';
 import '../config/admob_ids.dart';
+import '../services/counseling_timer_service.dart';
 import '../services/version_check_service.dart';
 import 'result_screen.dart';
 
@@ -90,6 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 28),
               _SavedResultsSection(controller: widget.controller, isKo: isKo),
               _CardCollectionShortcut(isKo: isKo),
+              _CommunityShortcut(isKo: isKo),
+              const SizedBox(height: 16),
               _StatsSection(isKo: isKo),
               const SizedBox(height: 28),
               _SampleQuestionSection(key: _learnMoreKey, isKo: isKo),
@@ -106,7 +109,10 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 28),
               _HexacoSection(isKo: isKo),
               const SizedBox(height: 28),
-              _VersionSelectionSection(controller: widget.controller, isKo: isKo),
+              _VersionSelectionSection(
+                controller: widget.controller,
+                isKo: isKo,
+              ),
               const SizedBox(height: 24),
               _DisclaimerSection(isKo: isKo),
               const SizedBox(height: 20),
@@ -291,14 +297,18 @@ class _SavedResultsSectionState extends State<_SavedResultsSection>
           behavior: HitTestBehavior.opaque,
           child: Row(
             children: [
-              const Icon(Icons.lock_outline, color: AppColors.purple400, size: 20),
+              const Icon(
+                Icons.lock_outline,
+                color: AppColors.purple400,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   widget.isKo ? '저장된 결과' : 'Saved Results',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               Container(
@@ -310,9 +320,9 @@ class _SavedResultsSectionState extends State<_SavedResultsSection>
                 child: Text(
                   '${_history.length}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.purple400,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    color: AppColors.purple400,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
               const SizedBox(width: 8),
@@ -344,7 +354,9 @@ class _SavedResultsSectionState extends State<_SavedResultsSection>
               final name = widget.isKo ? profile.nameKo : profile.nameEn;
 
               return Padding(
-                padding: EdgeInsets.only(bottom: i < _history.length - 1 ? 8 : 0),
+                padding: EdgeInsets.only(
+                  bottom: i < _history.length - 1 ? 8 : 0,
+                ),
                 child: DarkCard(
                   padding: EdgeInsets.zero,
                   child: Material(
@@ -353,10 +365,19 @@ class _SavedResultsSectionState extends State<_SavedResultsSection>
                       onTap: () => _onTapEntry(entry),
                       borderRadius: BorderRadius.circular(AppRadii.lg),
                       child: Padding(
-                        padding: const EdgeInsets.only(left: 16, top: 10, bottom: 10, right: 4),
+                        padding: const EdgeInsets.only(
+                          left: 16,
+                          top: 10,
+                          bottom: 10,
+                          right: 4,
+                        ),
                         child: Row(
                           children: [
-                            const Icon(Icons.lock, color: AppColors.gray500, size: 18),
+                            const Icon(
+                              Icons.lock,
+                              color: AppColors.gray500,
+                              size: 18,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Column(
@@ -366,27 +387,33 @@ class _SavedResultsSectionState extends State<_SavedResultsSection>
                                     name,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context).textTheme.titleSmall,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleSmall,
                                   ),
                                   const SizedBox(height: 2),
                                   Text(
                                     '${_formatDate(entry.timestamp)} · ${entry.testVersion}${widget.isKo ? '문항' : 'Q'}',
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                          color: AppColors.gray500,
-                                        ),
+                                    style: Theme.of(context).textTheme.bodySmall
+                                        ?.copyWith(color: AppColors.gray500),
                                   ),
                                 ],
                               ),
                             ),
                             Text(
                               '${entry.similarity}%',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
                                     color: AppColors.purple400,
                                     fontWeight: FontWeight.w600,
                                   ),
                             ),
                             const SizedBox(width: 2),
-                            const Icon(Icons.chevron_right, color: AppColors.gray500, size: 20),
+                            const Icon(
+                              Icons.chevron_right,
+                              color: AppColors.gray500,
+                              size: 20,
+                            ),
                             // Delete button
                             SizedBox(
                               width: 36,
@@ -429,6 +456,34 @@ class _HeroSection extends StatelessWidget {
     required this.onLearnMore,
   });
 
+  Future<void> _onCounselingTap(BuildContext context, bool isKo) async {
+    final hasTest = await CounselingTimerService.hasCompletedTest();
+    if (!context.mounted) return;
+
+    if (!hasTest) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            isKo
+                ? '성격 테스트를 먼저 완료해주세요'
+                : 'Please complete a personality test first',
+          ),
+          backgroundColor: AppColors.orange500,
+        ),
+      );
+      return;
+    }
+
+    final accepted = await CounselingTimerService.isDisclaimerAccepted();
+    if (!context.mounted) return;
+
+    if (!accepted) {
+      Navigator.pushNamed(context, '/counseling-disclaimer');
+    } else {
+      Navigator.pushNamed(context, '/counselor-select');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final title = isKo ? '6가지 심리 유형' : '6-Type';
@@ -448,19 +503,25 @@ class _HeroSection extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.purple500.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(999),
-                border: Border.all(color: AppColors.purple500.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppColors.purple500.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.auto_awesome, size: 16, color: AppColors.purple400),
+                  const Icon(
+                    Icons.auto_awesome,
+                    size: 16,
+                    color: AppColors.purple400,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     isKo ? '과학적 성격 분석' : 'Scientific Personality Analysis',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.purple400,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      color: AppColors.purple400,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -469,69 +530,98 @@ class _HeroSection extends StatelessWidget {
             GradientText(
               title,
               style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    height: 1.0,
-                  ),
+                fontWeight: FontWeight.w700,
+                height: 1.0,
+              ),
               maxLines: 1,
             ),
             const SizedBox(height: 6),
             Text(
               subtitle,
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                  ),
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
             ),
             const SizedBox(height: 12),
             _TypingText(
               isKo: isKo,
               items: isKo
                   ? ['진짜 나를 발견하세요', '숨은 성향을 찾아보세요', '나를 알아가는 시작']
-                  : ['Discover your true self', 'Find your hidden traits', 'Start knowing yourself'],
+                  : [
+                      'Discover your true self',
+                      'Find your hidden traits',
+                      'Start knowing yourself',
+                    ],
             ),
             const SizedBox(height: 12),
             Text(
               description,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: AppColors.gray400, height: 1.5),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.gray400,
+                height: 1.5,
+              ),
             ),
             const SizedBox(height: 18),
             _QuickVersionSelector(controller: controller, isKo: isKo),
             const SizedBox(height: 16),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
+            Row(
               children: [
-                PrimaryButton(
-                  onPressed: () {
-                    controller.reset();
-                    Navigator.pushNamed(context, '/test');
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.auto_awesome, size: 18),
-                      const SizedBox(width: 8),
-                      Text(
-                        isKo ? '테스트 시작' : 'Start Test',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
+                Expanded(
+                  child: PrimaryButton(
+                    onPressed: () {
+                      controller.reset();
+                      Navigator.pushNamed(context, '/test');
+                    },
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.auto_awesome, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          isKo ? '테스트 시작' : 'Start Test',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                SecondaryButton(
-                  onPressed: onLearnMore,
-                  child: Text(
-                    isKo ? '자세히 보기' : 'Learn More',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: SecondaryButton(
+                    onPressed: () => _onCounselingTap(context, isKo),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(Icons.psychology_alt, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          isKo ? 'AI 상담' : 'AI Counsel',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
+            ),
+            const SizedBox(height: 8),
+            Center(
+              child: GestureDetector(
+                onTap: onLearnMore,
+                child: Text(
+                  isKo ? '자세히 보기 ↓' : 'Learn More ↓',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: AppColors.gray500,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ),
           ],
         );
@@ -577,7 +667,9 @@ class _TypingTextState extends State<_TypingText> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final media = MediaQuery.maybeOf(context);
-    final reduce = (media?.disableAnimations ?? false) || (media?.accessibleNavigation ?? false);
+    final reduce =
+        (media?.disableAnimations ?? false) ||
+        (media?.accessibleNavigation ?? false);
     if (reduce != _reduceMotion) {
       _reduceMotion = reduce;
       if (_reduceMotion) {
@@ -614,7 +706,9 @@ class _TypingTextState extends State<_TypingText> {
   @override
   Widget build(BuildContext context) {
     return AnimatedSwitcher(
-      duration: _reduceMotion ? Duration.zero : const Duration(milliseconds: 400),
+      duration: _reduceMotion
+          ? Duration.zero
+          : const Duration(milliseconds: 400),
       transitionBuilder: (child, animation) {
         return FadeTransition(
           opacity: animation,
@@ -630,10 +724,10 @@ class _TypingTextState extends State<_TypingText> {
       child: Text(
         widget.items[_index],
         key: ValueKey(_index),
-        style: Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(color: AppColors.purple400, fontWeight: FontWeight.w600),
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+          color: AppColors.purple400,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }
@@ -659,7 +753,9 @@ class _QuickVersionSelector extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: selected ? AppColors.purple500.withValues(alpha: 0.2) : AppColors.darkCard,
+              color: selected
+                  ? AppColors.purple500.withValues(alpha: 0.2)
+                  : AppColors.darkCard,
               borderRadius: BorderRadius.circular(999),
               border: Border.all(
                 color: selected ? AppColors.purple500 : AppColors.darkBorder,
@@ -680,9 +776,9 @@ class _QuickVersionSelector extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: selected ? Colors.white : AppColors.gray400,
-                    fontWeight: FontWeight.w600,
-                  ),
+                color: selected ? Colors.white : AppColors.gray400,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         );
@@ -698,22 +794,27 @@ class _HexagonHero extends StatefulWidget {
   State<_HexagonHero> createState() => _HexagonHeroState();
 }
 
-class _HexagonHeroState extends State<_HexagonHero> with SingleTickerProviderStateMixin {
+class _HexagonHeroState extends State<_HexagonHero>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   bool _reduceMotion = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 30))
-      ..repeat();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 30),
+    )..repeat();
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final media = MediaQuery.maybeOf(context);
-    final reduce = (media?.disableAnimations ?? false) || (media?.accessibleNavigation ?? false);
+    final reduce =
+        (media?.disableAnimations ?? false) ||
+        (media?.accessibleNavigation ?? false);
     if (reduce != _reduceMotion) {
       _reduceMotion = reduce;
       if (_reduceMotion) {
@@ -741,17 +842,22 @@ class _HexagonHeroState extends State<_HexagonHero> with SingleTickerProviderSta
           return Stack(
             alignment: Alignment.center,
             children: [
-              Transform.rotate(
-                angle: angle,
-                child: _FactorRing(size: 260),
-              ),
+              Transform.rotate(angle: angle, child: _FactorRing(size: 260)),
               Transform.rotate(
                 angle: -angle,
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    Icon(Icons.hexagon, size: 120, color: AppColors.purple500.withValues(alpha: 0.5)),
-                    Icon(Icons.hexagon, size: 90, color: AppColors.pink500.withValues(alpha: 0.5)),
+                    Icon(
+                      Icons.hexagon,
+                      size: 120,
+                      color: AppColors.purple500.withValues(alpha: 0.5),
+                    ),
+                    Icon(
+                      Icons.hexagon,
+                      size: 90,
+                      color: AppColors.pink500.withValues(alpha: 0.5),
+                    ),
                   ],
                 ),
               ),
@@ -811,7 +917,9 @@ class _FactorRing extends StatelessWidget {
               child: Center(
                 child: GradientText(
                   factor,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                   maxLines: 1,
                 ),
               ),
@@ -822,6 +930,7 @@ class _FactorRing extends StatelessWidget {
     );
   }
 }
+
 class _StatsSection extends StatelessWidget {
   final bool isKo;
 
@@ -877,7 +986,11 @@ class _StatItem {
   final String value;
   final String label;
 
-  const _StatItem({required this.icon, required this.value, required this.label});
+  const _StatItem({
+    required this.icon,
+    required this.value,
+    required this.label,
+  });
 }
 
 class _StatCard extends StatelessWidget {
@@ -909,7 +1022,9 @@ class _StatCard extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: Text(
               item.value,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
           ),
           const SizedBox(height: 2),
@@ -917,7 +1032,10 @@ class _StatCard extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: Text(
               item.label,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400, fontSize: 11),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.gray400,
+                fontSize: 11,
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -943,11 +1061,7 @@ class _SampleQuestionSection extends StatelessWidget {
         if (!isWide) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              preview,
-              const SizedBox(height: 16),
-              detail,
-            ],
+            children: [preview, const SizedBox(height: 16), detail],
           );
         }
 
@@ -987,7 +1101,9 @@ class _SampleQuestionPreviewState extends State<_SampleQuestionPreview> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final media = MediaQuery.maybeOf(context);
-    final reduce = (media?.disableAnimations ?? false) || (media?.accessibleNavigation ?? false);
+    final reduce =
+        (media?.disableAnimations ?? false) ||
+        (media?.accessibleNavigation ?? false);
     if (reduce != _reduceMotion) {
       _reduceMotion = reduce;
       if (_reduceMotion) {
@@ -1030,10 +1146,22 @@ class _SampleQuestionPreviewState extends State<_SampleQuestionPreview> {
           _SampleQuestion('O', '미술관에서 작품을 보다 보면 시간 가는 줄 모른다.'),
         ]
       : const [
-          _SampleQuestion('H', 'If a friend asks about an outfit, I answer honestly.'),
-          _SampleQuestion('E', 'When watching scary movies, I cover my eyes or lower the volume.'),
-          _SampleQuestion('X', 'At gatherings, I start conversations with strangers.'),
-          _SampleQuestion('C', 'I prepare schedules and checklists before traveling.'),
+          _SampleQuestion(
+            'H',
+            'If a friend asks about an outfit, I answer honestly.',
+          ),
+          _SampleQuestion(
+            'E',
+            'When watching scary movies, I cover my eyes or lower the volume.',
+          ),
+          _SampleQuestion(
+            'X',
+            'At gatherings, I start conversations with strangers.',
+          ),
+          _SampleQuestion(
+            'C',
+            'I prepare schedules and checklists before traveling.',
+          ),
           _SampleQuestion('O', 'I lose track of time when appreciating art.'),
         ];
 
@@ -1057,7 +1185,11 @@ class _SampleQuestionPreviewState extends State<_SampleQuestionPreview> {
                   borderRadius: BorderRadius.circular(12),
                   color: AppColors.purple500.withValues(alpha: 0.15),
                 ),
-                child: const Icon(Icons.psychology, color: AppColors.purple400, size: 20),
+                child: const Icon(
+                  Icons.psychology,
+                  color: AppColors.purple400,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Column(
@@ -1069,8 +1201,12 @@ class _SampleQuestionPreviewState extends State<_SampleQuestionPreview> {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    widget.isKo ? '테스트에서 만나게 될 질문' : 'Questions you will see in the test',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+                    widget.isKo
+                        ? '테스트에서 만나게 될 질문'
+                        : 'Questions you will see in the test',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
                   ),
                 ],
               ),
@@ -1078,7 +1214,9 @@ class _SampleQuestionPreviewState extends State<_SampleQuestionPreview> {
           ),
           const SizedBox(height: 16),
           AnimatedSwitcher(
-            duration: _reduceMotion ? Duration.zero : const Duration(milliseconds: 400),
+            duration: _reduceMotion
+                ? Duration.zero
+                : const Duration(milliseconds: 400),
             transitionBuilder: (child, animation) {
               return FadeTransition(
                 opacity: animation,
@@ -1096,7 +1234,10 @@ class _SampleQuestionPreviewState extends State<_SampleQuestionPreview> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(999),
@@ -1109,7 +1250,9 @@ class _SampleQuestionPreviewState extends State<_SampleQuestionPreview> {
                 const SizedBox(height: 12),
                 Text(
                   sample.text,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(height: 1.5),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleMedium?.copyWith(height: 1.5),
                 ),
               ],
             ),
@@ -1143,6 +1286,7 @@ class _SampleQuestion {
 
   const _SampleQuestion(this.factor, this.text);
 }
+
 class _BenefitsPanel extends StatelessWidget {
   final bool isKo;
 
@@ -1170,42 +1314,57 @@ class _BenefitsPanel extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isKo ? '단순 질문이 아닌, 상황 기반 분석' : 'Not simple questions, situation-based analysis',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          isKo
+              ? '단순 질문이 아닌, 상황 기반 분석'
+              : 'Not simple questions, situation-based analysis',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
         Text(
           isKo
               ? '"나는 정직하다" 같은 직접 질문 대신, 실제 상황에서의 행동을 묻습니다.'
               : 'Instead of direct claims, we ask how you behave in real situations.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
         ),
         const SizedBox(height: 16),
         Column(
           children: benefits
-              .map((text) => Padding(
-                    padding: const EdgeInsets.only(bottom: 10),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 26,
-                          height: 26,
-                          decoration: const BoxDecoration(
-                            gradient: LinearGradient(colors: [AppColors.purple500, AppColors.pink500]),
-                            shape: BoxShape.circle,
+              .map(
+                (text) => Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 26,
+                        height: 26,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [AppColors.purple500, AppColors.pink500],
                           ),
-                          child: const Icon(Icons.check, size: 16, color: Colors.white),
+                          shape: BoxShape.circle,
                         ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            text,
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.gray300),
-                          ),
+                        child: const Icon(
+                          Icons.check,
+                          size: 16,
+                          color: Colors.white,
                         ),
-                      ],
-                    ),
-                  ))
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          text,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.gray300),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
               .toList(),
         ),
       ],
@@ -1224,7 +1383,9 @@ class _FeaturesSection extends StatelessWidget {
       _FeatureItem(
         icon: Icons.psychology,
         title: isKo ? '과학적 분석' : 'Scientific Analysis',
-        description: isKo ? '검증된 60문항 기반 분석' : 'Validated 60-question assessment',
+        description: isKo
+            ? '검증된 60문항 기반 분석'
+            : 'Validated 60-question assessment',
       ),
       _FeatureItem(
         icon: Icons.people_alt,
@@ -1263,7 +1424,11 @@ class _FeatureItem {
   final String title;
   final String description;
 
-  const _FeatureItem({required this.icon, required this.title, required this.description});
+  const _FeatureItem({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
 }
 
 class _FeatureCard extends StatelessWidget {
@@ -1282,7 +1447,9 @@ class _FeatureCard extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [AppColors.purple500, AppColors.pink500]),
+              gradient: const LinearGradient(
+                colors: [AppColors.purple500, AppColors.pink500],
+              ),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(item.icon, color: Colors.white, size: 26),
@@ -1300,7 +1467,9 @@ class _FeatureCard extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   item.description,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
                 ),
               ],
             ),
@@ -1350,15 +1519,21 @@ class _HexacoVsMbtiSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          isKo ? '6가지 심리 유형 vs MBTI, 뭐가 다를까?' : '6-Type vs MBTI: What\'s Different?',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          isKo
+              ? '6가지 심리 유형 vs MBTI, 뭐가 다를까?'
+              : '6-Type vs MBTI: What\'s Different?',
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         Text(
           isKo
               ? '6가지 심리 유형은 MBTI보다 더 정밀한 과학적 성격 분석 모델입니다.'
               : 'The 6-Type model is a more precise, scientific personality model than MBTI.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
         ),
         const SizedBox(height: 16),
         DarkCard(
@@ -1368,7 +1543,9 @@ class _HexacoVsMbtiSection extends StatelessWidget {
               // Header
               Container(
                 decoration: BoxDecoration(
-                  border: Border(bottom: BorderSide(color: AppColors.darkBorder)),
+                  border: Border(
+                    bottom: BorderSide(color: AppColors.darkBorder),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -1380,7 +1557,10 @@ class _HexacoVsMbtiSection extends StatelessWidget {
                         child: Center(
                           child: GradientText(
                             '6가지 유형',
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -1409,7 +1589,9 @@ class _HexacoVsMbtiSection extends StatelessWidget {
                 Container(
                   decoration: BoxDecoration(
                     border: i < rows.length - 1
-                        ? Border(bottom: BorderSide(color: AppColors.darkBorder))
+                        ? Border(
+                            bottom: BorderSide(color: AppColors.darkBorder),
+                          )
                         : null,
                   ),
                   child: Row(
@@ -1421,7 +1603,8 @@ class _HexacoVsMbtiSection extends StatelessWidget {
                           child: Text(
                             rows[i]['label']!,
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
                                   color: AppColors.gray400,
                                   fontWeight: FontWeight.w600,
                                   fontSize: 11,
@@ -1442,7 +1625,8 @@ class _HexacoVsMbtiSection extends StatelessWidget {
                           child: Text(
                             rows[i]['hexaco']!,
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
                                   color: AppColors.purple400,
                                   fontSize: 11,
                                 ),
@@ -1456,7 +1640,8 @@ class _HexacoVsMbtiSection extends StatelessWidget {
                           child: Text(
                             rows[i]['mbti']!,
                             textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            style: Theme.of(context).textTheme.bodySmall
+                                ?.copyWith(
                                   color: AppColors.gray500,
                                   fontSize: 11,
                                 ),
@@ -1503,14 +1688,18 @@ class _HexacoSection extends StatelessWidget {
       children: [
         Text(
           isKo ? '6가지 심리 유형이란?' : 'What Are the 6 Personality Types?',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         Text(
           isKo
               ? '6가지 심리 유형은 Big Five에 정직-겸손 요인을 추가한 성격 구조 모델입니다.'
               : 'The 6-Type model extends Big Five with Honesty-Humility for more precise traits.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
         ),
         const SizedBox(height: 16),
         LayoutBuilder(
@@ -1536,20 +1725,27 @@ class _HexacoSection extends StatelessWidget {
                     children: [
                       Text(
                         factor,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
-                            ?.copyWith(color: color, fontWeight: FontWeight.w700),
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(
+                              color: color,
+                              fontWeight: FontWeight.w700,
+                            ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        isKo ? factorNamesKo[factor] ?? '' : factorNamesEn[factor] ?? '',
+                        isKo
+                            ? factorNamesKo[factor] ?? ''
+                            : factorNamesEn[factor] ?? '',
                         style: Theme.of(context).textTheme.titleSmall,
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        isKo ? descriptionsKo[factor] ?? '' : descriptionsEn[factor] ?? '',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+                        isKo
+                            ? descriptionsKo[factor] ?? ''
+                            : descriptionsEn[factor] ?? '',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.gray400,
+                        ),
                       ),
                     ],
                   ),
@@ -1562,11 +1758,15 @@ class _HexacoSection extends StatelessWidget {
     );
   }
 }
+
 class _VersionSelectionSection extends StatelessWidget {
   final TestController controller;
   final bool isKo;
 
-  const _VersionSelectionSection({required this.controller, required this.isKo});
+  const _VersionSelectionSection({
+    required this.controller,
+    required this.isKo,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1575,21 +1775,27 @@ class _VersionSelectionSection extends StatelessWidget {
         value: 60,
         minutes: 5,
         title: isKo ? '빠른 테스트' : 'Quick Test',
-        description: isKo ? '기본 성격 특성을 빠르게 확인합니다.' : 'Quick overview of core traits.',
+        description: isKo
+            ? '기본 성격 특성을 빠르게 확인합니다.'
+            : 'Quick overview of core traits.',
         icon: Icons.bolt,
       ),
       _VersionCard(
         value: 120,
         minutes: 10,
         title: isKo ? '표준 테스트' : 'Standard Test',
-        description: isKo ? '균형 잡힌 분석으로 정확도를 높입니다.' : 'Balanced analysis with better accuracy.',
+        description: isKo
+            ? '균형 잡힌 분석으로 정확도를 높입니다.'
+            : 'Balanced analysis with better accuracy.',
         icon: Icons.schedule,
       ),
       _VersionCard(
         value: 180,
         minutes: 15,
         title: isKo ? '정밀 테스트' : 'Detailed Test',
-        description: isKo ? '가장 정교한 성격 분석을 제공합니다.' : 'Deepest and most detailed analysis.',
+        description: isKo
+            ? '가장 정교한 성격 분석을 제공합니다.'
+            : 'Deepest and most detailed analysis.',
         icon: Icons.track_changes,
       ),
     ];
@@ -1599,12 +1805,18 @@ class _VersionSelectionSection extends StatelessWidget {
       children: [
         Text(
           isKo ? '테스트 길이를 선택하세요' : 'Choose Test Length',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 8),
         Text(
-          isKo ? '문항이 많을수록 더 정밀한 결과를 제공합니다.' : 'More questions give more precise results.',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
+          isKo
+              ? '문항이 많을수록 더 정밀한 결과를 제공합니다.'
+              : 'More questions give more precise results.',
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.gray400),
         ),
         const SizedBox(height: 16),
         LayoutBuilder(
@@ -1629,7 +1841,9 @@ class _VersionSelectionSection extends StatelessWidget {
                   child: DarkCard(
                     radius: AppRadii.xl,
                     borderColor: selected ? AppColors.purple500 : null,
-                    color: selected ? AppColors.purple500.withValues(alpha: 0.08) : null,
+                    color: selected
+                        ? AppColors.purple500.withValues(alpha: 0.08)
+                        : null,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1640,23 +1854,31 @@ class _VersionSelectionSection extends StatelessWidget {
                               width: 44,
                               height: 44,
                               decoration: BoxDecoration(
-                                color: selected ? AppColors.purple500 : AppColors.darkBg,
+                                color: selected
+                                    ? AppColors.purple500
+                                    : AppColors.darkBg,
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Icon(card.icon, color: selected ? Colors.white : AppColors.purple400),
+                              child: Icon(
+                                card.icon,
+                                color: selected
+                                    ? Colors.white
+                                    : AppColors.purple400,
+                              ),
                             ),
                             if (selected)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: AppColors.purple500,
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                                 child: Text(
                                   isKo ? '선택됨' : 'Selected',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelSmall
+                                  style: Theme.of(context).textTheme.labelSmall
                                       ?.copyWith(color: Colors.white),
                                 ),
                               ),
@@ -1665,7 +1887,8 @@ class _VersionSelectionSection extends StatelessWidget {
                         const SizedBox(height: 12),
                         Text(
                           '${card.value}${isKo ? '문항' : ' questions'}',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                          style: Theme.of(context).textTheme.titleLarge
+                              ?.copyWith(fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -1675,16 +1898,24 @@ class _VersionSelectionSection extends StatelessWidget {
                         const SizedBox(height: 6),
                         Text(
                           card.description,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppColors.gray400),
                         ),
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            const Icon(Icons.schedule, size: 14, color: AppColors.gray500),
+                            const Icon(
+                              Icons.schedule,
+                              size: 14,
+                              color: AppColors.gray500,
+                            ),
                             const SizedBox(width: 6),
                             Text(
-                              isKo ? '약 ${card.minutes}분' : 'About ${card.minutes} min',
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray500),
+                              isKo
+                                  ? '약 ${card.minutes}분'
+                                  : 'About ${card.minutes} min',
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(color: AppColors.gray500),
                             ),
                           ],
                         ),
@@ -1765,7 +1996,11 @@ class _DisclaimerSection extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: AppColors.gray400, size: 18),
+              const Icon(
+                Icons.warning_amber_rounded,
+                color: AppColors.gray400,
+                size: 18,
+              ),
               const SizedBox(width: 8),
               Text(
                 isKo ? '법적 고지' : 'Legal Notice',
@@ -1774,13 +2009,17 @@ class _DisclaimerSection extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          ...notices.map((text) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  text,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
-                ),
-              )),
+          ...notices.map(
+            (text) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                text,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppColors.gray400),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -1798,14 +2037,18 @@ class _FooterSection extends StatelessWidget {
       children: [
         Text(
           '6-Type Personality Test',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray500),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.gray500),
         ),
         const SizedBox(height: 6),
         Text(
           isKo
               ? '6가지 심리 유형 이론 기반 | 비공식 테스트'
               : 'Based on 6-Type Personality Theory | Unofficial Test',
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: AppColors.gray600),
+          style: Theme.of(
+            context,
+          ).textTheme.bodySmall?.copyWith(color: AppColors.gray600),
           textAlign: TextAlign.center,
         ),
       ],
@@ -1815,12 +2058,82 @@ class _FooterSection extends StatelessWidget {
 
 // ─── 카드 보관함 바로가기 ─────────────────────────────────────────────────────
 
+class _CommunityShortcut extends StatelessWidget {
+  final bool isKo;
+  const _CommunityShortcut({required this.isKo});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16),
+      child: GestureDetector(
+        onTap: () => Navigator.pushNamed(context, '/community'),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: AppColors.darkCard,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: const Color(0xFF6366F1).withValues(alpha: 0.3),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF6366F1).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(
+                  Icons.forum_outlined,
+                  color: Color(0xFF818CF8),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      isKo ? '고민 나눔 게시판' : 'Community Board',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      isKo
+                          ? '익명으로 고민을 나누고 서로 상담해요'
+                          : 'Share worries & help each other anonymously',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF818CF8),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right, color: Colors.white38, size: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _CardCollectionShortcut extends StatefulWidget {
   final bool isKo;
   const _CardCollectionShortcut({required this.isKo});
 
   @override
-  State<_CardCollectionShortcut> createState() => _CardCollectionShortcutState();
+  State<_CardCollectionShortcut> createState() =>
+      _CardCollectionShortcutState();
 }
 
 class _CardCollectionShortcutState extends State<_CardCollectionShortcut> {
@@ -1906,10 +2219,7 @@ class _CardCollectionShortcutState extends State<_CardCollectionShortcut> {
                       widget.isKo
                           ? '$_cardCount장 보유 · 최고 $rarityIcon $rarityLabel'
                           : '$_cardCount cards · Best: $rarityIcon $rarityLabel',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: rarityColor,
-                      ),
+                      style: TextStyle(fontSize: 12, color: rarityColor),
                     ),
                   ],
                 ),

@@ -1,0 +1,88 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: check if user is authenticated
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Helper: check if user owns the document (authorId matches auth UID)
+    function isOwner(authorId) {
+      return isAuth() && request.auth.uid == authorId;
+    }
+
+    // community_users: owner read/write only (keyed by Firebase Auth UID)
+    match /community_users/{userId} {
+      allow read: if isAuth();
+      allow create: if isAuth() && request.auth.uid == userId;
+      allow update: if isAuth() && request.auth.uid == userId
+        && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['xp', 'level', 'banCount', 'banUntil', 'reportCount']);
+      // xp, level, ban fields are server-only (Cloud Functions)
+    }
+
+    // posts
+    match /posts/{postId} {
+      allow read: if true;
+      allow create: if isAuth()
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.likeCount == 0
+        && request.resource.data.commentCount == 0
+        && request.resource.data.isBlinded == false
+        && request.resource.data.reportCount == 0
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.content.size() <= 2000;
+      allow update: if isOwner(resource.data.authorId)
+        && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['likeCount', 'commentCount', 'isBlinded', 'reportCount', 'authorId']);
+      allow delete: if isOwner(resource.data.authorId);
+
+      // likes subcollection
+      match /likes/{likeUserId} {
+        allow read: if true;
+        allow create: if isAuth() && request.auth.uid == likeUserId;
+        allow delete: if isAuth() && request.auth.uid == likeUserId;
+      }
+
+      // reports subcollection
+      match /reports/{reportUserId} {
+        allow create: if isAuth() && request.auth.uid == reportUserId;
+        // no read, no update, no delete for users
+      }
+
+      // comments subcollection
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if isAuth()
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.likeCount == 0
+          && request.resource.data.isBlinded == false
+          && request.resource.data.reportCount == 0
+          && request.resource.data.content.size() <= 500;
+        allow update: if isOwner(resource.data.authorId)
+          && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['likeCount', 'isBest', 'isBlinded', 'reportCount', 'authorId']);
+        allow delete: if isOwner(resource.data.authorId);
+
+        match /likes/{likeUserId} {
+          allow read: if true;
+          allow create: if isAuth() && request.auth.uid == likeUserId;
+          allow delete: if isAuth() && request.auth.uid == likeUserId;
+        }
+
+        match /reports/{reportUserId} {
+          allow create: if isAuth() && request.auth.uid == reportUserId;
+        }
+      }
+    }
+
+    // notifications: owner read/update only
+    match /notifications/{userId}/items/{notifId} {
+      allow read: if isAuth() && request.auth.uid == userId;
+      allow update: if isAuth() && request.auth.uid == userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
+      // create/delete by Cloud Functions only (Admin SDK)
+    }
+  }
+}
