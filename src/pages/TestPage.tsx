@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Lightbulb, Circle, Sparkles, Eye } from 'luc
 import { factorColors } from '../data/questions'
 import { useTestStore, encodeResults } from '../stores/testStore'
 import AdBanner from '../components/AdBanner'
+import KakaoAdFit, { KAKAO_AD } from '../components/KakaoAdFit'
 
 // Test completion popup — no ad (AdSense policy: no ads on action screens)
 function CompletionPopup({
@@ -699,6 +700,14 @@ export default function TestPage() {
         )}
       </AnimatePresence>
 
+      {/* PC side ads — hidden on mobile */}
+      <div className="hidden lg:block fixed left-4 top-1/2 -translate-y-1/2 z-10">
+        <KakaoAdFit adUnit={KAKAO_AD.SIDE_160x600} width={160} height={600} />
+      </div>
+      <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 z-10">
+        <KakaoAdFit adUnit={KAKAO_AD.SIDE_160x600} width={160} height={600} />
+      </div>
+
       <div className="max-w-2xl mx-auto relative z-10">
         {/* Progress Indicator */}
         <ProgressIndicator
@@ -833,6 +842,11 @@ export default function TestPage() {
         >
           {t('test.slider.takeTime')}
         </motion.p>
+
+        {/* PC bottom banner — hidden on mobile */}
+        <div className="hidden md:flex justify-center mt-8">
+          <KakaoAdFit adUnit={KAKAO_AD.BANNER_728x90} width={728} height={90} />
+        </div>
       </div>
     </div>
   )

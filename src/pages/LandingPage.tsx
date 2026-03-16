@@ -10,6 +10,7 @@ import { personas } from '../data/personas'
 import ElectricBorder from '../components/ElectricBorder'
 import DecryptedText from '../components/DecryptedText'
 import DisclaimerSection from '../components/common/DisclaimerSection'
+import KakaoAdFit, { KAKAO_AD } from '../components/KakaoAdFit'
 import PinDialog from '../components/common/PinDialog'
 import { useHistoryStore, type SavedResult } from '../stores/historyStore'
 import { useCardStore, getCardStats, rarityLabels, type SavedCard, type CardRarity } from '../stores/cardStore'
@@ -337,7 +338,8 @@ function CardCollectionSection() {
 }
 
 function CardMiniPreview({ card, isKo }: { card: SavedCard; isKo: boolean }) {
-  const borderColor = rarityLabels[card.rarity].color
+  const label = rarityLabels[card.rarity] ?? rarityLabels.r
+  const borderColor = label.color
 
   return (
     <motion.div
@@ -357,7 +359,7 @@ function CardMiniPreview({ card, isKo }: { card: SavedCard; isKo: boolean }) {
             className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
             style={{ background: `${borderColor}25`, color: borderColor }}
           >
-            {isKo ? rarityLabels[card.rarity].ko : rarityLabels[card.rarity].en}
+            {isKo ? label.ko : label.en}
           </span>
           <span className="text-[9px] text-gray-500 font-mono">{card.cardNumber}</span>
         </div>
@@ -798,6 +800,11 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* PC banner ad — hidden on mobile */}
+      <div className="hidden md:flex justify-center py-6">
+        <KakaoAdFit adUnit={KAKAO_AD.BANNER_728x90} width={728} height={90} />
+      </div>
 
       {/* Saved Results Section */}
       <SavedResultsSection />
