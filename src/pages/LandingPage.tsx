@@ -521,6 +521,25 @@ export default function LandingPage() {
     <div className="min-h-screen pt-20 relative">
       <FloatingParticles />
 
+      {/* Promo Video Banner */}
+      <section className="relative max-w-3xl mx-auto px-4 pt-4 pb-2">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="rounded-2xl overflow-hidden border border-purple-500/20 bg-dark-card shadow-lg shadow-purple-500/10"
+        >
+          <video
+            src="/video/promo-landscape.mp4"
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-auto max-h-[280px] object-cover"
+          />
+        </motion.div>
+      </section>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 md:py-32">
         {/* Animated background elements */}
