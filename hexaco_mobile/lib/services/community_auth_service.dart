@@ -47,6 +47,10 @@ class CommunityAuthService {
     required String nickname,
     required String lang,
   }) async {
+    // Ensure signed in
+    if (_auth.currentUser == null) {
+      await _auth.signInAnonymously();
+    }
     final uid = _auth.currentUser!.uid;
     final now = DateTime.now();
 
