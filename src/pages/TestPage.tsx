@@ -7,7 +7,7 @@ import { factorColors } from '../data/questions'
 import { useTestStore, encodeResults } from '../stores/testStore'
 import AdBanner from '../components/AdBanner'
 
-// Test completion popup with rewarded ad before results
+// Test completion popup — no ad (AdSense policy: no ads on action screens)
 function CompletionPopup({
   isKo,
   onViewResults,
@@ -15,16 +15,6 @@ function CompletionPopup({
   isKo: boolean
   onViewResults: () => void
 }) {
-  const [adWatched, setAdWatched] = useState(false)
-
-  // Enable "결과 보기" button after ad display time (3 seconds)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setAdWatched(true)
-    }, 3000)
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -70,53 +60,35 @@ function CompletionPopup({
             : 'Your personality analysis is ready.'}
         </p>
 
-        {/* Rewarded Ad Area */}
-        <div className="mb-4 rounded-xl overflow-hidden bg-dark-bg/50 border border-dark-border">
-          <AdBanner />
-        </div>
-
-        {/* View Results Button - enabled after ad */}
-        {adWatched ? (
-          <motion.button
-            initial={{ opacity: 0, y: 10 }}
-            onClick={onViewResults}
-            className="relative inline-flex items-center gap-3 px-10 py-4 rounded-2xl text-white font-bold text-lg border-2"
-            style={{
-              background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
-            }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              scale: [1, 1.05, 1],
-              borderColor: [
-                'rgba(255,255,255,0.3)',
-                'rgba(255,255,255,0.6)',
-                'rgba(255,255,255,0.3)',
-              ],
-              boxShadow: [
-                '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3)',
-                '0 0 35px rgba(139, 92, 246, 0.7), 0 0 60px rgba(236, 72, 153, 0.5)',
-                '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3)',
-              ],
-            }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Eye className="w-6 h-6" />
-            {isKo ? '결과 보기' : 'View Results'}
-          </motion.button>
-        ) : (
-          <div className="flex flex-col items-center gap-2">
-            <motion.div
-              className="w-6 h-6 border-2 border-purple-400 border-t-transparent rounded-full"
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-            />
-            <p className="text-gray-500 text-xs">
-              {isKo ? '잠시만 기다려주세요...' : 'Please wait a moment...'}
-            </p>
-          </div>
-        )}
+        {/* View Results Button — immediate, no wait */}
+        <motion.button
+          initial={{ opacity: 0, y: 10 }}
+          onClick={onViewResults}
+          className="relative inline-flex items-center gap-3 px-10 py-4 rounded-2xl text-white font-bold text-lg border-2"
+          style={{
+            background: 'linear-gradient(135deg, #8B5CF6, #EC4899)',
+          }}
+          animate={{
+            opacity: 1,
+            y: 0,
+            scale: [1, 1.05, 1],
+            borderColor: [
+              'rgba(255,255,255,0.3)',
+              'rgba(255,255,255,0.6)',
+              'rgba(255,255,255,0.3)',
+            ],
+            boxShadow: [
+              '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3)',
+              '0 0 35px rgba(139, 92, 246, 0.7), 0 0 60px rgba(236, 72, 153, 0.5)',
+              '0 0 20px rgba(139, 92, 246, 0.4), 0 0 40px rgba(236, 72, 153, 0.3)',
+            ],
+          }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <Eye className="w-6 h-6" />
+          {isKo ? '결과 보기' : 'View Results'}
+        </motion.button>
       </motion.div>
     </motion.div>
   )

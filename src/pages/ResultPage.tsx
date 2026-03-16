@@ -22,7 +22,7 @@ import { useCardStore, type SavedCard } from '../stores/cardStore'
 import CardRevealModal from '../components/CardRevealModal'
 import { getMBTICompatibility } from '../utils/mbtiCompatibility'
 import { shareFacebook, shareNative, buildShareText, type ShareContent } from '../utils/shareTargets'
-import AdBanner from '../components/AdBanner'
+// AdBanner removed from loading screen — AdSense policy compliance
 
 interface AIAnalysisFactor {
   factor: string
@@ -147,10 +147,7 @@ function LoadingScreen({ language }: { language: string }) {
         {Math.round(progress)}%
       </p>
 
-      {/* Ad Banner during loading */}
-      <div className="w-full max-w-md mt-8 px-4 rounded-xl overflow-hidden">
-        <AdBanner />
-      </div>
+      {/* Ad removed — AdSense policy: no ads on loading screens */}
     </div>
   )
 }
