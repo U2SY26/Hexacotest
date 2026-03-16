@@ -283,57 +283,107 @@ function CardCollectionSection() {
   const { i18n } = useTranslation()
   const cards = useCardStore(state => state.cards)
   const isKo = i18n.language === 'ko'
+  const [showPopup, setShowPopup] = useState(false)
 
   if (cards.length === 0) return null
 
   const stats = getCardStats(cards)
   const rarityOrder: CardRarity[] = ['legend', 'ssr', 'sr', 'r']
+  const bestCard = cards[0]
+  const bestLabel = rarityLabels[bestCard?.rarity] ?? rarityLabels.r
 
   return (
-    <section className="py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xl">🃏</span>
-            <h2 className="text-lg font-bold text-white">
-              {isKo ? '보유 카드' : 'My Cards'}
-            </h2>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium">
-              {stats.total}
-            </span>
-          </div>
-          {/* Rarity stats */}
-          <div className="flex items-center gap-2">
-            {rarityOrder.map(r => stats[r] > 0 && (
-              <span
-                key={r}
-                className="text-xs px-2 py-0.5 rounded-full font-medium"
-                style={{
-                  background: `${rarityLabels[r].color}20`,
-                  color: rarityLabels[r].color,
-                  border: `1px solid ${rarityLabels[r].color}40`,
-                }}
-              >
-                {isKo ? rarityLabels[r].ko : rarityLabels[r].en} {stats[r]}
-              </span>
-            ))}
-          </div>
-        </div>
+    <>
+      <section className="py-4">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            whileHover={{ scale: 1.01 }}
+            onClick={() => setShowPopup(true)}
+            className="flex items-center gap-4 p-4 rounded-2xl cursor-pointer border border-purple-500/20"
+            style={{ background: 'linear-gradient(135deg, #1A1035 0%, #2D1B4E 50%, #1A1035 100%)' }}
+          >
+            {/* Best card mini */}
+            <div
+              className="w-14 h-20 rounded-lg flex-shrink-0 flex items-center justify-center"
+              style={{
+                background: `linear-gradient(160deg, #1A1035, #2D1B4E)`,
+                border: `1.5px solid ${bestLabel.color}40`,
+              }}
+            >
+              <span className="text-2xl">{bestCard?.personalityTitle?.emoji ?? '🃏'}</span>
+            </div>
 
-        {/* Card grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {cards.slice(0, 8).map(card => (
-            <CardMiniPreview key={card.id} card={card} isKo={isKo} />
-          ))}
-        </div>
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-sm font-bold text-white">
+                  {isKo ? '보유 카드' : 'My Cards'}
+                </h3>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-medium">
+                  {stats.total}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {rarityOrder.map(r => stats[r] > 0 && (
+                  <span
+                    key={r}
+                    className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
+                    style={{
+                      background: `${rarityLabels[r].color}20`,
+                      color: rarityLabels[r].color,
+                    }}
+                  >
+                    {isKo ? rarityLabels[r].ko : rarityLabels[r].en} {stats[r]}
+                  </span>
+                ))}
+              </div>
+            </div>
 
-        {cards.length > 8 && (
-          <p className="text-center text-xs text-gray-500 mt-3">
-            +{cards.length - 8} {isKo ? '더 보기' : 'more'}
-          </p>
+            {/* Arrow */}
+            <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Card Popup */}
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+            onClick={() => setShowPopup(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-lg w-full max-h-[80vh] rounded-2xl p-6 border border-purple-500/30 overflow-y-auto"
+              style={{ background: 'linear-gradient(135deg, #1A1035 0%, #2D1B4E 100%)' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-white">
+                  {isKo ? '보유 카드' : 'My Cards'} ({stats.total})
+                </h2>
+                <button
+                  onClick={() => setShowPopup(false)}
+                  className="text-gray-400 hover:text-white p-1"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {cards.map(card => (
+                  <CardMiniPreview key={card.id} card={card} isKo={isKo} />
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
         )}
-      </div>
-    </section>
+      </AnimatePresence>
+    </>
   )
 }
 
@@ -353,7 +403,6 @@ function CardMiniPreview({ card, isKo }: { card: SavedCard; isKo: boolean }) {
       }}
     >
       <div className="p-3 h-full flex flex-col items-center justify-between">
-        {/* Rarity + Number */}
         <div className="flex justify-between w-full">
           <span
             className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
@@ -363,26 +412,89 @@ function CardMiniPreview({ card, isKo }: { card: SavedCard; isKo: boolean }) {
           </span>
           <span className="text-[9px] text-gray-500 font-mono">{card.cardNumber}</span>
         </div>
-
-        {/* Emoji */}
         <div className="text-3xl my-2">{card.personalityTitle.emoji}</div>
-
-        {/* Title */}
         <p className="text-[10px] font-bold text-white text-center leading-tight">
           {isKo ? card.personalityTitle.titleKo : card.personalityTitle.titleEn}
         </p>
-
-        {/* Match */}
         <p className="text-[8px] text-gray-400 mt-1">
           {card.topMatch.name} {card.topMatch.similarity}%
         </p>
-
-        {/* Date */}
         <p className="text-[7px] text-gray-600 mt-auto">
           {new Date(card.createdAt).toLocaleDateString()}
         </p>
       </div>
     </motion.div>
+  )
+}
+
+// App features promotion — AI counseling + community
+function AppFeaturesPromo() {
+  const { i18n } = useTranslation()
+  const isKo = i18n.language === 'ko'
+
+  const features = [
+    {
+      icon: '🤖',
+      gradient: 'from-purple-600/20 to-pink-600/20',
+      border: 'border-purple-500/30',
+      titleKo: 'AI 심리상담',
+      titleEn: 'AI Counseling',
+      descKo: '5명의 AI 상담사와 고민을 나눠보세요. 음성 인식과 Rive 애니메이션으로 실감나는 상담 경험.',
+      descEn: 'Talk with 5 AI counselors. Voice input and Rive animations for an immersive experience.',
+      badgeKo: 'NEW',
+      badgeEn: 'NEW',
+    },
+    {
+      icon: '💬',
+      gradient: 'from-blue-600/20 to-cyan-600/20',
+      border: 'border-blue-500/30',
+      titleKo: '고민 나눔 게시판',
+      titleEn: 'Community Board',
+      descKo: '익명으로 고민을 나누고 서로 상담해주세요. 레벨업 배지, BEST 댓글, 다국어 자동 번역.',
+      descEn: 'Share worries anonymously. Level badges, BEST comments, auto translation.',
+      badgeKo: 'NEW',
+      badgeEn: 'NEW',
+    },
+  ]
+
+  return (
+    <section className="py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="grid sm:grid-cols-2 gap-4">
+          {features.map((f, i) => (
+            <motion.a
+              key={i}
+              href="https://play.google.com/store/apps/details?id=com.hexaco.hexaco_mobile"
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              whileHover={{ scale: 1.02, y: -2 }}
+              className={`relative p-5 rounded-2xl bg-gradient-to-br ${f.gradient} border ${f.border} block`}
+            >
+              <span className="absolute top-3 right-3 text-[10px] px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 font-bold">
+                {isKo ? f.badgeKo : f.badgeEn}
+              </span>
+              <div className="text-3xl mb-3">{f.icon}</div>
+              <h3 className="text-base font-bold text-white mb-1">
+                {isKo ? f.titleKo : f.titleEn}
+              </h3>
+              <p className="text-xs text-gray-400 leading-relaxed">
+                {isKo ? f.descKo : f.descEn}
+              </p>
+              <div className="flex items-center gap-1 mt-3 text-xs text-purple-300">
+                <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                  <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.53,12.9 20.18,13.18L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                </svg>
+                {isKo ? '앱에서 이용하기' : 'Get the App'}
+              </div>
+            </motion.a>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
 
@@ -809,8 +921,11 @@ export default function LandingPage() {
       {/* Saved Results Section */}
       <SavedResultsSection />
 
-      {/* Card Collection Section */}
+      {/* Card Collection Banner */}
       <CardCollectionSection />
+
+      {/* App Features — AI Counseling + Community */}
+      <AppFeaturesPromo />
 
       {/* Stats Section */}
       <StatsSection />
